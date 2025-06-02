@@ -29,25 +29,23 @@ module.exports = {
         process.env.BSC_TESTNET_RPC_URL ||
         "https://data-seed-prebsc-1-s1.binance.org:8545/",
       chainId: 97,
-      accounts: process.env.DEPLOYER_PRIVATE_KEY
-        ? [process.env.DEPLOYER_PRIVATE_KEY]
-        : [],
+      accounts: process.env.DEPLOYER_PRIVATE_KEY ? [process.env.DEPLOYER_PRIVATE_KEY] : [],
       gasPrice: 20000000000, // 20 Gwei
     },
     bsc_mainnet: {
       url:
         process.env.BSC_MAINNET_RPC_URL || "https://bsc-dataseed.binance.org/",
       chainId: 56,
-      accounts: process.env.DEPLOYER_PRIVATE_KEY
-        ? [process.env.DEPLOYER_PRIVATE_KEY]
-        : [],
+      // NOTE: For production deployment, use environment variable - NEVER hardcode private keys
+      accounts: process.env.DEPLOYER_PRIVATE_KEY ? [process.env.DEPLOYER_PRIVATE_KEY] : [],
       gasPrice: 5000000000, // 5 Gwei
     },
   },
   etherscan: {
+    // Set up BSCScan API key in .env file
     apiKey: {
-      bscTestnet: process.env.BSCSCAN_API_KEY,
-      bsc: process.env.BSCSCAN_API_KEY,
+      bscTestnet: process.env.BSCSCAN_API_KEY || "",
+      bsc: process.env.BSCSCAN_API_KEY || "",
     },
   },
   gasReporter: {

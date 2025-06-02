@@ -14,6 +14,15 @@ Orphi CrowdFund is a sophisticated blockchain-based crowdfunding platform built 
 - **Upgradeable Contracts**: UUPS proxy pattern for future improvements
 - **Leader Ranks**: Shining Star and Silver Star qualification system
 
+## Security Notice ⚠️
+
+This repository contains smart contract code intended to be deployed on BSC. Please follow these security practices:
+
+1. **Never commit private keys or secrets to GitHub**
+2. **Always use environment variables for sensitive information**
+3. **Create a proper `.env` file based on the `.env.example` template**
+4. **Keep your production deployment keys separate from development keys**
+
 ## System Architecture
 
 ### Smart Contracts
@@ -226,8 +235,14 @@ function _creditEarnings(address _user, uint256 _amount, uint256 _poolType) inte
 
 ### Installation
 
+Clone the repository and install dependencies:
+
 ```bash
-cd "Orphi CrowdFund"
+# Clone the repository
+git clone https://github.com/your-username/orphi-crowdfund.git
+cd orphi-crowdfund
+
+# Install dependencies
 npm install
 ```
 
@@ -242,7 +257,7 @@ cp .env.example .env
 Edit `.env` with your values:
 
 ```
-PRIVATE_KEY=your_private_key_here
+DEPLOYER_PRIVATE_KEY=your_private_key_here_without_0x_prefix
 BSCSCAN_API_KEY=your_bscscan_api_key_here
 ADMIN_RESERVE=your_admin_reserve_address_here
 MATRIX_ROOT=your_matrix_root_address_here

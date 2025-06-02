@@ -19,7 +19,7 @@ export const CONTRACT_CONFIG = {
     chainId: 97,
     name: 'BSC Testnet',
     rpcUrl: 'https://data-seed-prebsc-1-s1.binance.org:8545/',
-    contractAddress: '0x...', // Your deployed contract address
+    contractAddress: 'YOUR_DEPLOYED_CONTRACT_ADDRESS', // Replace after deployment
     usdtAddress: '0x337610d27c682E347C9cD60BD4b3b107C9d34dDd',
     blockExplorer: 'https://testnet.bscscan.com'
   },
@@ -27,7 +27,7 @@ export const CONTRACT_CONFIG = {
     chainId: 56,
     name: 'BSC Mainnet',
     rpcUrl: 'https://bsc-dataseed1.binance.org/',
-    contractAddress: '0x...', // Your deployed contract address
+    contractAddress: 'YOUR_DEPLOYED_CONTRACT_ADDRESS', // Replace after deployment
     usdtAddress: '0x55d398326f99059fF775485246999027B3197955',
     blockExplorer: 'https://bscscan.com'
   }

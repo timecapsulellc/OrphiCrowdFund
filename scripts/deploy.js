@@ -51,6 +51,42 @@ async function main() {
   console.log("- Admin Reserve:", adminReserve);
   console.log("- Matrix Root:", matrixRoot);
 
+  // Deploy the main contract
+  console.log("\nDeploying OrphiCrowdFund...");
+  const OrphiCrowdFund = await ethers.getContractFactory("OrphiCrowdFund");
+  const orphiCrowdFund = await upgrades.deployProxy(
+    OrphiCrowdFund,
+    [usdtAddress, adminReserve, matrixRoot],
+    { initializer: "initialize" }
+  );
+  await orphiCrowdFund.waitForDeployment();
+  const contractAddress = await orphiCrowdFund.getAddress();
+  
+  console.log("OrphiCrowdFund deployed to:", contractAddress);
+  
+  // Output summary
+  console.log("\n=== DEPLOYMENT SUMMARY ===");
+  console.log("Network:", network.name, "Chain ID:", network.chainId.toString());
+  console.log("OrphiCrowdFund:", contractAddress);
+  console.log("USDT:", usdtAddress);
+  console.log("Admin Reserve:", adminReserve);
+  console.log("Matrix Root:", matrixRoot);
+  console.log("Deployer:", deployer.address);
+  
+  // Security reminder
+  console.log("\n⚠️ IMPORTANT: Keep your deployment information secure and never share private keys.");
+  console.log("For verification, use 'npx hardhat verify --network [network] [contract-address]'");
+  
+  return {
+    contractAddress,
+    usdtAddress,
+    adminReserve,
+    matrixRoot,
+    deployer: deployer.address
+  };
+}
+  console.log("- Matrix Root:", matrixRoot);
+
   // Deploy OrphiCrowdFund using upgrades proxy
   console.log("\nDeploying OrphiCrowdFund...");
   const OrphiCrowdFund = await ethers.getContractFactory("OrphiCrowdFund");
