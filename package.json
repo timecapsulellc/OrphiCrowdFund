@@ -1,0 +1,63 @@
+{
+  "name": "orphi-crowdfund",
+  "version": "1.0.0",
+  "description": "Orphi CrowdFund Smart Contract System - Matrix-based compensation on BSC",
+  "main": "index.js",
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "test:coverage": "hardhat coverage",
+    "deploy:local": "hardhat run scripts/deploy.js --network hardhat",
+    "deploy:testnet": "hardhat run scripts/deploy.js --network bsc_testnet",
+    "deploy:mainnet": "hardhat run scripts/deploy.js --network bsc_mainnet",
+    "upgrade:testnet": "hardhat run scripts/upgrade.js --network bsc_testnet",
+    "upgrade:mainnet": "hardhat run scripts/upgrade.js --network bsc_mainnet",
+    "verify:testnet": "hardhat run scripts/verify.js --network bsc_testnet",
+    "verify:mainnet": "hardhat run scripts/verify.js --network bsc_mainnet",
+    "admin": "hardhat run scripts/admin.js --network bsc_testnet",
+    "admin:mainnet": "hardhat run scripts/admin.js --network bsc_mainnet",
+    "node": "hardhat node",
+    "lint": "solhint 'contracts/**/*.sol'",
+    "prettier": "prettier --write 'contracts/**/*.sol'"
+  },
+  "keywords": [
+    "blockchain",
+    "smart-contracts",
+    "defi",
+    "crowdfund",
+    "matrix",
+    "bsc",
+    "hardhat"
+  ],
+  "author": "Orphi Development Team",
+  "license": "MIT",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-chai-matchers": "^2.0.0",
+    "@nomicfoundation/hardhat-ethers": "^3.0.0",
+    "@nomicfoundation/hardhat-network-helpers": "^1.0.0",
+    "@nomicfoundation/hardhat-toolbox": "^4.0.0",
+    "@nomicfoundation/hardhat-verify": "^2.0.0",
+    "@openzeppelin/hardhat-upgrades": "^3.0.0",
+    "@typechain/ethers-v6": "^0.5.0",
+    "@typechain/hardhat": "^9.0.0",
+    "@types/chai": "^4.2.0",
+    "@types/mocha": ">=9.1.0",
+    "@types/node": ">=18.0.0",
+    "chai": "^4.2.0",
+    "ethers": "^6.4.0",
+    "hardhat": "^2.24.1",
+    "hardhat-gas-reporter": "^1.0.8",
+    "prettier": "^3.0.0",
+    "prettier-plugin-solidity": "^1.2.0",
+    "solhint": "^4.0.0",
+    "solidity-coverage": "^0.8.1",
+    "ts-node": ">=8.0.0",
+    "typechain": "^8.3.0",
+    "typescript": ">=4.5.0"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.3.0",
+    "@openzeppelin/contracts-upgradeable": "^5.3.0",
+    "dotenv": "^16.3.0"
+  }
+}
