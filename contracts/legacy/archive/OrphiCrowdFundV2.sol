@@ -461,7 +461,7 @@ contract OrphiCrowdFundV2 is
     /**
      * @dev Enhanced earnings credit with overflow protection
      */
-    function _creditEarningsEnhanced(address _user, uint256 _amount, uint8 _poolType) internal {
+    function _creditEarningsEnhanced(address _user, uint256 _amount, uint8 _poolType) internal virtual {
         require(_amount <= type(uint128).max, "Amount too large");
         
         users[_user].poolEarnings[_poolType] += uint128(_amount);

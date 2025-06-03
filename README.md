@@ -27,10 +27,10 @@ This repository contains smart contract code intended to be deployed on BSC. Ple
 
 ### Smart Contracts
 
-1. **OrphiCrowdFund.sol** - Initial implementation of the system
-2. **OrphiCrowdFundV2.sol** - Enhanced version with improved security and feature completeness
-3. **OrphiCrowdFundV3.sol** - Production-ready version with additional security features
-4. **MockUSDT.sol** - Test token for development (BEP20 compatible)
+1. **OrphiCrowdFund.sol** - Main production contract (symlink to V4LibOptimized)
+2. **OrphiCrowdFundV4LibOptimized.sol** - Production-ready implementation with all optimizations
+3. **MockUSDT.sol** - Test token for development (BEP20 compatible)
+4. **legacy/** - Archived development versions (V1, V2, V3, V4, CoreSimple)
 
 ### Key Components
 

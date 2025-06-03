@@ -12,10 +12,10 @@ import "./libraries/AutomationLibSimple.sol";
 
 /**
  * @title OrphiCrowdFund
- * @dev New optimized contract with Chainlink automation and library-based architecture
+ * @dev Size-optimized V4 with simplified libraries for automated distributions
  * @notice 2×∞ Forced Matrix MLM system with Chainlink automation - Under 24KB
  */
-contract OrphiCrowdFund is Ownable, ReentrancyGuard, Pausable, AutomationCompatibleInterface {
+contract OrphiCrowdFundV4LibOptimized is Ownable, ReentrancyGuard, Pausable, AutomationCompatibleInterface {
     using SafeERC20 for IERC20;
 
     // ===== CONSTANTS =====

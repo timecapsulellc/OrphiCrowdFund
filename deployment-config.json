@@ -1,0 +1,39 @@
+{
+  "network": "bsc_testnet",
+  "usdtAddress": "0x337610d27c682E347C9cD60BD4b3b107C9d34dDd",
+  "adminReserve": "0x0000000000000000000000000000000000000000",
+  "matrixRoot": "0x0000000000000000000000000000000000000000",
+  "deploymentTier": "enterprise",
+  "verifyContracts": true,
+  "saveArtifacts": true,
+  "runTests": true,
+  "gasPrice": "5000000000",
+  "gasLimit": "8000000",
+  "features": {
+    "governance": true,
+    "automation": true,
+    "emergencyControls": true,
+    "advancedAnalytics": true
+  },
+  "automationConfig": {
+    "ghpThreshold": "10000000000000000000000",
+    "leaderThreshold": "5000000000000000000000",
+    "automationInterval": 86400,
+    "maxGasLimit": 500000
+  },
+  "securityConfig": {
+    "withdrawalCooldown": 86400,
+    "maxDailyVolume": "1000000000000000000000000",
+    "maxDailyRegistrations": 1000,
+    "earningsCapMultiplier": 4
+  },
+  "poolConfig": {
+    "ghpDistributionInterval": 604800,
+    "leaderDistributionInterval": 1209600,
+    "sponsorCommissionRate": 4000,
+    "levelBonusRate": 1000,
+    "uplineBonusRate": 1000,
+    "leaderBonusRate": 1000,
+    "globalHelpPoolRate": 3000
+  }
+}
