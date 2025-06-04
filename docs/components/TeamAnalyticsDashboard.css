@@ -1,0 +1,595 @@
+/* TeamAnalyticsDashboard.css - OrphiChain Brand Compliant Styles */
+
+.team-analytics-dashboard {
+  font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+  min-height: 100vh;
+  color: var(--orphi-text-primary);
+  padding: 1rem;
+  overflow-x: hidden;
+}
+
+.dashboard-header {
+  margin-bottom: 2rem;
+  padding: 2rem;
+  background: linear-gradient(135deg, var(--orphi-cyber-blue) 0%, var(--orphi-royal-purple) 100%);
+  border-radius: 1rem;
+  box-shadow: 0 8px 32px rgba(0, 212, 255, 0.2);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dashboard-header .header-content {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.dashboard-header h1 {
+  font-family: 'Montserrat', sans-serif;
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  font-weight: 700;
+  margin: 0;
+  background: linear-gradient(45deg, #ffffff, #e0e0e0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.dashboard-header .header-text {
+  flex: 1;
+}
+
+.dashboard-header .header-text h2 {
+  font-family: 'Montserrat', sans-serif;
+  font-size: clamp(1.5rem, 3vw, 2.5rem);
+  font-weight: 700;
+  margin: 0;
+  background: linear-gradient(45deg, #ffffff, #e0e0e0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.dashboard-header .subtitle {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.8);
+  margin-top: 0.5rem;
+  font-weight: 300;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  color: var(--orphi-text-secondary);
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 3px solid rgba(0, 212, 255, 0.3);
+  border-top: 3px solid var(--orphi-cyber-blue);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.analytics-card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.analytics-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--orphi-cyber-blue), var(--orphi-royal-purple), var(--orphi-energy-orange));
+  border-radius: 1rem 1rem 0 0;
+}
+
+.analytics-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 40px rgba(0, 212, 255, 0.2);
+  border-color: var(--orphi-cyber-blue);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.card-title {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--orphi-text-primary);
+  margin: 0;
+}
+
+.card-icon {
+  font-size: 1.5rem;
+  color: var(--orphi-cyber-blue);
+  opacity: 0.8;
+}
+
+.metric-value {
+  font-family: 'Montserrat', sans-serif;
+  font-size: clamp(1.8rem, 3vw, 2.5rem);
+  font-weight: 700;
+  margin: 0.5rem 0;
+  background: linear-gradient(45deg, var(--orphi-cyber-blue), var(--orphi-royal-purple));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.metric-change {
+  display: flex;
+  align-items: center;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.metric-change.positive {
+  color: var(--orphi-success);
+}
+
+.metric-change.negative {
+  color: var(--orphi-error);
+}
+
+.metric-change.neutral {
+  color: var(--orphi-text-secondary);
+}
+
+.change-arrow {
+  margin-right: 0.3rem;
+  font-size: 0.8rem;
+}
+
+.chart-container {
+  height: 300px;
+  margin-top: 1rem;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 0.5rem;
+  padding: 1rem;
+}
+
+.chart-title {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--orphi-text-primary);
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.performance-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.performance-item {
+  text-align: center;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.performance-label {
+  font-size: 0.9rem;
+  color: var(--orphi-text-secondary);
+  margin-bottom: 0.5rem;
+}
+
+.performance-value {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--orphi-cyber-blue);
+}
+
+.team-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.stat-item {
+  text-align: center;
+  padding: 1rem;
+  background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(123, 44, 191, 0.1));
+  border-radius: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.stat-value {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--orphi-cyber-blue);
+  display: block;
+  margin-bottom: 0.3rem;
+}
+
+.stat-label {
+  font-size: 0.8rem;
+  color: var(--orphi-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.leader-ranking {
+  margin-top: 1rem;
+}
+
+.leader-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem;
+  margin-bottom: 0.5rem;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 0.5rem;
+  border-left: 3px solid var(--orphi-cyber-blue);
+  transition: all 0.3s ease;
+}
+
+.leader-item:hover {
+  background: rgba(0, 212, 255, 0.1);
+  transform: translateX(5px);
+}
+
+.leader-info {
+  display: flex;
+  align-items: center;
+}
+
+.leader-rank {
+  background: linear-gradient(135deg, var(--orphi-cyber-blue), var(--orphi-royal-purple));
+  color: white;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  margin-right: 1rem;
+  font-size: 0.9rem;
+}
+
+.leader-details {
+  flex: 1;
+}
+
+.leader-name {
+  font-weight: 600;
+  color: var(--orphi-text-primary);
+  font-size: 0.9rem;
+}
+
+.leader-team-size {
+  font-size: 0.8rem;
+  color: var(--orphi-text-secondary);
+}
+
+.leader-score {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  color: var(--orphi-energy-orange);
+}
+
+.export-section {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.export-title {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--orphi-text-primary);
+  margin-bottom: 1rem;
+}
+
+.export-buttons {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.export-btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 0.5rem;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 0.9rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.export-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transform: translateX(-100%);
+  transition: transform 0.6s;
+}
+
+.export-btn:hover::before {
+  transform: translateX(100%);
+}
+
+.export-btn.pdf {
+  background: linear-gradient(135deg, var(--orphi-cyber-blue), #0099cc);
+  color: white;
+}
+
+.export-btn.csv {
+  background: linear-gradient(135deg, var(--orphi-royal-purple), #5a1a8b);
+  color: white;
+}
+
+.export-btn.email {
+  background: linear-gradient(135deg, var(--orphi-energy-orange), #cc4a1a);
+  color: white;
+}
+
+.export-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.export-btn:active {
+  transform: translateY(0);
+}
+
+.time-filter {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.time-filter-btn {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--orphi-cyber-blue);
+  background: transparent;
+  color: var(--orphi-cyber-blue);
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.time-filter-btn.active {
+  background: var(--orphi-cyber-blue);
+  color: white;
+  box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
+}
+
+.time-filter-btn:hover:not(.active) {
+  background: rgba(0, 212, 255, 0.1);
+}
+
+.error-message {
+  text-align: center;
+  padding: 2rem;
+  color: var(--orphi-error);
+  background: rgba(244, 67, 54, 0.1);
+  border: 1px solid rgba(244, 67, 54, 0.3);
+  border-radius: 0.5rem;
+  margin: 1rem 0;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--orphi-text-secondary);
+}
+
+.empty-state-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+.refresh-btn {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--orphi-cyber-blue), var(--orphi-royal-purple));
+  border: none;
+  color: white;
+  cursor: pointer;
+  box-shadow: 0 8px 25px rgba(0, 212, 255, 0.3);
+  transition: all 0.3s ease;
+  z-index: 1000;
+}
+
+.refresh-btn:hover {
+  transform: scale(1.1) rotate(45deg);
+  box-shadow: 0 12px 35px rgba(0, 212, 255, 0.4);
+}
+
+.refresh-btn:active {
+  transform: scale(0.95);
+}
+
+/* Mobile Responsive Design */
+@media (max-width: 768px) {
+  .team-analytics-dashboard {
+    padding: 0.5rem;
+  }
+
+  .dashboard-header {
+    margin-bottom: 1rem;
+    padding: 1rem;
+  }
+
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .analytics-card {
+    padding: 1rem;
+  }
+
+  .chart-container {
+    height: 250px;
+  }
+
+  .performance-metrics {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+  }
+
+  .team-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .export-buttons {
+    flex-direction: column;
+  }
+
+  .export-btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .time-filter {
+    justify-content: center;
+  }
+
+  .refresh-btn {
+    bottom: 1rem;
+    right: 1rem;
+    width: 50px;
+    height: 50px;
+  }
+}
+
+@media (max-width: 480px) {
+  .team-stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .performance-metrics {
+    grid-template-columns: 1fr;
+  }
+
+  .leader-item {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.5rem;
+  }
+
+  .leader-info {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
+
+/* Accessibility Features */
+@media (prefers-reduced-motion: reduce) {
+  .analytics-card,
+  .export-btn,
+  .time-filter-btn,
+  .leader-item,
+  .refresh-btn {
+    transition: none;
+  }
+
+  .loading-spinner {
+    animation: none;
+  }
+
+  .export-btn::before {
+    display: none;
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .analytics-card {
+    border: 2px solid var(--orphi-cyber-blue);
+    background: rgba(0, 0, 0, 0.9);
+  }
+
+  .export-btn {
+    border: 2px solid currentColor;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .team-analytics-dashboard {
+    background: white;
+    color: black;
+  }
+
+  .refresh-btn,
+  .export-section {
+    display: none;
+  }
+
+  .analytics-card {
+    background: white;
+    border: 1px solid #ccc;
+    box-shadow: none;
+    page-break-inside: avoid;
+  }
+}

@@ -1,0 +1,8 @@
+WARNING: You are currently using Node.js v23.11.0, which is not supported by Hardhat. This can lead to unexpected behavior. See https://hardhat.org/nodejs-versions
+
+
+
+❌ DEPLOYMENT FAILED:
+TypeError: Cannot read properties of undefined (reading 'address')
+    at main (/Users/dadou/Orphi CrowdFund/standalone-v4ultra/bsc-testnet-deploy.js:9:52)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)

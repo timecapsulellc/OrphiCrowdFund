@@ -1,0 +1,35 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "Ownable",
+  "sourceName": "standalone-v4ultra/MockInterfaces.sol",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "initialOwner",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x60803461007357601f61011138819003918201601f19168301916001600160401b038311848410176100785780849260209460405283398101031261007357516001600160a01b0381169081900361007357600080546001600160a01b0319169190911790556040516082908161008f8239f35b600080fd5b634e487b7160e01b600052604160045260246000fdfe6080806040526004361015601257600080fd5b600090813560e01c638da5cb5b14602857600080fd5b346048578160031936011260485790546001600160a01b03168152602090f35b5080fdfea264697066735822122033b25331d9fd50cf3cd2fe73c63ff15b056f8a541c992c60bfc47ed0982f05a464736f6c63430008160033",
+  "deployedBytecode": "0x6080806040526004361015601257600080fd5b600090813560e01c638da5cb5b14602857600080fd5b346048578160031936011260485790546001600160a01b03168152602090f35b5080fdfea264697066735822122033b25331d9fd50cf3cd2fe73c63ff15b056f8a541c992c60bfc47ed0982f05a464736f6c63430008160033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}

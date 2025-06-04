@@ -1,0 +1,577 @@
+/* NetworkVisualization.css - OrphiChain Brand Compliant */
+@import './OrphiChain.css';
+
+.network-visualization {
+  background: var(--orphi-secondary-gradient);
+  border-radius: var(--orphi-radius-lg);
+  overflow: hidden;
+  box-shadow: var(--orphi-shadow-lg);
+  border: 1px solid var(--orphi-midnight-blue);
+  position: relative;
+  min-height: 600px;
+  color: var(--orphi-silver-mist);
+  font-family: var(--orphi-font-secondary);
+}
+
+.network-visualization.mobile {
+  min-height: 400px;
+}
+
+/* ================================
+   CONTROLS PANEL
+   ================================ */
+
+.controls-panel {
+  background: rgba(26, 26, 46, 0.95);
+  backdrop-filter: blur(10px);
+  padding: var(--orphi-spacing-lg);
+  border-bottom: 1px solid var(--orphi-midnight-blue);
+  display: flex;
+  flex-direction: column;
+  gap: var(--orphi-spacing-md);
+}
+
+.search-section {
+  display: flex;
+  align-items: center;
+  gap: var(--orphi-spacing-sm);
+}
+
+.search-input {
+  flex: 1;
+  padding: var(--orphi-spacing-md);
+  background: var(--orphi-midnight-blue);
+  border: 2px solid var(--orphi-deep-space);
+  border-radius: var(--orphi-radius-md);
+  color: var(--orphi-silver-mist);
+  font-family: var(--orphi-font-secondary);
+  font-size: var(--orphi-text-sm);
+  transition: all var(--orphi-transition-normal);
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--orphi-cyber-blue);
+  box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.2);
+}
+
+.search-input::placeholder {
+  color: var(--orphi-silver-mist);
+  opacity: 0.6;
+}
+
+.filters-section {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--orphi-spacing-lg);
+  align-items: center;
+}
+
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: var(--orphi-spacing-sm);
+  font-size: var(--orphi-text-sm);
+}
+
+.filter-group label {
+  color: var(--orphi-silver-mist);
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: var(--orphi-spacing-xs);
+}
+
+.filter-group input[type="checkbox"] {
+  accent-color: var(--orphi-cyber-blue);
+  width: 16px;
+  height: 16px;
+}
+
+.filter-group select {
+  background: var(--orphi-midnight-blue);
+  border: 1px solid var(--orphi-deep-space);
+  border-radius: var(--orphi-radius-sm);
+  color: var(--orphi-silver-mist);
+  padding: var(--orphi-spacing-sm) var(--orphi-spacing-md);
+  font-size: var(--orphi-text-sm);
+}
+
+.filter-group input[type="range"] {
+  width: 120px;
+  height: 4px;
+  background: var(--orphi-deep-space);
+  border-radius: 2px;
+  outline: none;
+  opacity: 0.8;
+  transition: opacity var(--orphi-transition-fast);
+}
+
+.filter-group input[type="range"]:hover {
+  opacity: 1;
+}
+
+.filter-group input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  background: var(--orphi-cyber-blue);
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 212, 255, 0.3);
+}
+
+.filter-group input[type="range"]::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  background: var(--orphi-cyber-blue);
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 2px 6px rgba(0, 212, 255, 0.3);
+}
+
+/* ================================
+   VISUALIZATION CONTAINER
+   ================================ */
+
+.visualization-container {
+  position: relative;
+  width: 100%;
+  height: 500px;
+  overflow: hidden;
+}
+
+.network-visualization.mobile .visualization-container {
+  height: 350px;
+}
+
+.network-svg {
+  background: var(--orphi-deep-space);
+  cursor: grab;
+}
+
+.network-svg:active {
+  cursor: grabbing;
+}
+
+/* ================================
+   NETWORK ELEMENTS
+   ================================ */
+
+.network-link {
+  stroke: var(--orphi-cyber-blue);
+  stroke-opacity: 0.6;
+  transition: all var(--orphi-transition-fast);
+}
+
+.network-link:hover {
+  stroke-opacity: 1;
+  stroke-width: 3px !important;
+  filter: drop-shadow(0 0 6px var(--orphi-cyber-blue));
+}
+
+.network-node {
+  cursor: pointer;
+  transition: all var(--orphi-transition-fast);
+}
+
+.network-node:hover {
+  transform: scale(1.1);
+}
+
+.network-node circle {
+  transition: all var(--orphi-transition-fast);
+}
+
+.network-node:hover circle {
+  filter: drop-shadow(0 0 10px currentColor);
+}
+
+.node-label {
+  font-family: var(--orphi-font-secondary);
+  font-weight: 500;
+  fill: var(--orphi-silver-mist);
+  text-anchor: middle;
+  pointer-events: none;
+  user-select: none;
+}
+
+.team-size-label {
+  font-family: var(--orphi-font-primary);
+  font-weight: 700;
+  fill: var(--orphi-pure-white);
+  text-anchor: middle;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* ================================
+   LEGEND
+   ================================ */
+
+.legend {
+  position: absolute;
+  top: var(--orphi-spacing-lg);
+  left: var(--orphi-spacing-lg);
+  background: rgba(26, 26, 46, 0.95);
+  backdrop-filter: blur(10px);
+  padding: var(--orphi-spacing-md);
+  border-radius: var(--orphi-radius-md);
+  border: 1px solid var(--orphi-midnight-blue);
+  box-shadow: var(--orphi-shadow-md);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: var(--orphi-spacing-sm);
+  margin-bottom: var(--orphi-spacing-xs);
+  font-size: var(--orphi-text-xs);
+  color: var(--orphi-silver-mist);
+}
+
+.legend-item:last-child {
+  margin-bottom: 0;
+}
+
+.legend-circle {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid;
+}
+
+.legend-circle.active {
+  background: var(--orphi-success-green);
+  border-color: var(--orphi-success-green);
+}
+
+.legend-circle.inactive {
+  background: var(--orphi-alert-red);
+  border-color: var(--orphi-alert-red);
+}
+
+.legend-line {
+  width: 20px;
+  height: 2px;
+  background: var(--orphi-cyber-blue);
+  border-radius: 1px;
+}
+
+/* ================================
+   SELECTED NODE INFO
+   ================================ */
+
+.selected-node-info {
+  position: absolute;
+  top: var(--orphi-spacing-lg);
+  right: var(--orphi-spacing-lg);
+  background: rgba(26, 26, 46, 0.98);
+  backdrop-filter: blur(15px);
+  padding: var(--orphi-spacing-lg);
+  border-radius: var(--orphi-radius-lg);
+  border: 1px solid var(--orphi-cyber-blue);
+  box-shadow: var(--orphi-shadow-lg);
+  min-width: 280px;
+  max-width: 350px;
+  animation: orphiSlideUp 0.3s ease-out;
+}
+
+.selected-node-info h3 {
+  font-family: var(--orphi-font-primary);
+  font-weight: 600;
+  color: var(--orphi-cyber-blue);
+  margin: 0 0 var(--orphi-spacing-md) 0;
+  font-size: var(--orphi-text-lg);
+}
+
+.node-details {
+  display: flex;
+  flex-direction: column;
+  gap: var(--orphi-spacing-sm);
+}
+
+.node-details p {
+  margin: 0;
+  font-size: var(--orphi-text-sm);
+  color: var(--orphi-silver-mist);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.node-details strong {
+  color: var(--orphi-pure-white);
+  font-weight: 600;
+  min-width: 120px;
+}
+
+.close-btn {
+  position: absolute;
+  top: var(--orphi-spacing-sm);
+  right: var(--orphi-spacing-sm);
+  background: transparent;
+  border: none;
+  color: var(--orphi-silver-mist);
+  font-size: var(--orphi-text-lg);
+  cursor: pointer;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--orphi-radius-sm);
+  transition: all var(--orphi-transition-fast);
+}
+
+.close-btn:hover {
+  background: var(--orphi-alert-red);
+  color: var(--orphi-pure-white);
+}
+
+/* ================================
+   NETWORK STATS
+   ================================ */
+
+.network-stats {
+  position: absolute;
+  bottom: var(--orphi-spacing-lg);
+  left: var(--orphi-spacing-lg);
+  display: flex;
+  gap: var(--orphi-spacing-lg);
+  background: rgba(26, 26, 46, 0.95);
+  backdrop-filter: blur(10px);
+  padding: var(--orphi-spacing-md);
+  border-radius: var(--orphi-radius-md);
+  border: 1px solid var(--orphi-midnight-blue);
+  box-shadow: var(--orphi-shadow-md);
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--orphi-spacing-xs);
+}
+
+.stat-value {
+  font-family: var(--orphi-font-primary);
+  font-weight: 700;
+  font-size: var(--orphi-text-lg);
+  color: var(--orphi-cyber-blue);
+}
+
+.stat-label {
+  font-size: var(--orphi-text-xs);
+  color: var(--orphi-silver-mist);
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ================================
+   LOADING STATE
+   ================================ */
+
+.loading-spinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 400px;
+  color: var(--orphi-silver-mist);
+}
+
+.spinner {
+  width: 60px;
+  height: 60px;
+  border: 4px solid rgba(0, 212, 255, 0.1);
+  border-left: 4px solid var(--orphi-cyber-blue);
+  border-radius: 50%;
+  animation: orphiSpin 1s linear infinite;
+  margin-bottom: var(--orphi-spacing-lg);
+}
+
+.loading-spinner p {
+  font-family: var(--orphi-font-secondary);
+  font-size: var(--orphi-text-base);
+  color: var(--orphi-silver-mist);
+  margin: 0;
+}
+
+/* ================================
+   TOOLTIP
+   ================================ */
+
+.network-tooltip {
+  position: absolute;
+  background: var(--orphi-deep-space);
+  color: var(--orphi-silver-mist);
+  padding: var(--orphi-spacing-md);
+  border-radius: var(--orphi-radius-md);
+  border: 1px solid var(--orphi-cyber-blue);
+  box-shadow: var(--orphi-shadow-lg);
+  font-size: var(--orphi-text-sm);
+  font-family: var(--orphi-font-secondary);
+  max-width: 250px;
+  z-index: 1000;
+  pointer-events: none;
+  backdrop-filter: blur(10px);
+}
+
+.network-tooltip strong {
+  color: var(--orphi-cyber-blue);
+}
+
+/* ================================
+   RESPONSIVE DESIGN
+   ================================ */
+
+@media (max-width: 768px) {
+  .controls-panel {
+    padding: var(--orphi-spacing-md);
+  }
+  
+  .filters-section {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--orphi-spacing-md);
+  }
+  
+  .filter-group {
+    justify-content: space-between;
+  }
+  
+  .selected-node-info {
+    position: relative;
+    top: auto;
+    right: auto;
+    margin: var(--orphi-spacing-md);
+    max-width: none;
+  }
+  
+  .network-stats {
+    position: relative;
+    bottom: auto;
+    left: auto;
+    margin: var(--orphi-spacing-md);
+    justify-content: space-around;
+  }
+  
+  .legend {
+    position: relative;
+    top: auto;
+    left: auto;
+    margin: var(--orphi-spacing-md);
+    display: flex;
+    gap: var(--orphi-spacing-lg);
+  }
+  
+  .legend-item {
+    margin-bottom: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .network-visualization {
+    min-height: 300px;
+  }
+  
+  .visualization-container {
+    height: 250px;
+  }
+  
+  .controls-panel {
+    padding: var(--orphi-spacing-sm);
+  }
+  
+  .search-input {
+    font-size: var(--orphi-text-xs);
+  }
+  
+  .filter-group {
+    font-size: var(--orphi-text-xs);
+  }
+  
+  .selected-node-info {
+    padding: var(--orphi-spacing-md);
+    min-width: auto;
+  }
+  
+  .network-stats {
+    flex-direction: column;
+    gap: var(--orphi-spacing-sm);
+  }
+  
+  .stat-item {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+}
+
+/* ================================
+   ACCESSIBILITY
+   ================================ */
+
+.network-visualization:focus-within {
+  outline: 2px solid var(--orphi-cyber-blue);
+  outline-offset: 2px;
+}
+
+.network-node:focus {
+  outline: 2px solid var(--orphi-cyber-blue);
+  outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .network-link {
+    stroke-width: 2px;
+  }
+  
+  .network-node circle {
+    stroke-width: 3px;
+  }
+  
+  .legend,
+  .selected-node-info,
+  .network-stats {
+    border-width: 2px;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .network-node,
+  .network-link,
+  .selected-node-info {
+    transition: none;
+  }
+  
+  .spinner {
+    animation: none;
+  }
+  
+  .orphi-animate-slide-up {
+    animation: none;
+  }
+}
+
+/* Print styles */
+@media print {
+  .controls-panel,
+  .selected-node-info,
+  .network-stats,
+  .legend {
+    position: static;
+    background: white;
+    color: black;
+    border: 1px solid black;
+  }
+  
+  .network-svg {
+    background: white;
+  }
+}

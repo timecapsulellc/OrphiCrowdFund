@@ -1,0 +1,16 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "ReentrancyGuard",
+  "sourceName": "standalone-v4ultra/MockInterfaces.sol",
+  "abi": [
+    {
+      "inputs": [],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    }
+  ],
+  "bytecode": "0x608080604052346018576001600055603a9081601e8239f35b600080fdfe600080fdfea26469706673582212209ac256d5902f3c95080d3b980f5dc66b50e4877550bc227d71bde7ee7b9e089464736f6c63430008160033",
+  "deployedBytecode": "0x600080fdfea26469706673582212209ac256d5902f3c95080d3b980f5dc66b50e4877550bc227d71bde7ee7b9e089464736f6c63430008160033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}

@@ -1,0 +1,1740 @@
+/* OrphiChain Brand Guidelines CSS */
+/* Based on official brand guidelines: https://epurvxqr.gensparkspace.com/ */
+
+/* ================================
+   BRAND FONTS
+   ================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&family=Roboto:wght@300;400;500;700&display=swap');
+
+/* ================================
+   BRAND COLOR PALETTE
+   ================================ */
+
+:root {
+  /* Primary Colors */
+  --orphi-cyber-blue: #00D4FF;
+  --orphi-royal-purple: #7B2CBF;
+  --orphi-energy-orange: #FF6B35;
+  
+  /* Secondary Colors */
+  --orphi-deep-space: #1A1A2E;
+  --orphi-midnight-blue: #16213E;
+  --orphi-silver-mist: #B8C5D1;
+  
+  /* Accent Colors */
+  --orphi-success-green: #00FF88;
+  --orphi-alert-red: #FF4757;
+  --orphi-premium-gold: #FFD700;
+  
+  /* Neutral Colors */
+  --orphi-pure-white: #FFFFFF;
+  --orphi-charcoal-gray: #2D3748;
+  --orphi-true-black: #0A0A0A;
+  
+  /* Brand Gradients */
+  --orphi-primary-gradient: linear-gradient(45deg, var(--orphi-cyber-blue), var(--orphi-royal-purple));
+  --orphi-secondary-gradient: linear-gradient(135deg, var(--orphi-deep-space), var(--orphi-midnight-blue));
+  --orphi-energy-gradient: linear-gradient(45deg, var(--orphi-energy-orange), var(--orphi-cyber-blue));
+  --orphi-full-spectrum: linear-gradient(45deg, var(--orphi-cyber-blue), var(--orphi-royal-purple), var(--orphi-energy-orange));
+  
+  /* Typography Scale */
+  --orphi-font-primary: 'Montserrat', sans-serif;
+  --orphi-font-secondary: 'Roboto', sans-serif;
+  
+  /* Font Sizes */
+  --orphi-text-xs: 12px;
+  --orphi-text-sm: 14px;
+  --orphi-text-base: 16px;
+  --orphi-text-lg: 18px;
+  --orphi-text-xl: 20px;
+  --orphi-text-2xl: 24px;
+  --orphi-text-3xl: 32px;
+  --orphi-text-4xl: 40px;
+  --orphi-text-5xl: 48px;
+  
+  /* Spacing */
+  --orphi-spacing-xs: 4px;
+  --orphi-spacing-sm: 8px;
+  --orphi-spacing-md: 16px;
+  --orphi-spacing-lg: 24px;
+  --orphi-spacing-xl: 32px;
+  --orphi-spacing-2xl: 48px;
+  --orphi-spacing-3xl: 64px;
+  
+  /* Border Radius */
+  --orphi-radius-sm: 4px;
+  --orphi-radius-md: 8px;
+  --orphi-radius-lg: 12px;
+  --orphi-radius-xl: 16px;
+  --orphi-radius-full: 9999px;
+  
+  /* Shadows */
+  --orphi-shadow-sm: 0 2px 4px rgba(0, 212, 255, 0.1);
+  --orphi-shadow-md: 0 4px 12px rgba(0, 212, 255, 0.15);
+  --orphi-shadow-lg: 0 8px 24px rgba(0, 212, 255, 0.2);
+  --orphi-shadow-glow: 0 0 20px rgba(0, 212, 255, 0.3);
+  
+  /* Transitions */
+  --orphi-transition-fast: 0.15s ease-out;
+  --orphi-transition-normal: 0.3s ease-out;
+  --orphi-transition-slow: 0.5s ease-out;
+}
+
+/* ================================
+   TYPOGRAPHY STYLES
+   ================================ */
+
+.orphi-text {
+  font-family: var(--orphi-font-secondary);
+  color: var(--orphi-charcoal-gray);
+  line-height: 1.5;
+}
+
+.orphi-heading {
+  font-family: var(--orphi-font-primary);
+  font-weight: 700;
+  color: var(--orphi-deep-space);
+  line-height: 1.2;
+}
+
+/* Heading Hierarchy */
+.orphi-h1 {
+  font-family: var(--orphi-font-primary);
+  font-weight: 800;
+  font-size: var(--orphi-text-4xl);
+  color: var(--orphi-deep-space);
+}
+
+.orphi-h2 {
+  font-family: var(--orphi-font-primary);
+  font-weight: 700;
+  font-size: var(--orphi-text-3xl);
+  color: var(--orphi-deep-space);
+}
+
+.orphi-h3 {
+  font-family: var(--orphi-font-primary);
+  font-weight: 600;
+  font-size: var(--orphi-text-2xl);
+  color: var(--orphi-deep-space);
+}
+
+.orphi-h4 {
+  font-family: var(--orphi-font-primary);
+  font-weight: 600;
+  font-size: var(--orphi-text-xl);
+  color: var(--orphi-deep-space);
+}
+
+.orphi-body {
+  font-family: var(--orphi-font-secondary);
+  font-weight: 400;
+  font-size: var(--orphi-text-base);
+  line-height: 1.5;
+}
+
+.orphi-caption {
+  font-family: var(--orphi-font-secondary);
+  font-weight: 300;
+  font-size: var(--orphi-text-sm);
+  line-height: 1.4;
+}
+
+/* ================================
+   COMPONENT STYLES
+   ================================ */
+
+/* Buttons */
+.orphi-btn {
+  font-family: var(--orphi-font-primary);
+  font-weight: 600;
+  padding: var(--orphi-spacing-md) var(--orphi-spacing-lg);
+  border-radius: var(--orphi-radius-md);
+  border: none;
+  cursor: pointer;
+  transition: all var(--orphi-transition-normal);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--orphi-spacing-sm);
+}
+
+.orphi-btn-primary {
+  background: var(--orphi-primary-gradient);
+  color: var(--orphi-pure-white);
+  box-shadow: var(--orphi-shadow-md);
+}
+
+.orphi-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--orphi-shadow-lg);
+}
+
+.orphi-btn-secondary {
+  background: transparent;
+  color: var(--orphi-cyber-blue);
+  border: 2px solid var(--orphi-cyber-blue);
+}
+
+.orphi-btn-secondary:hover {
+  background: var(--orphi-cyber-blue);
+  color: var(--orphi-pure-white);
+}
+
+.orphi-btn-ghost {
+  background: transparent;
+  color: var(--orphi-silver-mist);
+  border: 1px solid var(--orphi-silver-mist);
+}
+
+.orphi-btn-ghost:hover {
+  background: var(--orphi-silver-mist);
+  color: var(--orphi-deep-space);
+}
+
+/* Cards */
+.orphi-card {
+  background: var(--orphi-pure-white);
+  border-radius: var(--orphi-radius-lg);
+  box-shadow: var(--orphi-shadow-md);
+  padding: var(--orphi-spacing-lg);
+  border: 1px solid rgba(0, 212, 255, 0.1);
+  transition: all var(--orphi-transition-normal);
+}
+
+.orphi-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--orphi-shadow-lg);
+}
+
+.orphi-card-dark {
+  background: var(--orphi-secondary-gradient);
+  color: var(--orphi-silver-mist);
+  border: 1px solid var(--orphi-midnight-blue);
+}
+
+/* Form Elements */
+.orphi-input {
+  font-family: var(--orphi-font-secondary);
+  padding: var(--orphi-spacing-md);
+  border-radius: var(--orphi-radius-md);
+  border: 2px solid var(--orphi-silver-mist);
+  background: var(--orphi-pure-white);
+  color: var(--orphi-charcoal-gray);
+  transition: all var(--orphi-transition-normal);
+}
+
+.orphi-input:focus {
+  outline: none;
+  border-color: var(--orphi-cyber-blue);
+  box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1);
+}
+
+.orphi-select {
+  font-family: var(--orphi-font-secondary);
+  padding: var(--orphi-spacing-md);
+  border-radius: var(--orphi-radius-md);
+  border: 2px solid var(--orphi-silver-mist);
+  background: var(--orphi-pure-white);
+  color: var(--orphi-charcoal-gray);
+  cursor: pointer;
+}
+
+/* Status Indicators */
+.orphi-status-active {
+  color: var(--orphi-success-green);
+  background: rgba(0, 255, 136, 0.1);
+  padding: var(--orphi-spacing-xs) var(--orphi-spacing-sm);
+  border-radius: var(--orphi-radius-full);
+  font-size: var(--orphi-text-xs);
+  font-weight: 600;
+}
+
+.orphi-status-inactive {
+  color: var(--orphi-alert-red);
+  background: rgba(255, 71, 87, 0.1);
+  padding: var(--orphi-spacing-xs) var(--orphi-spacing-sm);
+  border-radius: var(--orphi-radius-full);
+  font-size: var(--orphi-text-xs);
+  font-weight: 600;
+}
+
+.orphi-status-premium {
+  color: var(--orphi-premium-gold);
+  background: rgba(255, 215, 0, 0.1);
+  padding: var(--orphi-spacing-xs) var(--orphi-spacing-sm);
+  border-radius: var(--orphi-radius-full);
+  font-size: var(--orphi-text-xs);
+  font-weight: 600;
+}
+
+/* ================================
+   LAYOUT UTILITIES
+   ================================ */
+
+.orphi-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--orphi-spacing-lg);
+}
+
+.orphi-flex {
+  display: flex;
+}
+
+.orphi-flex-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.orphi-grid {
+  display: grid;
+}
+
+.orphi-grid-cols-1 { grid-template-columns: repeat(1, 1fr); }
+.orphi-grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+.orphi-grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
+.orphi-grid-cols-4 { grid-template-columns: repeat(4, 1fr); }
+
+.orphi-gap-sm { gap: var(--orphi-spacing-sm); }
+.orphi-gap-md { gap: var(--orphi-spacing-md); }
+.orphi-gap-lg { gap: var(--orphi-spacing-lg); }
+.orphi-gap-xl { gap: var(--orphi-spacing-xl); }
+
+/* ================================
+   RESPONSIVE UTILITIES
+   ================================ */
+
+@media (max-width: 768px) {
+  :root {
+    --orphi-text-4xl: 32px;
+    --orphi-text-3xl: 24px;
+    --orphi-text-2xl: 20px;
+    --orphi-spacing-lg: 16px;
+    --orphi-spacing-xl: 24px;
+  }
+  
+  .orphi-grid-cols-2,
+  .orphi-grid-cols-3,
+  .orphi-grid-cols-4 {
+    grid-template-columns: 1fr;
+  }
+  
+  .orphi-container {
+    padding: 0 var(--orphi-spacing-md);
+  }
+}
+
+/* ================================
+   ANIMATION UTILITIES
+   ================================ */
+
+.orphi-animate-fade-in {
+  animation: orphiFadeIn 0.5s ease-out;
+}
+
+.orphi-animate-slide-up {
+  animation: orphiSlideUp 0.5s ease-out;
+}
+
+.orphi-animate-glow {
+  animation: orphiGlow 2s ease-in-out infinite;
+}
+
+@keyframes orphiFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes orphiSlideUp {
+  from { 
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes orphiGlow {
+  0%, 100% { box-shadow: 0 0 10px rgba(0, 212, 255, 0.3); }
+  50% { box-shadow: 0 0 30px rgba(0, 212, 255, 0.8); }
+}
+
+/* === ENHANCED ANIMATIONS & TRANSITIONS === */
+
+/* Staggered fade-in animation for dashboard sections */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Apply animations to dashboard sections */
+.dashboard-header {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.metrics-grid {
+  animation: fadeInUp 0.8s ease-out 0.1s both;
+}
+
+.charts-section {
+  animation: fadeInUp 0.8s ease-out 0.2s both;
+}
+
+.genealogy-section {
+  animation: slideInRight 0.8s ease-out 0.3s both;
+}
+
+.activity-section {
+  animation: fadeInUp 0.8s ease-out 0.4s both;
+}
+
+.alerts-section {
+  animation: fadeInUp 0.8s ease-out 0.5s both;
+}
+
+/* Metric cards stagger animation */
+.metric-card:nth-child(1) { animation: scaleIn 0.5s ease-out 0.6s both; }
+.metric-card:nth-child(2) { animation: scaleIn 0.5s ease-out 0.7s both; }
+.metric-card:nth-child(3) { animation: scaleIn 0.5s ease-out 0.8s both; }
+.metric-card:nth-child(4) { animation: scaleIn 0.5s ease-out 0.9s both; }
+.metric-card:nth-child(5) { animation: scaleIn 0.5s ease-out 1.0s both; }
+
+/* Floating animation for key elements */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-6px); }
+}
+
+.dashboard-header .logo-container {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Gradient shift animation for backgrounds */
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.orphi-dashboard {
+  background: linear-gradient(-45deg, #0a0a1a, #141428, #1a1a2e, #0f0f20);
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+}
+
+/* Chart data point animations */
+@keyframes dataPointPulse {
+  0%, 100% { 
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  50% { 
+    transform: scale(1.1);
+    opacity: 1;
+  }
+}
+
+.recharts-dot:hover {
+  animation: dataPointPulse 1s ease-in-out infinite;
+}
+
+/* Tree node connection line animation */
+@keyframes connectionPulse {
+  0%, 100% { 
+    stroke-dasharray: 5,5;
+    stroke-dashoffset: 0;
+  }
+  50% { 
+    stroke-dashoffset: 10;
+  }
+}
+
+.rd3t-link:hover {
+  animation: connectionPulse 2s linear infinite;
+}
+
+/* Progress bar animation for loading states */
+@keyframes progressBar {
+  0% { width: 0%; }
+  100% { width: 100%; }
+}
+
+.loading-progress {
+  height: 3px;
+  background: linear-gradient(90deg, #00D4FF, #7B2CBF, #FF6B35);
+  border-radius: 2px;
+  animation: progressBar 2s ease-in-out;
+}
+
+/* Alert notification slide-in */
+@keyframes alertSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.alert-item {
+  animation: alertSlideIn 0.5s ease-out;
+}
+
+/* Smooth state transitions for all interactive elements */
+* {
+  transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease, 
+              transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
+              box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.3s ease;
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ================================
+   DARK THEME OVERRIDES
+   ================================ */
+
+.orphi-theme-dark {
+  background: var(--orphi-secondary-gradient);
+  color: var(--orphi-silver-mist);
+}
+
+.orphi-theme-dark .orphi-card {
+  background: var(--orphi-midnight-blue);
+  border-color: var(--orphi-deep-space);
+  color: var(--orphi-silver-mist);
+}
+
+.orphi-theme-dark .orphi-input {
+  background: var(--orphi-midnight-blue);
+  border-color: var(--orphi-deep-space);
+  color: var(--orphi-silver-mist);
+}
+
+.orphi-theme-dark .orphi-input:focus {
+  border-color: var(--orphi-cyber-blue);
+}
+
+/* ================================
+   BRAND-SPECIFIC COMPONENT STYLES
+   ================================ */
+
+/* OrphiChain Logo Styles */
+.orphi-logo {
+  filter: drop-shadow(0 0 10px rgba(0, 212, 255, 0.3));
+  transition: all var(--orphi-transition-normal);
+}
+
+.orphi-logo:hover {
+  filter: drop-shadow(0 0 20px rgba(0, 212, 255, 0.5));
+}
+
+/* ================================
+   LOGO COMPONENT STYLES
+   ================================ */
+
+.orphi-logo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  overflow: hidden;
+  position: relative;
+}
+
+.logo-transparent-bg {
+  background: transparent;
+}
+
+.logo-dark-bg {
+  background: linear-gradient(135deg, var(--orphi-deep-space) 0%, #16213e 100%);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.logo-light-bg {
+  background: white;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.orphi-logo svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Network Visualization Styles */
+.orphi-network-node {
+  transition: all var(--orphi-transition-fast);
+}
+
+.orphi-network-node:hover {
+  filter: drop-shadow(0 0 10px rgba(0, 212, 255, 0.8));
+}
+
+.orphi-network-link {
+  stroke: var(--orphi-cyber-blue);
+  opacity: 0.6;
+  transition: opacity var(--orphi-transition-fast);
+}
+
+.orphi-network-link:hover {
+  opacity: 1;
+}
+
+/* Dashboard Metrics */
+.orphi-metric-card {
+  background: var(--orphi-pure-white);
+  border-radius: var(--orphi-radius-lg);
+  padding: var(--orphi-spacing-lg);
+  border-left: 4px solid var(--orphi-cyber-blue);
+  box-shadow: var(--orphi-shadow-sm);
+  transition: all var(--orphi-transition-normal);
+}
+
+.orphi-metric-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--orphi-shadow-md);
+}
+
+.orphi-metric-value {
+  font-family: var(--orphi-font-primary);
+  font-weight: 800;
+  font-size: var(--orphi-text-3xl);
+  color: var(--orphi-cyber-blue);
+}
+
+.orphi-metric-label {
+  font-family: var(--orphi-font-secondary);
+  font-size: var(--orphi-text-sm);
+  color: var(--orphi-charcoal-gray);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Loading Animations */
+.orphi-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(0, 212, 255, 0.1);
+  border-left: 4px solid var(--orphi-cyber-blue);
+  border-radius: 50%;
+  animation: orphiSpin 1s linear infinite;
+}
+
+@keyframes orphiSpin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Tooltips */
+.orphi-tooltip {
+  background: var(--orphi-deep-space);
+  color: var(--orphi-silver-mist);
+  padding: var(--orphi-spacing-sm) var(--orphi-spacing-md);
+  border-radius: var(--orphi-radius-md);
+  font-size: var(--orphi-text-sm);
+  box-shadow: var(--orphi-shadow-lg);
+  border: 1px solid var(--orphi-cyber-blue);
+  max-width: 250px;
+  z-index: 1000;
+}
+
+/* ================================
+   GENEALOGY TREE STYLES
+   ================================ */
+
+.genealogy-section {
+  margin: var(--orphi-spacing-xl) 0;
+  background: var(--orphi-secondary-gradient);
+  border-radius: var(--orphi-border-radius-lg);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  box-shadow: var(--orphi-shadow-lg);
+}
+
+.genealogy-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--orphi-spacing-lg);
+  background: rgba(0, 212, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.genealogy-header h3 {
+  font-family: var(--orphi-font-primary);
+  font-size: var(--orphi-text-xl);
+  font-weight: 700;
+  color: var(--orphi-pure-white);
+  margin: 0;
+  background: var(--orphi-primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.genealogy-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--orphi-spacing-md);
+}
+
+.tree-control-btn {
+  padding: var(--orphi-spacing-sm) var(--orphi-spacing-md);
+  background: var(--orphi-cyber-blue);
+  color: var(--orphi-pure-white);
+  border: none;
+  border-radius: var(--orphi-border-radius-md);
+  font-family: var(--orphi-font-primary);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: var(--orphi-text-sm);
+}
+
+.tree-control-btn:hover {
+  background: var(--orphi-royal-purple);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 212, 255, 0.3);
+}
+
+.tree-user-selector {
+  padding: var(--orphi-spacing-sm);
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--orphi-pure-white);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--orphi-border-radius-md);
+  font-family: var(--orphi-font-secondary);
+  font-size: var(--orphi-text-sm);
+  min-width: 200px;
+}
+
+.tree-user-selector option {
+  background: var(--orphi-deep-space);
+  color: var(--orphi-pure-white);
+}
+
+.genealogy-container {
+  background: var(--orphi-true-black);
+  position: relative;
+  overflow: hidden;
+}
+
+.tree-legend {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--orphi-spacing-lg);
+  padding: var(--orphi-spacing-md);
+  background: rgba(0, 0, 0, 0.3);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  flex-wrap: wrap;
+}
+
+.tree-legend .legend-item {
+  display: flex;
+  align-items: center;
+  gap: var(--orphi-spacing-sm);
+  font-size: var(--orphi-text-sm);
+  color: var(--orphi-silver-mist);
+}
+
+.tree-legend .legend-color {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid var(--orphi-pure-white);
+}
+
+/* ================================
+   DASHBOARD HEADER ENHANCEMENT
+   ================================ */
+
+.dashboard-header {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--orphi-deep-space) 0%, #16213e 100%);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  z-index: 1;
+  position: relative;
+}
+
+.header-content::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 50% 50%, rgba(0, 212, 255, 0.1) 0%, rgba(123, 44, 191, 0.05) 50%, transparent 70%);
+  z-index: -1;
+}
+
+.title-section {
+  margin-left: 20px;
+}
+
+.main-title {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 800;
+  font-size: 2rem;
+  margin: 0;
+  background: linear-gradient(90deg, var(--orphi-cyber-blue), var(--orphi-royal-purple));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.sub-title {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 1.2rem;
+  margin: 5px 0;
+  color: var(--orphi-cyber-blue);
+}
+
+.dashboard-description {
+  font-family: 'Roboto', sans-serif;
+  font-weight: 300;
+  font-size: 0.9rem;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.connection-status {
+  margin-left: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.status-indicator {
+  display: flex;
+  align-items: center;
+  padding: 5px 10px;
+  border-radius: 20px;
+  background: rgba(0, 0, 0, 0.2);
+  margin-bottom: 5px;
+}
+
+.status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
+.connected .status-dot {
+  background: var(--orphi-success);
+  box-shadow: 0 0 10px var(--orphi-success);
+}
+
+.disconnected .status-dot {
+  background: var(--orphi-error);
+  box-shadow: 0 0 10px var(--orphi-error);
+}
+
+.status-text {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: white;
+}
+
+.last-update {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .header-content {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .title-section {
+    margin-left: 0;
+    margin-top: 15px;
+  }
+  
+  .connection-status {
+    margin-left: 0;
+    margin-top: 15px;
+    align-items: center;
+  }
+}
+
+/* === TEXT & CONTRAST IMPROVEMENTS === */
+.orphi-dashboard, .orphi-dashboard * {
+  color: #FFFFFF;
+  font-family: 'Montserrat', 'Roboto', Arial, sans-serif;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Enhanced text visibility with stronger contrast */
+.orphi-dashboard h1, .orphi-dashboard h2, .orphi-dashboard h3, .orphi-dashboard h4,
+.metrics-grid .metric-value,
+.metrics-grid h3,
+.dashboard-header .main-title,
+.dashboard-header .sub-title,
+.section-title,
+.activity-item h4,
+.alert-item h4 {
+  color: #FFFFFF !important;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.6), 0 1px 4px rgba(0,0,0,0.8);
+  font-weight: 600;
+}
+
+/* Strong contrast for metric values */
+.metrics-grid .metric-value {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: #00D4FF !important;
+  text-shadow: 0 0 20px rgba(0, 212, 255, 0.3), 0 2px 8px rgba(0,0,0,0.8);
+}
+
+.metrics-grid h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #FFFFFF !important;
+  opacity: 0.95;
+}
+
+.dashboard-header .main-title {
+  font-size: 2.4rem;
+  font-weight: 900;
+  background: linear-gradient(45deg, #00D4FF, #7B2CBF);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: none;
+}
+
+.dashboard-header .sub-title {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #B8C5D1 !important;
+}
+
+/* === CARD & PANEL BACKGROUNDS === */
+.metrics-grid, .charts-section, .genealogy-section, .activity-section, .alerts-section {
+  background: rgba(24, 24, 40, 0.95);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  box-shadow: 
+    0 8px 32px rgba(0,0,0,0.3),
+    0 4px 16px rgba(0,0,0,0.2),
+    inset 0 1px 0 rgba(255,255,255,0.1);
+  margin-bottom: 28px;
+  padding: 24px 28px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.metrics-grid:hover, .charts-section:hover, .genealogy-section:hover, 
+.activity-section:hover, .alerts-section:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 12px 40px rgba(0,0,0,0.4),
+    0 6px 20px rgba(0,0,0,0.3),
+    0 0 24px rgba(0, 212, 255, 0.1),
+    inset 0 1px 0 rgba(255,255,255,0.15);
+}
+
+.metric-card {
+  background: linear-gradient(135deg, 
+    rgba(40, 40, 60, 0.98) 0%, 
+    rgba(60, 60, 80, 0.95) 100%);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  margin: 0 12px 12px 0;
+  padding: 20px 22px;
+  display: inline-block;
+  min-width: 180px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 
+    0 4px 16px rgba(0,0,0,0.2),
+    inset 0 1px 0 rgba(255,255,255,0.05);
+}
+
+.metric-card:hover {
+  transform: translateY(-3px) scale(1.02);
+  background: linear-gradient(135deg, 
+    rgba(0, 212, 255, 0.15) 0%, 
+    rgba(123, 44, 191, 0.12) 100%);
+  border-color: rgba(0, 212, 255, 0.3);
+  box-shadow: 
+    0 8px 32px rgba(0,0,0,0.3),
+    0 0 24px rgba(0, 212, 255, 0.2),
+    inset 0 1px 0 rgba(255,255,255,0.1);
+}
+
+.metric-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #00D4FF, #7B2CBF, #FF6B35);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.metric-card:hover::before {
+  opacity: 1;
+}
+
+/* === GENEALOGY TREE ENHANCEMENTS === */
+.genealogy-container {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.genealogy-container svg {
+  background: linear-gradient(135deg, #0a0a1a 0%, #141428 50%, #1a1a2e 100%);
+  border-radius: 16px;
+  transition: all 0.3s ease;
+}
+
+.rd3t-node > g > circle {
+  stroke: #FFFFFF;
+  stroke-width: 3px;
+  filter: drop-shadow(0 0 12px #00d4ff66) drop-shadow(0 2px 8px rgba(0,0,0,0.4));
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+.rd3t-node > g:hover > circle {
+  transform: scale(1.15);
+  filter: 
+    drop-shadow(0 0 20px #ff6b35aa) 
+    drop-shadow(0 0 12px #00d4ffaa)
+    drop-shadow(0 4px 16px rgba(0,0,0,0.6));
+  stroke: #FF6B35;
+  stroke-width: 4px;
+}
+
+.rd3t-node > g > circle[fill="#00D4FF"] {
+  animation: pulse-primary 2s ease-in-out infinite;
+}
+
+@keyframes pulse-primary {
+  0%, 100% { 
+    filter: drop-shadow(0 0 12px #00d4ff66) drop-shadow(0 2px 8px rgba(0,0,0,0.4));
+  }
+  50% { 
+    filter: drop-shadow(0 0 20px #00d4ffaa) drop-shadow(0 4px 12px rgba(0,0,0,0.5));
+  }
+}
+
+.rd3t-link {
+  stroke: #00D4FF;
+  stroke-width: 3px;
+  filter: drop-shadow(0 0 8px #00d4ff44);
+  transition: all 0.3s ease;
+  opacity: 0.8;
+}
+
+.rd3t-link:hover {
+  stroke-width: 4px;
+  filter: drop-shadow(0 0 16px #00d4ff88);
+  opacity: 1;
+}
+
+.rd3t-node > g > text {
+  font-size: 1.2rem;
+  font-weight: 700;
+  fill: #FFFFFF;
+  text-shadow: 0 3px 12px rgba(0,0,0,0.8), 0 1px 4px rgba(0,0,0,0.9);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.rd3t-node > g:hover > text {
+  fill: #FF6B35;
+  transform: scale(1.05);
+}
+
+.rd3t-node > g > text[font-size="8"] {
+  fill: #B8C5D1;
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+}
+
+/* === TOOLTIP FOR TREE NODES === */
+.rd3t-node {
+  position: relative;
+}
+
+.rd3t-node:hover::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  left: calc(100% + 15px);
+  top: 50%;
+  transform: translateY(-50%);
+  background: linear-gradient(135deg, rgba(24, 24, 40, 0.98), rgba(40, 40, 60, 0.95));
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  color: #FFFFFF;
+  padding: 8px 16px;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  pointer-events: none;
+  z-index: 1000;
+  white-space: nowrap;
+  box-shadow: 
+    0 8px 24px rgba(0,0,0,0.4),
+    0 0 16px rgba(0, 212, 255, 0.2);
+  backdrop-filter: blur(8px);
+  animation: tooltip-appear 0.2s ease-out;
+}
+
+@keyframes tooltip-appear {
+  from {
+    opacity: 0;
+    transform: translateY(-50%) translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0);
+  }
+}
+
+/* === HOVER/FOCUS EFFECTS & ANIMATIONS === */
+button, .tree-user-selector, .activity-item, .metric-card, .alert-item {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+button:hover, .tree-user-selector:focus, .activity-item:hover, .alert-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 8px 32px rgba(0, 212, 255, 0.25),
+    0 4px 16px rgba(0,0,0,0.3);
+  background: linear-gradient(135deg, 
+    rgba(0, 212, 255, 0.12) 0%, 
+    rgba(123, 44, 191, 0.08) 100%);
+  color: #FFFFFF;
+  border-color: rgba(0, 212, 255, 0.4);
+}
+
+/* Button enhancements */
+button {
+  background: linear-gradient(135deg, 
+    rgba(0, 212, 255, 0.2) 0%, 
+    rgba(123, 44, 191, 0.15) 100%);
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  color: #FFFFFF;
+  font-weight: 600;
+  padding: 12px 24px;
+  border-radius: 12px;
+  cursor: pointer;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+}
+
+button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(255, 255, 255, 0.2), 
+    transparent);
+  transition: left 0.5s ease;
+}
+
+button:hover::before {
+  left: 100%;
+}
+
+/* Activity and Alert items */
+.activity-item, .alert-item {
+  background: rgba(40, 40, 60, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 12px;
+  backdrop-filter: blur(6px);
+}
+
+.activity-item h4, .alert-item h4 {
+  color: #00D4FF !important;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.activity-item p, .alert-item p {
+  color: #B8C5D1 !important;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  opacity: 0.9;
+}
+
+/* Chart container enhancements */
+.recharts-wrapper {
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.2));
+  transition: filter 0.3s ease;
+}
+
+.recharts-wrapper:hover {
+  filter: drop-shadow(0 6px 20px rgba(0,0,0,0.3));
+}
+
+/* Theme toggle button */
+.theme-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: linear-gradient(135deg, #00D4FF, #7B2CBF);
+  border: none;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  cursor: pointer;
+  z-index: 1000;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.theme-toggle:hover {
+  transform: scale(1.1) rotate(15deg);
+  box-shadow: 0 8px 24px rgba(0, 212, 255, 0.4);
+}
+
+/* Loading animations */
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.loading-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.loading-shimmer::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(255, 255, 255, 0.1), 
+    transparent);
+  animation: shimmer 2s infinite;
+}
+
+/* Pulse animation for important elements */
+@keyframes pulse-glow {
+  0%, 100% { 
+    box-shadow: 0 0 8px rgba(0, 212, 255, 0.3);
+  }
+  50% { 
+    box-shadow: 0 0 20px rgba(0, 212, 255, 0.6);
+  }
+}
+
+.pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* === RESPONSIVE LAYOUT === */
+@media (max-width: 900px) {
+  .metrics-grid, .charts-section, .genealogy-section, .activity-section, .alerts-section {
+    padding: 16px 20px;
+    margin-bottom: 20px;
+  }
+  .metric-card {
+    min-width: 140px;
+    font-size: 0.95rem;
+    padding: 16px 18px;
+  }
+  .dashboard-header .main-title {
+    font-size: 2rem;
+  }
+  .dashboard-header .sub-title {
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .metrics-grid, .charts-section, .genealogy-section, .activity-section, .alerts-section {
+    padding: 12px 16px;
+    margin-bottom: 16px;
+  }
+  .metric-card {
+    min-width: 120px;
+    font-size: 0.85rem;
+    padding: 12px 16px;
+  }
+  .dashboard-header .main-title {
+    font-size: 1.8rem;
+  }
+  .dashboard-header .sub-title {
+    font-size: 1rem;
+  }
+  .theme-toggle {
+    width: 45px;
+    height: 45px;
+    font-size: 1.3rem;
+  }
+}
+
+/* === TEXT VISIBILITY GLOBAL FIXES === */
+/* Ensure all text elements have proper contrast */
+.orphi-dashboard span,
+.orphi-dashboard p,
+.orphi-dashboard div,
+.orphi-dashboard label,
+.orphi-dashboard a,
+.orphi-dashboard li,
+.orphi-dashboard td,
+.orphi-dashboard th {
+  color: #FFFFFF !important;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+}
+
+/* Special handling for chart text */
+.recharts-text,
+.recharts-legend-item-text,
+.recharts-cartesian-axis-tick-value,
+.recharts-tooltip-wrapper,
+.recharts-tooltip-label {
+  fill: #FFFFFF !important;
+  color: #FFFFFF !important;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.7);
+}
+
+/* Ensure input and select elements are visible */
+input, select, textarea {
+  background: rgba(40, 40, 60, 0.9) !important;
+  border: 1px solid rgba(0, 212, 255, 0.3) !important;
+  color: #FFFFFF !important;
+  border-radius: 8px;
+  padding: 8px 12px;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: #00D4FF !important;
+  box-shadow: 0 0 12px rgba(0, 212, 255, 0.3) !important;
+  outline: none;
+}
+
+/* Section titles */
+.section-title {
+  font-size: 1.4rem !important;
+  font-weight: 700 !important;
+  color: #00D4FF !important;
+  margin-bottom: 16px !important;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.6) !important;
+}
+
+/* Export panel visibility */
+.export-panel,
+.export-panel * {
+  color: #FFFFFF !important;
+  background: rgba(24, 24, 40, 0.95) !important;
+}
+
+.export-panel button {
+  background: linear-gradient(135deg, #00D4FF, #7B2CBF) !important;
+  color: #FFFFFF !important;
+  border: none !important;
+}
+
+/* Alert status colors */
+.alert-high {
+  border-left: 4px solid #FF4757 !important;
+  background: rgba(255, 71, 87, 0.1) !important;
+}
+
+.alert-medium {
+  border-left: 4px solid #FF9800 !important;
+  background: rgba(255, 152, 0, 0.1) !important;
+}
+
+.alert-low {
+  border-left: 4px solid #4CAF50 !important;
+  background: rgba(76, 175, 80, 0.1) !important;
+}
+
+/* === DARK/LIGHT MODE BASE === */
+:root[data-theme='light'] {
+  --orphi-bg: #f8f9fa;
+  --orphi-panel: #fff;
+  --orphi-text: #1a1a2e;
+}
+:root[data-theme='dark'] {
+  --orphi-bg: #181828;
+  --orphi-panel: #22223b;
+  --orphi-text: #f8f8ff;
+}
+body {
+  background: var(--orphi-bg, #181828);
+  color: var(--orphi-text, #f8f8ff);
+}
+
+/* ================================
+   GENEALOGY TREE MINIMAP & SEARCH STYLES
+   ================================ */
+
+.minimap-container {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 250px;
+  height: 150px;
+  background: rgba(0, 0, 0, 0.7);
+  border-radius: var(--orphi-radius-lg);
+  padding: var(--orphi-spacing-md);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+}
+
+.minimap-header {
+  font-family: var(--orphi-font-primary);
+  font-weight: 700;
+  font-size: var(--orphi-text-lg);
+  color: var(--orphi-pure-white);
+  margin-bottom: var(--orphi-spacing-md);
+}
+
+.minimap {
+  width: 100%;
+  height: 100%;
+  border-radius: var(--orphi-radius-md);
+  overflow: hidden;
+  position: relative;
+}
+
+.minimap svg {
+  width: 100%;
+  height: 100%;
+}
+
+.minimap-zoom-controls {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  gap: var(--orphi-spacing-xs);
+}
+
+.minimap-zoom-btn {
+  background: var(--orphi-cyber-blue);
+  color: var(--orphi-pure-white);
+  border: none;
+  border-radius: var(--orphi-radius-md);
+  padding: var(--orphi-spacing-xs) var(--orphi-spacing-sm);
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.minimap-zoom-btn:hover {
+  background: var(--orphi-royal-purple);
+}
+
+.search-filter-container {
+  margin-top: var(--orphi-spacing-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--orphi-spacing-sm);
+}
+
+.search-filter-input {
+  padding: var(--orphi-spacing-md);
+  border-radius: var(--orphi-radius-md);
+  border: 2px solid var(--orphi-silver-mist);
+  background: var(--orphi-pure-white);
+  color: var(--orphi-charcoal-gray);
+  transition: all var(--orphi-transition-normal);
+}
+
+.search-filter-input:focus {
+  outline: none;
+  border-color: var(--orphi-cyber-blue);
+  box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1);
+}
+
+.search-filter-label {
+  font-family: var(--orphi-font-secondary);
+  font-weight: 500;
+  font-size: var(--orphi-text-sm);
+  color: var(--orphi-charcoal-gray);
+}
+
+/* ================================
+   ANALYTICS & PERSONALIZATION PANEL STYLES
+   ================================ */
+
+.analytics-panel, .personalization-panel {
+  background: rgba(24, 24, 40, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 24px 28px;
+  margin-bottom: 28px;
+  box-shadow: 
+    0 8px 32px rgba(0,0,0,0.3),
+    0 4px 16px rgba(0,0,0,0.2),
+    inset 0 1px 0 rgba(255,255,255,0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.analytics-panel:hover, .personalization-panel:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 12px 40px rgba(0,0,0,0.4),
+    0 6px 20px rgba(0,0,0,0.3),
+    0 0 24px rgba(0, 212, 255, 0.1),
+    inset 0 1px 0 rgba(255,255,255,0.15);
+}
+
+.analytics-header, .personalization-header {
+  font-family: var(--orphi-font-primary);
+  font-weight: 700;
+  font-size: var(--orphi-text-xl);
+  color: var(--orphi-pure-white);
+  margin-bottom: var(--orphi-spacing-md);
+}
+
+.analytics-content, .personalization-content {
+  font-family: var(--orphi-font-secondary);
+  font-weight: 400;
+  font-size: var(--orphi-text-base);
+  color: var(--orphi-charcoal-gray);
+  line-height: 1.5;
+}
+
+.analytics-footer, .personalization-footer {
+  margin-top: var(--orphi-spacing-md);
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--orphi-spacing-md);
+}
+
+.analytics-btn, .personalization-btn {
+  padding: var(--orphi-spacing-sm) var(--orphi-spacing-md);
+  background: var(--orphi-cyber-blue);
+  color: var(--orphi-pure-white);
+  border: none;
+  border-radius: var(--orphi-border-radius-md);
+  font-family: var(--orphi-font-primary);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: var(--orphi-text-sm);
+}
+
+.analytics-btn:hover, .personalization-btn:hover {
+  background: var(--orphi-royal-purple);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 212, 255, 0.3);
+}
+
+/* ================================
+   GENEALOGY TREE STATS FAB & POPOVER
+   ================================ */
+.tree-stats-fab {
+  position: absolute;
+  top: 18px;
+  right: 24px;
+  z-index: 10;
+  background: linear-gradient(135deg, #00D4FF, #7B2CBF);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+  font-size: 1.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.tree-stats-fab:hover, .tree-stats-fab:focus {
+  transform: scale(1.08);
+  box-shadow: 0 8px 32px #00D4FF44;
+  outline: 2px solid #00D4FF;
+}
+
+.tree-stats-popover {
+  position: absolute;
+  top: 80px;
+  right: 24px;
+  left: auto;
+  transform: scale(1);
+  z-index: 100;
+  background: linear-gradient(135deg, #181828 80%, #7B2CBF 100%);
+  border-radius: 20px;
+  box-shadow: 0 8px 40px #00D4FF33, 0 2px 8px #0008;
+  border: 2px solid #00D4FF;
+  padding: 32px 24px 24px 24px;
+  min-width: 340px;
+  max-width: 380px;
+  animation: popoverFadeIn 0.3s cubic-bezier(0.4,0,0.2,1);
+}
+@keyframes popoverFadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+.tree-stats-popover-content {
+  position: relative;
+}
+.tree-stats-popover-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.2rem;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+.tree-stats-popover-close:hover, .tree-stats-popover-close:focus {
+  opacity: 1;
+  outline: 2px solid #00D4FF;
+}
+.tree-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+  justify-content: center;
+  align-items: stretch;
+  margin-top: 12px;
+}
+.tree-stats-card {
+  background: linear-gradient(135deg, #181828 80%, #1A1A2E 100%);
+  border-radius: 14px;
+  box-shadow: 0 2px 8px #00D4FF22;
+  border-top: 4px solid #00D4FF;
+  min-width: 120px;
+  padding: 24px 18px 18px 18px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.tree-stats-value {
+  font-size: 2.1rem;
+  font-weight: 800;
+  color: #00D4FF;
+  margin-bottom: 8px;
+  letter-spacing: 1px;
+}
+.tree-stats-label {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #B8C5D1;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+@media (max-width: 700px) {
+  .tree-stats-popover {
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    transform: none;
+    min-width: unset;
+    max-width: 100vw;
+    border-radius: 18px 18px 0 0;
+    padding: 18px 6vw 12px 6vw;
+  }
+  .tree-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  .tree-stats-fab {
+    top: 10px;
+    right: 10px;
+    width: 40px;
+    height: 40px;
+    font-size: 1.2rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .tree-stats-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,438 @@
+/* GenealogyTreeDemo.css - OrphiChain Genealogy Tree Styles */
+
+.genealogy-tree-demo {
+  font-family: var(--orphi-font-secondary);
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+  min-height: 100vh;
+  color: var(--orphi-pure-white);
+  padding: var(--orphi-spacing-lg);
+}
+
+.demo-header {
+  margin-bottom: var(--orphi-spacing-xl);
+  padding: var(--orphi-spacing-xl);
+  background: var(--orphi-primary-gradient);
+  border-radius: var(--orphi-border-radius-lg);
+  box-shadow: var(--orphi-shadow-lg);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.demo-header .header-content {
+  display: flex;
+  align-items: center;
+  gap: var(--orphi-spacing-lg);
+  flex-wrap: wrap;
+}
+
+.demo-header .title-section {
+  flex: 1;
+  min-width: 300px;
+}
+
+.demo-header .main-title {
+  font-family: var(--orphi-font-primary);
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 800;
+  margin: 0;
+  color: var(--orphi-pure-white);
+  text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.demo-header .subtitle {
+  font-size: var(--orphi-text-lg);
+  color: rgba(255, 255, 255, 0.9);
+  margin: var(--orphi-spacing-sm) 0 0 0;
+  font-weight: 400;
+}
+
+.tree-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--orphi-spacing-lg);
+  margin-bottom: var(--orphi-spacing-xl);
+  padding: var(--orphi-spacing-lg);
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: var(--orphi-border-radius-lg);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  flex-wrap: wrap;
+}
+
+.control-group {
+  display: flex;
+  align-items: center;
+  gap: var(--orphi-spacing-sm);
+}
+
+.control-group label {
+  font-weight: 600;
+  color: var(--orphi-silver-mist);
+  font-size: var(--orphi-text-sm);
+  min-width: 80px;
+}
+
+.control-select {
+  padding: var(--orphi-spacing-sm);
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--orphi-pure-white);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--orphi-border-radius-md);
+  font-family: var(--orphi-font-secondary);
+  font-size: var(--orphi-text-sm);
+  min-width: 120px;
+}
+
+.control-select option {
+  background: var(--orphi-deep-space);
+  color: var(--orphi-pure-white);
+}
+
+.zoom-slider {
+  width: 120px;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+  outline: none;
+  -webkit-appearance: none;
+}
+
+.zoom-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  background: var(--orphi-cyber-blue);
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 212, 255, 0.3);
+}
+
+.zoom-slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  background: var(--orphi-cyber-blue);
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 2px 6px rgba(0, 212, 255, 0.3);
+}
+
+.zoom-value {
+  font-weight: 600;
+  color: var(--orphi-cyber-blue);
+  font-size: var(--orphi-text-sm);
+  min-width: 40px;
+}
+
+.reset-btn {
+  padding: var(--orphi-spacing-sm) var(--orphi-spacing-lg);
+  background: var(--orphi-energy-orange);
+  color: var(--orphi-pure-white);
+  border: none;
+  border-radius: var(--orphi-border-radius-md);
+  font-family: var(--orphi-font-primary);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: var(--orphi-text-sm);
+}
+
+.reset-btn:hover {
+  background: var(--orphi-royal-purple);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+}
+
+.tree-container {
+  background: var(--orphi-true-black);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--orphi-border-radius-lg);
+  margin-bottom: var(--orphi-spacing-xl);
+  overflow: hidden;
+  position: relative;
+}
+
+.node-info-panel {
+  position: fixed;
+  top: 50%;
+  right: var(--orphi-spacing-lg);
+  transform: translateY(-50%);
+  width: 300px;
+  background: rgba(0, 0, 0, 0.95);
+  border: 2px solid var(--orphi-cyber-blue);
+  border-radius: var(--orphi-border-radius-lg);
+  padding: var(--orphi-spacing-lg);
+  box-shadow: var(--orphi-shadow-xl);
+  backdrop-filter: blur(15px);
+  z-index: 1000;
+}
+
+.node-info-panel h3 {
+  font-family: var(--orphi-font-primary);
+  font-size: var(--orphi-text-xl);
+  font-weight: 700;
+  color: var(--orphi-cyber-blue);
+  margin: 0 0 var(--orphi-spacing-lg) 0;
+  text-align: center;
+}
+
+.node-details {
+  display: flex;
+  flex-direction: column;
+  gap: var(--orphi-spacing-md);
+  margin-bottom: var(--orphi-spacing-lg);
+}
+
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--orphi-spacing-sm);
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: var(--orphi-border-radius-sm);
+  border-left: 3px solid var(--orphi-cyber-blue);
+}
+
+.detail-item .label {
+  font-weight: 600;
+  color: var(--orphi-silver-mist);
+  font-size: var(--orphi-text-sm);
+}
+
+.detail-item .value {
+  font-weight: 600;
+  color: var(--orphi-pure-white);
+  font-size: var(--orphi-text-sm);
+  text-align: right;
+  flex: 1;
+  margin-left: var(--orphi-spacing-sm);
+}
+
+.close-panel-btn {
+  width: 100%;
+  padding: var(--orphi-spacing-md);
+  background: var(--orphi-alert-red);
+  color: var(--orphi-pure-white);
+  border: none;
+  border-radius: var(--orphi-border-radius-md);
+  font-family: var(--orphi-font-primary);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: var(--orphi-text-sm);
+}
+
+.close-panel-btn:hover {
+  background: var(--orphi-royal-purple);
+  transform: translateY(-2px);
+}
+
+.tree-legend {
+  margin-bottom: var(--orphi-spacing-xl);
+  padding: var(--orphi-spacing-lg);
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: var(--orphi-border-radius-lg);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tree-legend h4 {
+  font-family: var(--orphi-font-primary);
+  font-size: var(--orphi-text-lg);
+  font-weight: 700;
+  color: var(--orphi-pure-white);
+  margin: 0 0 var(--orphi-spacing-md) 0;
+  text-align: center;
+}
+
+.legend-items {
+  display: flex;
+  justify-content: center;
+  gap: var(--orphi-spacing-xl);
+  flex-wrap: wrap;
+}
+
+.tree-legend .legend-item {
+  display: flex;
+  align-items: center;
+  gap: var(--orphi-spacing-sm);
+  font-size: var(--orphi-text-sm);
+  color: var(--orphi-silver-mist);
+  font-weight: 600;
+}
+
+.tree-legend .legend-color {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid var(--orphi-pure-white);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.network-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--orphi-spacing-lg);
+  margin-bottom: var(--orphi-spacing-xl);
+}
+
+.stat-card {
+  text-align: center;
+  padding: var(--orphi-spacing-xl);
+  background: var(--orphi-secondary-gradient);
+  border-radius: var(--orphi-border-radius-lg);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: var(--orphi-shadow-lg);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--orphi-primary-gradient);
+  border-radius: var(--orphi-border-radius-lg) var(--orphi-border-radius-lg) 0 0;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 40px rgba(0, 212, 255, 0.2);
+  border-color: var(--orphi-cyber-blue);
+}
+
+.stat-value {
+  font-family: var(--orphi-font-primary);
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 800;
+  margin-bottom: var(--orphi-spacing-sm);
+  background: var(--orphi-primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.stat-label {
+  font-size: var(--orphi-text-base);
+  color: var(--orphi-silver-mist);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* React D3 Tree Customizations */
+.rd3t-tree-container {
+  width: 100%;
+  height: 100%;
+  background: transparent;
+}
+
+.rd3t-node {
+  cursor: pointer;
+}
+
+.rd3t-node text {
+  font-family: var(--orphi-font-secondary);
+  font-weight: 600;
+  pointer-events: none;
+}
+
+.rd3t-link {
+  stroke: var(--orphi-cyber-blue);
+  stroke-width: 2;
+  opacity: 0.8;
+  fill: none;
+}
+
+.rd3t-node circle {
+  transition: all 0.3s ease;
+}
+
+.rd3t-node:hover circle {
+  stroke-width: 4;
+  filter: brightness(1.3) drop-shadow(0 0 10px currentColor);
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .genealogy-tree-demo {
+    padding: var(--orphi-spacing-md);
+  }
+  
+  .demo-header {
+    padding: var(--orphi-spacing-lg);
+  }
+  
+  .demo-header .header-content {
+    text-align: center;
+    justify-content: center;
+  }
+  
+  .tree-controls {
+    flex-direction: column;
+    gap: var(--orphi-spacing-md);
+    align-items: stretch;
+  }
+  
+  .control-group {
+    justify-content: space-between;
+  }
+  
+  .node-info-panel {
+    position: fixed;
+    top: auto;
+    bottom: var(--orphi-spacing-lg);
+    right: var(--orphi-spacing-lg);
+    left: var(--orphi-spacing-lg);
+    width: auto;
+    transform: none;
+  }
+  
+  .legend-items {
+    flex-direction: column;
+    align-items: center;
+    gap: var(--orphi-spacing-md);
+  }
+  
+  .network-stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--orphi-spacing-md);
+  }
+}
+
+@media (max-width: 480px) {
+  .network-stats {
+    grid-template-columns: 1fr;
+  }
+  
+  .tree-container {
+    height: 400px !important;
+  }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .stat-card,
+  .reset-btn,
+  .close-panel-btn,
+  .rd3t-node circle {
+    transition: none;
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .stat-card,
+  .tree-legend,
+  .tree-controls {
+    border: 2px solid var(--orphi-cyber-blue);
+    background: rgba(0, 0, 0, 0.9);
+  }
+  
+  .reset-btn,
+  .close-panel-btn {
+    border: 2px solid currentColor;
+  }
+}
