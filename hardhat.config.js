@@ -15,6 +15,7 @@ module.exports = {
         enabled: true,
         runs: 1000, // Increased for better optimization
       },
+      viaIR: true, // Enable IR-based compilation to resolve stack too deep
     },
   },
   networks: {

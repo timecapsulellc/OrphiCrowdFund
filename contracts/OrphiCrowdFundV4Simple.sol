@@ -4,6 +4,7 @@ pragma solidity ^0.8.22;
 import "./OrphiCrowdFundV2.sol";
 import "@chainlink/contracts/src/v0.8/automation/interfaces/AutomationCompatibleInterface.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 
 /**
  * @title OrphiCrowdFundV4Simple
@@ -14,8 +15,18 @@ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
  * - Enhanced earnings cap enforcement
  * - Circuit breakers for automation safety
  */
-contract OrphiCrowdFundV4Simple is OrphiCrowdFundV2, AutomationCompatibleInterface {
+contract OrphiCrowdFundV4Simple is OrphiCrowdFundV2, AutomationCompatibleInterface, AccessControlUpgradeable {
     using SafeERC20 for IERC20;
+    
+    // Role constants
+    bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
+    
+    // Core state variables
+    IERC20 public paymentToken;
+    address public adminReserve;
+    
+    // Constants
+    uint256 public constant EARNINGS_CAP_MULTIPLIER = 3;
     
     // Automation constants
     uint256 public constant GHP_AUTOMATION_INTERVAL = 7 days;
@@ -60,7 +71,8 @@ contract OrphiCrowdFundV4Simple is OrphiCrowdFundV2, AutomationCompatibleInterfa
     /**
      * @dev Initialize V4 enhancements
      */
-    function initializeV4() external onlyRole(ADMIN_ROLE) {
+    function initializeV4() external {
+        require(hasRole(ADMIN_ROLE, msg.sender), "Caller is not an admin");
         require(!automationEnabled, "Already initialized");
         automationEnabled = true;
         lastAutomationCheck = block.timestamp;
@@ -321,7 +333,7 @@ contract OrphiCrowdFundV4Simple is OrphiCrowdFundV2, AutomationCompatibleInterfa
         poolBalances[4] += uint128(ghpShare);
     }
     
-    function _getPoolName(uint8 poolType) internal pure returns (string memory) {
+    function _getPoolName(uint8 poolType) internal pure override returns (string memory) {
         if (poolType == 0) return "Sponsor";
         if (poolType == 1) return "Level";
         if (poolType == 2) return "Upline";
@@ -347,7 +359,8 @@ contract OrphiCrowdFundV4Simple is OrphiCrowdFundV2, AutomationCompatibleInterfa
     /**
      * @dev Admin function to enable/disable automation
      */
-    function setAutomationEnabled(bool _enabled) external onlyRole(ADMIN_ROLE) {
+    function setAutomationEnabled(bool _enabled) external {
+        require(hasRole(ADMIN_ROLE, msg.sender), "Caller is not an admin");
         automationEnabled = _enabled;
         emit AutomationStatusChanged(_enabled, block.timestamp);
     }
@@ -355,7 +368,8 @@ contract OrphiCrowdFundV4Simple is OrphiCrowdFundV2, AutomationCompatibleInterfa
     /**
      * @dev Admin function to reset automation failures
      */
-    function resetAutomationFailures() external onlyRole(ADMIN_ROLE) {
+    function resetAutomationFailures() external {
+        require(hasRole(ADMIN_ROLE, msg.sender), "Caller is not an admin");
         automationFailureCount = 0;
         lastAutomationFailure = 0;
     }
@@ -363,13 +377,15 @@ contract OrphiCrowdFundV4Simple is OrphiCrowdFundV2, AutomationCompatibleInterfa
     /**
      * @dev Admin function to set gas limit for automation
      */
-    function setAutomationGasLimit(uint256 _gasLimit) external onlyRole(ADMIN_ROLE) {
+    function setAutomationGasLimit(uint256 _gasLimit) external {
+        require(hasRole(ADMIN_ROLE, msg.sender), "Caller is not an admin");
         require(_gasLimit >= 100000 && _gasLimit <= 1000000, "Invalid gas limit");
         automationGasLimit = _gasLimit;
     }
     
     // Emergency functions
-    function emergencyDistributePool(uint8 poolType) external onlyRole(ADMIN_ROLE) {
+    function emergencyDistributePool(uint8 poolType) external {
+        require(hasRole(ADMIN_ROLE, msg.sender), "Caller is not an admin");
         require(poolType < 5, "Invalid pool type");
         require(!automationEnabled, "Disable automation first");
         
@@ -380,7 +396,8 @@ contract OrphiCrowdFundV4Simple is OrphiCrowdFundV2, AutomationCompatibleInterfa
         }
     }
     
-    function emergencyWithdrawPool(uint8 poolType) external onlyRole(ADMIN_ROLE) {
+    function emergencyWithdrawPool(uint8 poolType) external {
+        require(hasRole(ADMIN_ROLE, msg.sender), "Caller is not an admin");
         require(poolType < 5, "Invalid pool type");
         require(poolBalances[poolType] > 0, "No balance");
         

@@ -1,7 +1,13 @@
 import React, { useState, useEffect, useCallback, Suspense } from 'react';
 import { ethers } from 'ethers';
 import './OrphiChain.css';
+import './OrphiChainEnhanced.css';
 import OrphiChainLogo from './OrphiChainLogo';
+import ErrorBoundary from './ErrorBoundary';
+import TransactionRetryHandler from './TransactionRetryHandler';
+import NetworkStatusMonitor from './NetworkStatusMonitor';
+import { ABIProvider } from './ABIManager';
+import { io } from 'socket.io-client';
 
 // Lazy load heavy components for code splitting
 const ChartsBundle = React.lazy(() => import('./ChartsBundle'));
@@ -60,6 +66,8 @@ const BREAKPOINTS = {
   desktop: '1280px'
 };
 
+const SOCKET_URL = process.env.REACT_APP_ORPHI_WS_URL || 'http://localhost:4001';
+
 const OrphiDashboard = ({ contractAddress, provider, userAddress, demoMode = false }) => {
   // --- System-wide statistics (from contract or demo) ---
   const [systemStats, setSystemStats] = useState({
@@ -83,6 +91,20 @@ const OrphiDashboard = ({ contractAddress, provider, userAddress, demoMode = fal
   const [contract, setContract] = useState(null);
   const [isConnected, setIsConnected] = useState(false);
   const [lastUpdate, setLastUpdate] = useState(new Date());
+  
+  // --- Transaction and Network Management State ---
+  const [pendingTransactions, setPendingTransactions] = useState([]);
+  const [networkStatus, setNetworkStatus] = useState({
+    isOnline: navigator.onLine,
+    isProviderConnected: false,
+    isCongested: false,
+    lastBlockTime: null,
+    blockNumber: null
+  });
+  const [transactionQueue, setTransactionQueue] = useState([]);
+  const [activeTransactions, setActiveTransactions] = useState([]);
+  const [completedTransactions, setCompletedTransactions] = useState([]);
+  const [showTransactionManager, setShowTransactionManager] = useState(false);
   
   // --- Genealogy tree state ---
   const [treeExpanded, setTreeExpanded] = useState(false);
@@ -188,23 +210,45 @@ const OrphiDashboard = ({ contractAddress, provider, userAddress, demoMode = fal
     initContract();
   }, [contractAddress, provider, demoMode]);
 
+  // Simple in-memory cache for API/data
+  const apiCache = {};
+  function getCached(key, maxAgeMs = 30000) {
+    const entry = apiCache[key];
+    if (entry && (Date.now() - entry.timestamp < maxAgeMs)) {
+      return entry.value;
+    }
+    return null;
+  }
+  function setCached(key, value) {
+    apiCache[key] = { value, timestamp: Date.now() };
+  }
+
   // Load system statistics
   const loadSystemStats = useCallback(async (contractInstance = contract) => {
     if (!contractInstance) return;
-
+    const cacheKey = `systemStats`;
+    const cached = getCached(cacheKey, 30000); // 30s cache
+    if (cached) {
+      setSystemStats(cached);
+      setLastUpdate(new Date());
+      return;
+    }
     try {
       // Check if enhanced version is available
       let stats;
       try {
         stats = await contractInstance.getSystemStatsEnhanced();
-        setSystemStats({
+        const statsObj = {
           totalMembers: Number(stats[0]),
           totalVolume: ethers.formatEther(stats[1]),
           lastGHPDistribution: Number(stats[2]),
           lastLeaderDistribution: Number(stats[3]),
           dailyRegistrations: Number(stats[4]),
           dailyWithdrawals: Number(stats[5])
-        });
+        };
+        setSystemStats(statsObj);
+        setCached(cacheKey, statsObj);
+        setLastUpdate(new Date());
       } catch {
         // Fallback to V1 methods
         const [totalMembers, totalVolume, poolBalances] = await Promise.all([
@@ -213,16 +257,19 @@ const OrphiDashboard = ({ contractAddress, provider, userAddress, demoMode = fal
           contractInstance.getPoolBalances()
         ]);
 
-        setSystemStats({
+        const statsObj = {
           totalMembers: Number(totalMembers),
           totalVolume: ethers.formatEther(totalVolume),
           poolBalances: poolBalances.map(balance => ethers.formatEther(balance)),
           dailyRegistrations: 0,
           dailyWithdrawals: 0
-        });
+        };
+        setSystemStats(statsObj);
+        setCached(cacheKey, statsObj);
+        setLastUpdate(new Date());
       }
 
-      setLastUpdate(new Date());
+      
     } catch (error) {
       console.error("Error loading system stats:", error);
       addAlert("Failed to load system statistics", "error");
@@ -321,6 +368,74 @@ const OrphiDashboard = ({ contractAddress, provider, userAddress, demoMode = fal
     }));
   };
 
+  // --- Transaction Management Functions ---
+  const handleTransactionRequest = async (transactionConfig) => {
+    const transactionId = `tx_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    
+    // Add to pending transactions
+    setPendingTransactions(prev => [...prev, {
+      id: transactionId,
+      ...transactionConfig,
+      status: 'pending',
+      timestamp: Date.now()
+    }]);
+
+    // Add to transaction queue for the transaction manager
+    setTransactionQueue(prev => [...prev, {
+      id: transactionId,
+      ...transactionConfig,
+      status: 'queued',
+      timestamp: Date.now()
+    }]);
+
+    return transactionId;
+  };
+
+  const handleTransactionComplete = (transactionId, result) => {
+    // Update pending transactions
+    setPendingTransactions(prev => 
+      prev.map(tx => 
+        tx.id === transactionId 
+          ? { ...tx, status: result.success ? 'success' : 'failed', result }
+          : tx
+      )
+    );
+
+    // Move transaction from queue/active to completed
+    setTransactionQueue(prev => prev.filter(tx => tx.id !== transactionId));
+    setActiveTransactions(prev => prev.filter(tx => tx.id !== transactionId));
+    
+    setCompletedTransactions(prev => [{
+      id: transactionId,
+      status: result.success ? 'success' : 'failed',
+      result,
+      completedAt: Date.now()
+    }, ...prev.slice(0, 19)]); // Keep last 20
+
+    // Update system stats if transaction was successful
+    if (result.success) {
+      loadSystemStats();
+    }
+  };
+
+  const handleNetworkStatusChange = (status) => {
+    setNetworkStatus(status);
+    
+    // Add alert for network issues
+    if (!status.isOnline) {
+      addAlert('Network connection lost. Operating in offline mode.', 'warning');
+    } else if (!status.isProviderConnected) {
+      addAlert('Blockchain provider disconnected. Retrying connection...', 'warning');
+    } else if (status.isCongested) {
+      addAlert('Network congestion detected. Transactions may be delayed.', 'info');
+    }
+  };
+
+  // Transaction manager UI toggle
+  const toggleTransactionManager = () => {
+    setShowTransactionManager(prev => !prev);
+  };
+
   // --- Utility: Load demo data for all dashboard sections ---
   const loadDemoData = () => {
     setSystemStats({
@@ -367,6 +482,12 @@ const OrphiDashboard = ({ contractAddress, provider, userAddress, demoMode = fal
 
   // Build network tree data from registrations
   const buildNetworkTree = useCallback(() => {
+    const cacheKey = `networkTreeData`;
+    const cached = getCached(cacheKey, 30000);
+    if (cached) {
+      setNetworkTreeData(cached);
+      return;
+    }
     const userMap = new Map();
     const rootNode = {
       name: 'OrphiChain Network',
@@ -421,6 +542,7 @@ const OrphiDashboard = ({ contractAddress, provider, userAddress, demoMode = fal
     });
 
     setNetworkTreeData(rootNode);
+    setCached(cacheKey, rootNode);
   }, [realtimeData.registrations]);
 
   // Update tree when registrations change
@@ -516,19 +638,105 @@ const OrphiDashboard = ({ contractAddress, provider, userAddress, demoMode = fal
     directChildren: networkTreeData.children?.length || 0
   };
 
+  // Off-chain analytics state
+  const [analytics, setAnalytics] = useState(null);
+  const [analyticsError, setAnalyticsError] = useState(null);
+
+  // Fetch analytics from backend
+  useEffect(() => {
+    async function fetchAnalytics() {
+      try {
+        const res = await fetch('http://localhost:4001/api/analytics/summary');
+        if (!res.ok) throw new Error('Analytics backend unavailable');
+        const data = await res.json();
+        setAnalytics(data);
+        setAnalyticsError(null);
+      } catch (err) {
+        setAnalyticsError('Off-chain analytics unavailable');
+      }
+    }
+    fetchAnalytics();
+  }, []);
+
+  // --- WebSocket client for real-time updates ---
+  const [pushNotification, setPushNotification] = useState(null);
+
+  useEffect(() => {
+    const socket = io(SOCKET_URL, { transports: ['websocket'] });
+    socket.on('orphi-event', (event) => {
+      // Show push notification for important events
+      if ([
+        'WITHDRAWAL',
+        'USER_REGISTERED',
+        'DISTRIBUTION_COMPLETED',
+        'CIRCUIT_BREAKER_TRIPPED',
+        'EMERGENCY_MODE_ACTIVATED'
+      ].includes(event.eventType)) {
+        setPushNotification({
+          message: `${event.eventType.replace(/_/g, ' ')}: ${event.data ? JSON.stringify(event.data) : ''}`,
+          timestamp: new Date().toLocaleTimeString()
+        });
+        setTimeout(() => setPushNotification(null), 6000);
+      }
+      // Optionally update dashboard state here for real-time UI
+    });
+    return () => socket.disconnect();
+  }, []);
+
   return (
-    <div className="orphi-dashboard" data-theme={theme}>
-      {/* Onboarding/help modal */}
-      {showHelp && (
-        <div className="onboarding-modal" role="dialog" aria-modal="true" tabIndex={-1}>
-          <div className="onboarding-content">
-            <h2>Welcome!</h2>
-            <pre>{onboardingText}</pre>
-            <button onClick={() => setShowHelp(false)} autoFocus>Close</button>
-          </div>
-        </div>
-      )}
-      <button className="help-btn" onClick={() => setShowHelp(true)} aria-label="Show help and onboarding">❓ Help</button>
+    <ABIProvider>
+      <ErrorBoundary 
+        fallbackComponent="OrphiDashboard"
+        showDetails={process.env.NODE_ENV === 'development'}
+        enableReporting={true}
+        onError={(error, errorInfo) => {
+          console.error('Dashboard error:', error, errorInfo);
+          addAlert(`Dashboard error: ${error.message}`, 'error');
+        }}
+      >
+        <div className="orphi-dashboard" data-theme={theme}>
+          {/* Network Status Monitor */}
+          <NetworkStatusMonitor
+            provider={provider}
+            onStatusChange={handleNetworkStatusChange}
+            onReconnect={() => {
+              addAlert('Network reconnected successfully', 'success');
+              loadSystemStats();
+            }}
+            pendingTransactions={pendingTransactions}
+          />
+
+          {/* Transaction Manager */}
+          <TransactionManager
+            provider={provider}
+            signer={provider?.getSigner?.()}
+            onTransactionUpdate={handleTransactionComplete}
+            onError={(error) => addAlert(`Transaction Manager: ${error}`, 'error')}
+            maxConcurrentTx={3}
+            maxQueueSize={10}
+            enableBatching={true}
+          />
+
+          {/* Transaction Retry Handler */}
+          <TransactionRetryHandler
+            provider={provider}
+            onTransactionRequest={handleTransactionRequest}
+            onTransactionComplete={handleTransactionComplete}
+            onError={(error) => addAlert(`Transaction error: ${error.message}`, 'error')}
+            maxRetries={3}
+          />
+
+          {/* Onboarding/help modal */}
+          {showHelp && (
+            <div className="onboarding-modal" role="dialog" aria-modal="true" tabIndex={-1}>
+              <div className="onboarding-content">
+                <h2>Welcome!</h2>
+                <pre>{onboardingText}</pre>
+                <button onClick={() => setShowHelp(false)} autoFocus>Close</button>
+              </div>
+            </div>
+          )}
+          <button className="help-btn" onClick={() => setShowHelp(true)} aria-label="Show help and onboarding">❓ Help</button>
       {/* Theme toggle (with ARIA) */}
       <button 
         className="theme-toggle-btn"
@@ -576,70 +784,83 @@ const OrphiDashboard = ({ contractAddress, provider, userAddress, demoMode = fal
             <div className="metric-card" title="Total registered members in the OrphiChain network">
               <h3>Total Members</h3>
               <div className="metric-value" aria-live="polite">{systemStats.totalMembers.toLocaleString()}</div>
+              {analytics && <div className="metric-analytics">Off-chain: {analytics.totalUsers}</div>}
             </div>
             <div className="metric-card" title="Total volume of transactions in USDT">
               <h3>Total Volume</h3>
               <div className="metric-value" aria-live="polite">{parseFloat(systemStats.totalVolume).toLocaleString()} USDT</div>
+              {analytics && <div className="metric-analytics">Off-chain: {analytics.totalVolume}</div>}
             </div>
             <div className="metric-card" title="New registrations in the last 24 hours">
               <h3>Daily Registrations</h3>
               <div className="metric-value" aria-live="polite">{systemStats.dailyRegistrations}</div>
+              {analytics && <div className="metric-analytics">Off-chain: {analytics.dailyRegistrations}</div>}
             </div>
             <div className="metric-card" title="Withdrawals processed in the last 24 hours">
               <h3>Daily Withdrawals</h3>
               <div className="metric-value" aria-live="polite">{systemStats.dailyWithdrawals}</div>
+              {analytics && <div className="metric-analytics">Off-chain: {analytics.dailyWithdrawals}</div>}
             </div>
           </>
+        )}
+        {analyticsError && (
+          <div className="metric-card metric-error">
+            <div className="metric-value">{analyticsError}</div>
+          </div>
         )}
       </div>
 
       {/* === CHARTS SECTION: Pool Balances & Registration Activity === */}
-      <Suspense fallback={
-        <div className="charts-section">
-          <div className="chart-skeleton shimmer" aria-hidden="true" style={{ height: '300px', marginBottom: '2rem' }}>
-            <div className="loading-text">Loading Charts...</div>
-          </div>
-        </div>
-      }>
-        <ChartsBundle 
-          poolData={poolData}
-          recentRegistrations={recentRegistrations}
-          loading={loading}
-          systemStats={systemStats}
-          realtimeData={realtimeData}
-        />
-      </Suspense>
-
-      {/* === GENEALOGY TREE: Network Visualization === */}
-      {showGenealogy && (
+      <ErrorBoundary fallbackComponent="ChartsBundle" showDetails={process.env.NODE_ENV === 'development'} enableReporting={true}>
         <Suspense fallback={
-          <div className="genealogy-section">
-            <div className="tree-skeleton shimmer" aria-hidden="true" style={{ height: '500px' }}>
-              <div className="loading-text">Loading Genealogy Tree...</div>
+          <div className="charts-section">
+            <div className="chart-skeleton shimmer" aria-hidden="true" style={{ height: '300px', marginBottom: '2rem' }}>
+              <div className="loading-text">Loading Charts...</div>
             </div>
           </div>
         }>
-          <GenealogyTreeBundle
-            networkTreeData={networkTreeData}
-            treeExpanded={treeExpanded}
-            setTreeExpanded={setTreeExpanded}
-            treeSearch={treeSearch}
-            handleTreeSearch={handleTreeSearch}
-            selectedTreeUser={selectedTreeUser}
-            setSelectedTreeUser={setSelectedTreeUser}
-            focusOnTreeUser={focusOnTreeUser}
-            realtimeData={realtimeData}
-            treeMinimapVisible={treeMinimapVisible}
-            setTreeMinimapVisible={setTreeMinimapVisible}
+          <ChartsBundle 
+            poolData={poolData}
+            recentRegistrations={recentRegistrations}
             loading={loading}
-            treeSearchResults={treeSearchResults}
-            handleMinimapNodeClick={handleMinimapNodeClick}
-            addAlert={addAlert}
-            showTreeStats={showTreeStats}
-            setShowTreeStats={setShowTreeStats}
-            treeStats={treeStats}
+            systemStats={systemStats}
+            realtimeData={realtimeData}
           />
         </Suspense>
+      </ErrorBoundary>
+
+      {/* === GENEALOGY TREE: Network Visualization === */}
+      {showGenealogy && (
+        <ErrorBoundary fallbackComponent="GenealogyTreeBundle" showDetails={process.env.NODE_ENV === 'development'} enableReporting={true}>
+          <Suspense fallback={
+            <div className="genealogy-section">
+              <div className="tree-skeleton shimmer" aria-hidden="true" style={{ height: '500px' }}>
+                <div className="loading-text">Loading Genealogy Tree...</div>
+              </div>
+            </div>
+          }>
+            <GenealogyTreeBundle
+              networkTreeData={networkTreeData}
+              treeExpanded={treeExpanded}
+              setTreeExpanded={setTreeExpanded}
+              treeSearch={treeSearch}
+              handleTreeSearch={handleTreeSearch}
+              selectedTreeUser={selectedTreeUser}
+              setSelectedTreeUser={setSelectedTreeUser}
+              focusOnTreeUser={focusOnTreeUser}
+              realtimeData={realtimeData}
+              treeMinimapVisible={treeMinimapVisible}
+              setTreeMinimapVisible={setTreeMinimapVisible}
+              loading={loading}
+              treeSearchResults={treeSearchResults}
+              handleMinimapNodeClick={handleMinimapNodeClick}
+              addAlert={addAlert}
+              showTreeStats={showTreeStats}
+              setShowTreeStats={setShowTreeStats}
+              treeStats={treeStats}
+            />
+          </Suspense>
+        </ErrorBoundary>
       )}
 
       {/* === ACTIVITY PANELS: Registrations & Withdrawals === */}
@@ -763,26 +984,28 @@ const OrphiDashboard = ({ contractAddress, provider, userAddress, demoMode = fal
       </div>
 
       {/* === EXPORT PANEL: PDF/CSV/Email === */}
-      <Suspense fallback={
-        <div className="export-panel-skeleton shimmer" aria-hidden="true" style={{ height: '80px', margin: '1rem 0' }}>
-          <div className="loading-text">Loading Export Options...</div>
-        </div>
-      }>
-        <ExportPanel 
-          data={{
-            systemStats,
-            realtimeData,
-            poolData,
-            networkTree: networkTreeData,
-            growthTrends: growthTrendsData,
-            myStats,
-            lastUpdate: lastUpdate.toISOString()
-          }}
-          filename="orphichain-dashboard-report"
-          title="OrphiChain Dashboard Report"
-          subtitle={`Generated on ${new Date().toLocaleDateString()}`}
-        />
-      </Suspense>
+      <ErrorBoundary fallbackComponent="ExportPanel" showDetails={process.env.NODE_ENV === 'development'} enableReporting={true}>
+        <Suspense fallback={
+          <div className="export-panel-skeleton shimmer" aria-hidden="true" style={{ height: '80px', margin: '1rem 0' }}>
+            <div className="loading-text">Loading Export Options...</div>
+          </div>
+        }>
+          <ExportPanel 
+            data={{
+              systemStats,
+              realtimeData,
+              poolData,
+              networkTree: networkTreeData,
+              growthTrends: growthTrendsData,
+              myStats,
+              lastUpdate: lastUpdate.toISOString()
+            }}
+            filename="orphichain-dashboard-report"
+            title="OrphiChain Dashboard Report"
+            subtitle={`Generated on ${new Date().toLocaleDateString()}`}
+          />
+        </Suspense>
+      </ErrorBoundary>
 
       {/* === AUTO-REFRESH INDICATOR === */}
       <div className="refresh-indicator">
@@ -791,7 +1014,25 @@ const OrphiDashboard = ({ contractAddress, provider, userAddress, demoMode = fal
           Auto-refresh: 30s
         </div>
       </div>
-    </div>
+
+      {/* === GLOBAL LOADING OVERLAY === */}
+      {loading && (
+        <div className="global-loading-overlay" role="status" aria-live="polite">
+          <div className="global-loading-spinner">⏳ Loading dashboard data...</div>
+        </div>
+      )}
+
+      {/* === PUSH NOTIFICATION === */}
+      {pushNotification && (
+        <div className="push-notification" role="status" aria-live="polite">
+          <span>🔔</span>
+          <span>{pushNotification.message}</span>
+          <span style={{ fontSize: '0.85em', opacity: 0.7 }}>{pushNotification.timestamp}</span>
+        </div>
+      )}
+        </div>
+      </ErrorBoundary>
+    </ABIProvider>
   );
 };
 

@@ -15,7 +15,14 @@ const ExportPanel = ({ data, filename = 'report', title = 'Analytics Report', on
   const [emailTo, setEmailTo] = useState('');
   const [showEmailInput, setShowEmailInput] = useState(false);
   const [exportStatus, setExportStatus] = useState({ message: '', type: '' });
+  const [isExporting, setIsExporting] = useState(false);
   const containerRef = useRef(null);
+
+  // Utility: Email validation
+  function validateEmail(email) {
+    // Simple RFC 5322 compliant regex
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  }
 
   // Handle CSV export
   const handleCSVExport = () => {
@@ -32,6 +39,7 @@ const ExportPanel = ({ data, filename = 'report', title = 'Analytics Report', on
   // Handle PDF export
   const handlePDFExport = async () => {
     try {
+      setIsExporting(true);
       setExportStatus({ message: 'Generating PDF...', type: 'info' });
       
       // If we have a container ref and it's for a dashboard, use it
@@ -51,6 +59,8 @@ const ExportPanel = ({ data, filename = 'report', title = 'Analytics Report', on
     } catch (error) {
       console.error('PDF export error:', error);
       setExportStatus({ message: 'PDF export failed', type: 'error' });
+    } finally {
+      setIsExporting(false);
     }
   };
 
@@ -60,7 +70,11 @@ const ExportPanel = ({ data, filename = 'report', title = 'Analytics Report', on
       setExportStatus({ message: 'Please enter an email address', type: 'warning' });
       return;
     }
-
+    if (!validateEmail(emailTo)) {
+      setExportStatus({ message: 'Invalid email address format', type: 'error' });
+      return;
+    }
+    setIsExporting(true);
     try {
       // Generate a report from the data
       const reportText = AnalyticsExport.generateReport(data, title);
@@ -74,6 +88,8 @@ const ExportPanel = ({ data, filename = 'report', title = 'Analytics Report', on
     } catch (error) {
       console.error('Email export error:', error);
       setExportStatus({ message: 'Email preparation failed', type: 'error' });
+    } finally {
+      setIsExporting(false);
     }
   };
 
@@ -142,6 +158,12 @@ const ExportPanel = ({ data, filename = 'report', title = 'Analytics Report', on
       {exportStatus.message && (
         <div className={`export-status ${exportStatus.type}`}>
           {exportStatus.message}
+        </div>
+      )}
+
+      {isExporting && (
+        <div className="export-loading-indicator">
+          <span className="spinner" role="status" aria-live="polite">⏳ Exporting...</span>
         </div>
       )}
     </div>

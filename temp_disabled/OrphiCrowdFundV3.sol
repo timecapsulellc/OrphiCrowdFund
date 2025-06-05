@@ -3,11 +3,7 @@ pragma solidity ^0.8.20;
 
 import "./OrphiCrowdFundV2.sol";
 import "@openzeppelin/contracts-upgradeable/utils/cryptography/EIP712Upgradeable.sol";
-import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
-import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+// import "@openzeppelin/contracts-upgradeable/utils/cryptography/ECDSAUpgradeable.sol";
 
 /**
  * @title OrphiCrowdFundV3
@@ -22,12 +18,8 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
  * - MEV protection mechanisms
  * - Enhanced emergency response system
  */
-contract OrphiCrowdFundV3 is OrphiCrowdFundV2, EIP712Upgradeable, ReentrancyGuardUpgradeable, PausableUpgradeable, AccessControlUpgradeable {
-    bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
-    bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
-    bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
-
-    using ECDSA for bytes32;
+contract OrphiCrowdFundV3 is OrphiCrowdFundV2, EIP712Upgradeable {
+    // using ECDSAUpgradeable for bytes32;
 
     // Multi-signature requirements
     struct MultiSigProposal {
@@ -58,17 +50,6 @@ contract OrphiCrowdFundV3 is OrphiCrowdFundV2, EIP712Upgradeable, ReentrancyGuar
     mapping(address => uint256) public lastBlockInteraction;
     uint256 public maxBlockDelay;
 
-    IERC20 public paymentToken;
-    address public adminReserve;
-    
-    // V3-specific additional fields (beyond base User struct)
-    struct UserV3Extension {
-        // Reserved for future V3-specific fields
-        uint256 reserved;
-    }
-    
-    mapping(address => UserV3Extension) public userV3Extensions;
-
     // Enhanced events for V3
     event MultiSigProposalCreated(uint256 indexed proposalId, address indexed creator, address target, bytes data);
     event MultiSigProposalApproved(uint256 indexed proposalId, address indexed signer);
@@ -95,18 +76,20 @@ contract OrphiCrowdFundV3 is OrphiCrowdFundV2, EIP712Upgradeable, ReentrancyGuar
         uint256 _requiredApprovals,
         address _priceOracle
     ) public reinitializer(3) {
+        require(_signers.length >= 3, "Minimum 3 signers required");
+        require(_requiredApprovals >= 2 && _requiredApprovals <= _signers.length, "Invalid approval threshold");
+        
         __EIP712_init("OrphiCrowdFundV3", "1");
-        __ReentrancyGuard_init();
-        __Pausable_init();
-        __AccessControl_init();
-        // Grant multisig roles
-        for (uint i = 0; i < _signers.length; i++) {
-            grantRole(ADMIN_ROLE, _signers[i]);
-        }
+        
         signers = _signers;
         requiredApprovals = _requiredApprovals;
         priceOracle = IPriceOracle(_priceOracle);
         maxBlockDelay = 2; // 2 blocks MEV protection
+        
+        // Grant multisig roles
+        for (uint i = 0; i < _signers.length; i++) {
+            _grantRole(ADMIN_ROLE, _signers[i]);
+        }
     }
 
     /**
@@ -117,7 +100,7 @@ contract OrphiCrowdFundV3 is OrphiCrowdFundV2, EIP712Upgradeable, ReentrancyGuar
         PackageTier _packageTier,
         uint256 _nonce,
         bytes memory _signature
-    ) external whenNotPaused preventMEV nonReentrant {
+    ) external nonReentrant whenNotPaused preventMEV {
         bytes32 structHash = keccak256(abi.encode(
             keccak256("RegisterUser(address user,address sponsor,uint8 packageTier,uint256 nonce)"),
             msg.sender,
@@ -148,8 +131,7 @@ contract OrphiCrowdFundV3 is OrphiCrowdFundV2, EIP712Upgradeable, ReentrancyGuar
         bytes memory _data,
         uint256 _value,
         uint256 _deadline
-    ) external returns (uint256) {
-        require(hasRole(ADMIN_ROLE, msg.sender), "Caller is not an admin");
+    ) external onlyRole(ADMIN_ROLE) returns (uint256) {
         require(_deadline > block.timestamp, "Invalid deadline");
         
         uint256 proposalId = nextProposalId++;
@@ -168,8 +150,7 @@ contract OrphiCrowdFundV3 is OrphiCrowdFundV2, EIP712Upgradeable, ReentrancyGuar
     /**
      * @dev Multi-signature proposal approval
      */
-    function approveMultiSigProposal(uint256 _proposalId) external {
-        require(hasRole(ADMIN_ROLE, msg.sender), "Caller is not an admin");
+    function approveMultiSigProposal(uint256 _proposalId) external onlyRole(ADMIN_ROLE) {
         MultiSigProposal storage proposal = multiSigProposals[_proposalId];
         require(proposal.proposalId == _proposalId, "Proposal not found");
         require(block.timestamp <= proposal.deadline, "Proposal expired");
@@ -214,8 +195,7 @@ contract OrphiCrowdFundV3 is OrphiCrowdFundV2, EIP712Upgradeable, ReentrancyGuar
     /**
      * @dev Enhanced withdrawal with oracle checks
      */
-    function withdrawV3() external nonReentrant whenNotPaused preventMEV {
-        require(users[msg.sender].totalInvested > 0, "Not a valid user");
+    function withdrawV3() external nonReentrant whenNotPaused onlyValidUser(msg.sender) preventMEV {
         _checkOracleBasedLimits();
         
         // Call V2 withdrawal logic
@@ -236,8 +216,7 @@ contract OrphiCrowdFundV3 is OrphiCrowdFundV2, EIP712Upgradeable, ReentrancyGuar
         uint256 _destinationChain,
         address _recipient,
         uint256 _amount
-    ) external {
-        require(hasRole(OPERATOR_ROLE, msg.sender), "Caller is not an operator");
+    ) external onlyRole(OPERATOR_ROLE) {
         require(_amount <= users[_recipient].withdrawableAmount, "Insufficient balance");
         
         // Lock funds for cross-chain transfer
@@ -262,8 +241,7 @@ contract OrphiCrowdFundV3 is OrphiCrowdFundV2, EIP712Upgradeable, ReentrancyGuar
     /**
      * @dev Emergency pause with oracle integration
      */
-    function emergencyPauseV3() external {
-        require(hasRole(PAUSER_ROLE, msg.sender), "Caller is not a pauser");
+    function emergencyPauseV3() external onlyRole(PAUSER_ROLE) {
         _checkOracleBasedLimits();
         _pause();
         
@@ -275,6 +253,8 @@ contract OrphiCrowdFundV3 is OrphiCrowdFundV2, EIP712Upgradeable, ReentrancyGuar
     event CrossChainTransferPrepared(uint256 indexed destinationChain, address indexed recipient, uint256 amount, uint256 timestamp);
     event EmergencyPausedV3(address indexed by, uint256 timestamp, string reason);
     event GovernanceTokensAllocated(address indexed user, uint256 amount, uint256 timestamp);
+
+    function _authorizeUpgrade(address newImplementation) internal override onlyMultiSig {}
 }
 
 // Oracle integration interface for emergency circuit breakers

@@ -4,6 +4,7 @@ pragma solidity ^0.8.22;
 import "./OrphiCrowdFundV2.sol";
 import "@chainlink/contracts/src/v0.8/automation/interfaces/AutomationCompatibleInterface.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "@openzeppelin/contracts/access/AccessControl.sol";
 
 /**
  * @title OrphiCrowdFundV4
@@ -16,8 +17,10 @@ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
  * - Enhanced event logging and monitoring
  * - Circuit breakers for automation safety
  */
-contract OrphiCrowdFundV4 is OrphiCrowdFundV2, AutomationCompatibleInterface {
+contract OrphiCrowdFundV4 is OrphiCrowdFundV2, AutomationCompatibleInterface, AccessControl {
     using SafeERC20 for IERC20;
+    
+    bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
     
     // Automation constants
     uint256 public constant GHP_AUTOMATION_INTERVAL = 7 days; // Weekly GHP distribution
@@ -79,10 +82,15 @@ contract OrphiCrowdFundV4 is OrphiCrowdFundV2, AutomationCompatibleInterface {
         emit MatrixOptimizationApplied(msg.sender, address(0), gasUsed, block.timestamp);
     }
     
+    modifier onlyAdmin() {
+        require(hasRole(ADMIN_ROLE, msg.sender), "Caller is not an admin");
+        _;
+    }
+
     /**
      * @dev Initialize V4 enhancements
      */
-    function initializeV4() external onlyRole(ADMIN_ROLE) {
+    function initializeV4() external onlyAdmin {
         require(!automationEnabled, "Already initialized");
         automationEnabled = true;
         lastAutomationCheck = block.timestamp;
@@ -358,7 +366,7 @@ contract OrphiCrowdFundV4 is OrphiCrowdFundV2, AutomationCompatibleInterface {
     /**
      * @dev Admin function to enable/disable automation
      */
-    function setAutomationEnabled(bool _enabled) external onlyRole(ADMIN_ROLE) {
+    function setAutomationEnabled(bool _enabled) external onlyAdmin {
         automationEnabled = _enabled;
         emit AutomationStatusChanged(_enabled, block.timestamp);
     }
@@ -366,7 +374,7 @@ contract OrphiCrowdFundV4 is OrphiCrowdFundV2, AutomationCompatibleInterface {
     /**
      * @dev Admin function to reset automation failures
      */
-    function resetAutomationFailures() external onlyRole(ADMIN_ROLE) {
+    function resetAutomationFailures() external onlyAdmin {
         automationFailureCount = 0;
         lastAutomationFailure = 0;
     }
@@ -374,9 +382,19 @@ contract OrphiCrowdFundV4 is OrphiCrowdFundV2, AutomationCompatibleInterface {
     /**
      * @dev Admin function to set gas limit for automation
      */
-    function setAutomationGasLimit(uint256 _gasLimit) external onlyRole(ADMIN_ROLE) {
+    function setAutomationGasLimit(uint256 _gasLimit) external onlyAdmin {
         require(_gasLimit >= 100000 && _gasLimit <= 1000000, "Invalid gas limit");
         automationGasLimit = _gasLimit;
+    }
+    
+    /**
+     * @dev Constructor to set up roles and initial state
+     */
+    constructor(address _token, address _admin, address _matrixRoot) {
+        // Grant admin role to deployer and provided admin
+        grantRole(ADMIN_ROLE, msg.sender);
+        grantRole(ADMIN_ROLE, _admin);
+        _setRoleAdmin(ADMIN_ROLE, ADMIN_ROLE);
     }
     
     // Helper functions for optimization
@@ -457,7 +475,7 @@ contract OrphiCrowdFundV4 is OrphiCrowdFundV2, AutomationCompatibleInterface {
         poolBalances[4] += uint128(ghpShare);
     }
     
-    function _getPoolName(uint8 poolType) internal pure returns (string memory) {
+    function _getPoolName(uint8 poolType) internal pure override returns (string memory) {
         if (poolType == 0) return "Sponsor";
         if (poolType == 1) return "Level";
         if (poolType == 2) return "Upline";
@@ -474,7 +492,7 @@ contract OrphiCrowdFundV4 is OrphiCrowdFundV2, AutomationCompatibleInterface {
         levelQueues[level][1] = QueueNode(user, 0);
     }
     
-    function _enqueueUser(uint256 level, address user) internal {
+    function _enqueueUser(uint256 level, address user) internal override {
         queueTails[level]++;
         levelQueues[level][queueTails[level]] = QueueNode(user, 0);
         if (queueSizes[level] > 0) {
@@ -506,7 +524,8 @@ contract OrphiCrowdFundV4 is OrphiCrowdFundV2, AutomationCompatibleInterface {
     }
     
     // Emergency functions
-    function emergencyDistributePool(uint8 poolType) external onlyRole(ADMIN_ROLE) {
+    function emergencyDistributePool(uint8 poolType) external {
+        require(hasRole(ADMIN_ROLE, msg.sender), "Caller is not an admin");
         require(poolType < 5, "Invalid pool type");
         require(!automationEnabled, "Disable automation first");
         
@@ -517,7 +536,8 @@ contract OrphiCrowdFundV4 is OrphiCrowdFundV2, AutomationCompatibleInterface {
         }
     }
     
-    function emergencyWithdrawPool(uint8 poolType) external onlyRole(ADMIN_ROLE) {
+    function emergencyWithdrawPool(uint8 poolType) external {
+        require(hasRole(ADMIN_ROLE, msg.sender), "Caller is not an admin");
         require(poolType < 5, "Invalid pool type");
         require(poolBalances[poolType] > 0, "No balance");
         
@@ -574,4 +594,9 @@ contract OrphiCrowdFundV4 is OrphiCrowdFundV2, AutomationCompatibleInterface {
         remainingCap = maxEarnings > totalEarnings ? maxEarnings - totalEarnings : 0;
         isCapped = users[user].isCapped;
     }
+    
+    uint256 constant PACKAGE_30 = 30 ether;
+    uint256 constant EARNINGS_CAP_MULTIPLIER = 4;
+    IERC20 public paymentToken;
+    address public adminReserve;
 }

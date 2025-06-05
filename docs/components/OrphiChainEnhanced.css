@@ -1,0 +1,1197 @@
+/* OrphiChain UI/UX Enhancement Styles */
+/* Following OrphiChain brand guidelines */
+
+/* Import base OrphiChain styles */
+@import url('./OrphiChain.css');
+
+/* ================================
+   ERROR BOUNDARY STYLES
+   ================================ */
+.error-boundary {
+  margin: 1rem;
+  padding: 1.5rem;
+  border-radius: 8px;
+  background: linear-gradient(rgba(255, 71, 87, 0.05), rgba(255, 71, 87, 0.15));
+  border: 1px solid var(--orphi-alert-red);
+  color: var(--orphi-pure-white);
+  font-family: var(--orphi-font-primary);
+}
+
+.error-boundary-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+  gap: 0.75rem;
+}
+
+.error-boundary-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: var(--orphi-alert-red);
+  color: var(--orphi-pure-white);
+  font-size: 1.5rem;
+}
+
+.error-boundary-title {
+  margin: 0;
+  font-size: var(--orphi-text-xl);
+  font-weight: 700;
+}
+
+.error-details {
+  background: rgba(0, 0, 0, 0.2);
+  padding: 1rem;
+  border-radius: 6px;
+  font-family: monospace;
+  white-space: pre-wrap;
+  overflow-x: auto;
+  margin-bottom: 1rem;
+  font-size: var(--orphi-text-sm);
+  border-left: 3px solid var(--orphi-alert-red);
+}
+
+.error-boundary-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.error-boundary-button {
+  padding: 0.6rem 1.2rem;
+  border-radius: 4px;
+  background-color: transparent;
+  border: 1px solid var(--orphi-cyber-blue);
+  color: var(--orphi-cyber-blue);
+  font-family: var(--orphi-font-primary);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.error-boundary-button:hover {
+  background-color: rgba(0, 212, 255, 0.1);
+}
+
+.error-boundary-button.primary {
+  background-color: var(--orphi-cyber-blue);
+  color: var(--orphi-deep-space);
+}
+
+.error-boundary-button.primary:hover {
+  background-color: #33DDFF;
+}
+
+.dev-info {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: rgba(123, 44, 191, 0.1);
+  border-radius: 6px;
+  border-left: 3px solid var(--orphi-royal-purple);
+}
+
+/* ================================
+   FORM VALIDATION STYLES
+   ================================ */
+.form-field {
+  margin-bottom: 1.5rem;
+}
+
+.form-field-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.form-field-label {
+  font-family: var(--orphi-font-primary);
+  font-weight: 600;
+  font-size: var(--orphi-text-sm);
+  color: var(--orphi-silver-mist);
+}
+
+.form-field-requirement {
+  font-size: var(--orphi-text-xs);
+  color: var(--orphi-silver-mist);
+  opacity: 0.8;
+}
+
+.form-input-wrapper {
+  position: relative;
+}
+
+.form-input {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border-radius: 6px;
+  background-color: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(184, 197, 209, 0.3);
+  color: var(--orphi-pure-white);
+  font-family: var(--orphi-font-secondary);
+  font-size: var(--orphi-text-base);
+  transition: all 0.2s ease;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--orphi-cyber-blue);
+  box-shadow: 0 0 0 2px rgba(0, 212, 255, 0.25);
+}
+
+.form-input.valid {
+  border-color: var(--orphi-success-green);
+}
+
+.form-input.invalid {
+  border-color: var(--orphi-alert-red);
+}
+
+.validation-icon {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.2rem;
+}
+
+.validation-icon.valid {
+  color: var(--orphi-success-green);
+}
+
+.validation-icon.invalid {
+  color: var(--orphi-alert-red);
+}
+
+.validation-message {
+  margin-top: 0.5rem;
+  font-size: var(--orphi-text-xs);
+  transition: all 0.2s ease;
+  min-height: 1.5em;
+}
+
+.validation-message.valid {
+  color: var(--orphi-success-green);
+}
+
+.validation-message.invalid {
+  color: var(--orphi-alert-red);
+}
+
+.form-input-suggestions {
+  position: absolute;
+  width: 100%;
+  max-height: 200px;
+  overflow-y: auto;
+  background-color: var(--orphi-deep-space);
+  border: 1px solid rgba(184, 197, 209, 0.3);
+  border-top: none;
+  border-radius: 0 0 6px 6px;
+  z-index: 10;
+}
+
+.suggestion-item {
+  padding: 0.7rem 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.suggestion-item:hover {
+  background-color: rgba(0, 212, 255, 0.1);
+}
+
+.validation-rules {
+  margin-top: 0.7rem;
+  font-size: var(--orphi-text-xs);
+}
+
+.validation-rule {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.3rem;
+  color: var(--orphi-silver-mist);
+}
+
+.validation-rule.valid {
+  color: var(--orphi-success-green);
+}
+
+.validation-rule.invalid {
+  color: var(--orphi-alert-red);
+}
+
+/* ================================
+   TRANSACTION RETRY HANDLER STYLES
+   ================================ */
+.transaction-retry-handler {
+  margin: 1rem 0;
+  font-family: var(--orphi-font-primary);
+}
+
+.transaction-button {
+  padding: 0.8rem 1.5rem;
+  border-radius: 6px;
+  background: var(--orphi-primary-gradient);
+  border: none;
+  color: var(--orphi-pure-white);
+  font-family: var(--orphi-font-primary);
+  font-weight: 600;
+  font-size: var(--orphi-text-base);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-width: 180px;
+}
+
+.transaction-button:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 212, 255, 0.3);
+}
+
+.transaction-button.processing {
+  opacity: 0.7;
+  cursor: not-allowed;
+  background: linear-gradient(45deg, var(--orphi-cyber-blue), var(--orphi-cyber-blue));
+}
+
+.transaction-status {
+  margin-top: 1rem;
+  padding: 1rem;
+  border-radius: 8px;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-left: 3px solid var(--orphi-cyber-blue);
+}
+
+.transaction-status-waiting_confirmation {
+  border-left-color: var(--orphi-royal-purple);
+}
+
+.transaction-status-pending {
+  border-left-color: var(--orphi-energy-orange);
+}
+
+.transaction-status-retrying {
+  border-left-color: var(--orphi-royal-purple);
+}
+
+.transaction-status-success {
+  border-left-color: var(--orphi-success-green);
+}
+
+.transaction-status-failed {
+  border-left-color: var(--orphi-alert-red);
+}
+
+.transaction-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.7rem;
+}
+
+.transaction-spinner {
+  width: 30px;
+  height: 30px;
+  border: 3px solid rgba(0, 212, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: var(--orphi-cyber-blue);
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.transaction-success-icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--orphi-success-green);
+  color: var(--orphi-pure-white);
+  border-radius: 50%;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.transaction-error-icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--orphi-alert-red);
+  color: var(--orphi-pure-white);
+  border-radius: 50%;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.transaction-success {
+  background-color: rgba(0, 255, 136, 0.1);
+}
+
+.transaction-error {
+  background-color: rgba(255, 71, 87, 0.1);
+}
+
+.transaction-link {
+  color: var(--orphi-cyber-blue);
+  text-decoration: none;
+  font-size: var(--orphi-text-sm);
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.transaction-link:hover {
+  text-decoration: underline;
+}
+
+.transaction-error-message {
+  font-size: var(--orphi-text-sm);
+  background-color: rgba(255, 71, 87, 0.1);
+  padding: 0.5rem 0.8rem;
+  border-radius: 4px;
+  margin-top: 0.5rem;
+}
+
+.retry-button {
+  padding: 0.6rem 1.2rem;
+  border-radius: 4px;
+  background-color: var(--orphi-royal-purple);
+  border: none;
+  color: var(--orphi-pure-white);
+  font-family: var(--orphi-font-primary);
+  font-size: var(--orphi-text-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 0.5rem;
+}
+
+.retry-button:hover {
+  background-color: #8a3fd0;
+}
+
+.reset-button {
+  padding: 0.6rem 1.2rem;
+  border-radius: 4px;
+  background-color: transparent;
+  border: 1px solid var(--orphi-silver-mist);
+  color: var(--orphi-silver-mist);
+  font-family: var(--orphi-font-primary);
+  font-size: var(--orphi-text-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 0.5rem;
+}
+
+.reset-button:hover {
+  background-color: rgba(184, 197, 209, 0.1);
+}
+
+/* ================================
+   NETWORK STATUS MONITOR STYLES
+   ================================ */
+.network-status-monitor {
+  font-family: var(--orphi-font-primary);
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: var(--orphi-deep-space);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  width: 320px;
+  position: fixed;
+  z-index: 1000;
+  transition: all 0.3s ease;
+}
+
+.network-status-monitor.bottom-right {
+  bottom: 1.5rem;
+  right: 1.5rem;
+}
+
+.network-status-monitor.bottom-left {
+  bottom: 1.5rem;
+  left: 1.5rem;
+}
+
+.network-status-monitor.top-right {
+  top: 1.5rem;
+  right: 1.5rem;
+}
+
+.network-status-monitor.top-left {
+  top: 1.5rem;
+  left: 1.5rem;
+}
+
+.status-header {
+  display: flex;
+  align-items: center;
+  padding: 0.8rem 1rem;
+  cursor: pointer;
+  background-color: rgba(0, 0, 0, 0.3);
+  gap: 0.8rem;
+}
+
+.status-icon {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-weight: bold;
+}
+
+.status-online .status-icon {
+  background-color: var(--orphi-success-green);
+  color: var(--orphi-deep-space);
+}
+
+.status-offline .status-icon,
+.status-provider-error .status-icon {
+  background-color: var(--orphi-alert-red);
+  color: var(--orphi-pure-white);
+}
+
+.status-reconnecting .status-icon,
+.status-syncing .status-icon {
+  background-color: var(--orphi-energy-orange);
+  color: var(--orphi-deep-space);
+  animation: spin 2s linear infinite;
+}
+
+.status-congested .status-icon {
+  background-color: var(--orphi-energy-orange);
+  color: var(--orphi-deep-space);
+}
+
+.status-text {
+  flex: 1;
+  font-weight: 600;
+  font-size: var(--orphi-text-sm);
+}
+
+.network-latency {
+  font-size: var(--orphi-text-xs);
+  padding: 0.3rem 0.5rem;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+  color: var(--orphi-cyber-blue);
+}
+
+.expand-button {
+  background: none;
+  border: none;
+  color: var(--orphi-silver-mist);
+  cursor: pointer;
+}
+
+.status-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 0.5rem;
+}
+
+.status-online .status-indicator {
+  background-color: var(--orphi-success-green);
+  box-shadow: 0 0 8px var(--orphi-success-green);
+  animation: pulse 2s infinite;
+}
+
+.status-offline .status-indicator,
+.status-provider-error .status-indicator {
+  background-color: var(--orphi-alert-red);
+}
+
+.status-reconnecting .status-indicator,
+.status-syncing .status-indicator,
+.status-congested .status-indicator {
+  background-color: var(--orphi-energy-orange);
+  animation: blink 1s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+@keyframes blink {
+  0% { opacity: 1; }
+  50% { opacity: 0.3; }
+  100% { opacity: 1; }
+}
+
+.status-details {
+  padding: 1rem;
+  background-color: rgba(0, 0, 0, 0.2);
+  font-size: var(--orphi-text-sm);
+}
+
+.status-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.8rem;
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid rgba(184, 197, 209, 0.1);
+}
+
+.status-label {
+  color: var(--orphi-silver-mist);
+  font-weight: 500;
+}
+
+.status-value {
+  font-weight: 600;
+}
+
+.status-value.online {
+  color: var(--orphi-success-green);
+}
+
+.status-value.offline {
+  color: var(--orphi-alert-red);
+}
+
+.pending-transactions,
+.recovered-transactions {
+  margin-top: 1rem;
+}
+
+.pending-transactions h4,
+.recovered-transactions h4 {
+  font-size: var(--orphi-text-sm);
+  margin-bottom: 0.8rem;
+  color: var(--orphi-cyber-blue);
+}
+
+.tx-item {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+  font-size: var(--orphi-text-xs);
+}
+
+.tx-hash {
+  flex: 1;
+  font-family: monospace;
+}
+
+.tx-status {
+  padding: 0.2rem 0.5rem;
+  border-radius: 12px;
+  font-size: var(--orphi-text-xs);
+  margin: 0 0.5rem;
+}
+
+.tx-item.pending .tx-status {
+  background-color: rgba(255, 107, 53, 0.2);
+  color: var(--orphi-energy-orange);
+}
+
+.tx-item.confirmed .tx-status {
+  background-color: rgba(0, 255, 136, 0.2);
+  color: var(--orphi-success-green);
+}
+
+.tx-item.failed .tx-status,
+.tx-item.error .tx-status {
+  background-color: rgba(255, 71, 87, 0.2);
+  color: var(--orphi-alert-red);
+}
+
+.tx-item.lost .tx-status {
+  background-color: rgba(184, 197, 209, 0.2);
+  color: var(--orphi-silver-mist);
+}
+
+.tx-link {
+  color: var(--orphi-cyber-blue);
+  text-decoration: none;
+  font-size: var(--orphi-text-xs);
+}
+
+.tx-link:hover {
+  text-decoration: underline;
+}
+
+.resubmit-button {
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  background-color: var(--orphi-royal-purple);
+  border: none;
+  color: var(--orphi-pure-white);
+  font-size: var(--orphi-text-xs);
+  cursor: pointer;
+  margin-right: 0.5rem;
+}
+
+.reconnect-button {
+  width: 100%;
+  padding: 0.7rem;
+  border-radius: 4px;
+  background-color: var(--orphi-royal-purple);
+  border: none;
+  color: var(--orphi-pure-white);
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 1rem;
+  transition: all 0.2s ease;
+}
+
+.reconnect-button:hover {
+  background-color: #8a3fd0;
+}
+
+.reconnect-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.close-button {
+  width: 100%;
+  padding: 0.7rem;
+  border-radius: 4px;
+  background-color: transparent;
+  border: 1px solid var(--orphi-silver-mist);
+  color: var(--orphi-silver-mist);
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.close-button:hover {
+  background-color: rgba(184, 197, 209, 0.1);
+}
+
+/* ================================
+   ABI MANAGER STYLES
+   ================================ */
+.abi-manager {
+  background-color: var(--orphi-deep-space);
+  border-radius: 8px;
+  padding: 1.5rem;
+  color: var(--orphi-pure-white);
+  font-family: var(--orphi-font-primary);
+  margin: 1rem 0;
+}
+
+.abi-manager-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.abi-manager-header h3 {
+  margin: 0;
+  font-size: var(--orphi-text-xl);
+  color: var(--orphi-cyber-blue);
+}
+
+.version-selector {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.version-selector label {
+  font-size: var(--orphi-text-sm);
+  color: var(--orphi-silver-mist);
+}
+
+.version-selector select {
+  padding: 0.5rem;
+  background-color: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(184, 197, 209, 0.3);
+  border-radius: 4px;
+  color: var(--orphi-pure-white);
+  font-family: var(--orphi-font-secondary);
+}
+
+.contract-features {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background-color: rgba(123, 44, 191, 0.1);
+  border-radius: 6px;
+  border-left: 3px solid var(--orphi-royal-purple);
+}
+
+.contract-features h4 {
+  margin-top: 0;
+  margin-bottom: 0.7rem;
+  font-size: var(--orphi-text-base);
+  color: var(--orphi-royal-purple);
+}
+
+.contract-features ul {
+  margin: 0;
+  padding-left: 1.5rem;
+}
+
+.contract-features li {
+  margin-bottom: 0.3rem;
+  font-size: var(--orphi-text-sm);
+}
+
+.contract-selector {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin-bottom: 1rem;
+}
+
+.contract-selector label {
+  font-size: var(--orphi-text-sm);
+  color: var(--orphi-silver-mist);
+}
+
+.contract-selector select {
+  flex: 1;
+  padding: 0.5rem;
+  background-color: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(184, 197, 209, 0.3);
+  border-radius: 4px;
+  color: var(--orphi-pure-white);
+  font-family: var(--orphi-font-secondary);
+}
+
+.toggle-abi-button,
+.copy-button {
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  background-color: var(--orphi-cyber-blue);
+  border: none;
+  color: var(--orphi-deep-space);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.toggle-abi-button:hover,
+.copy-button:hover {
+  background-color: #33DDFF;
+}
+
+.loading-indicator {
+  text-align: center;
+  padding: 1rem;
+  font-style: italic;
+  color: var(--orphi-silver-mist);
+}
+
+.abi-display {
+  margin-top: 1rem;
+}
+
+.abi-display h4 {
+  margin-top: 0;
+  font-size: var(--orphi-text-base);
+  color: var(--orphi-cyber-blue);
+}
+
+.abi-json {
+  background-color: rgba(0, 0, 0, 0.2);
+  padding: 1rem;
+  border-radius: 6px;
+  font-family: monospace;
+  font-size: var(--orphi-text-xs);
+  color: var(--orphi-silver-mist);
+  overflow: auto;
+  max-height: 300px;
+  margin-bottom: 1rem;
+  white-space: pre-wrap;
+}
+
+.abi-error {
+  padding: 0.8rem 1rem;
+  background-color: rgba(255, 71, 87, 0.1);
+  border-left: 3px solid var(--orphi-alert-red);
+  color: var(--orphi-alert-red);
+  margin-bottom: 1rem;
+  font-size: var(--orphi-text-sm);
+  border-radius: 4px;
+}
+
+.orphi-error-boundary {
+  background: var(--orphi-midnight-blue);
+  border: 2px solid var(--orphi-alert-red);
+  border-radius: var(--orphi-radius-lg);
+  padding: var(--orphi-spacing-lg);
+  margin: var(--orphi-spacing-md);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  color: var(--orphi-silver-mist);
+  text-align: center;
+  width: 100%;
+  max-width: 800px;
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.orphi-error-boundary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--orphi-alert-red);
+}
+
+.error-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding: var(--orphi-spacing-lg);
+}
+
+.error-icon {
+  font-size: 48px;
+  margin-bottom: var(--orphi-spacing-md);
+}
+
+.error-title {
+  font-family: var(--orphi-font-primary);
+  font-weight: 700;
+  font-size: var(--orphi-text-xl);
+  margin-bottom: var(--orphi-spacing-sm);
+  color: var(--orphi-cyber-blue);
+}
+
+.error-message {
+  font-family: var(--orphi-font-secondary);
+  font-size: var(--orphi-text-base);
+  margin-bottom: var(--orphi-spacing-lg);
+  max-width: 80%;
+}
+
+.error-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--orphi-spacing-md);
+}
+
+.error-details {
+  margin-top: var(--orphi-spacing-md);
+  text-align: left;
+  width: 100%;
+  max-width: 90%;
+}
+
+.error-details summary {
+  cursor: pointer;
+  color: var(--orphi-cyber-blue);
+  font-family: var(--orphi-font-secondary);
+  font-weight: 500;
+  margin-bottom: var(--orphi-spacing-sm);
+}
+
+.error-details pre {
+  background: var(--orphi-deep-space);
+  padding: var(--orphi-spacing-md);
+  border-radius: var(--orphi-radius-sm);
+  font-size: var(--orphi-text-xs);
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* ================================
+   FORM VALIDATION STYLES
+   ================================ */
+
+.orphi-form-group {
+  margin-bottom: var(--orphi-spacing-md);
+  position: relative;
+}
+
+.orphi-form-label {
+  display: block;
+  margin-bottom: var(--orphi-spacing-xs);
+  font-family: var(--orphi-font-primary);
+  font-weight: 600;
+  font-size: var(--orphi-text-sm);
+  color: var(--orphi-silver-mist);
+}
+
+.orphi-form-input {
+  width: 100%;
+  padding: var(--orphi-spacing-md);
+  background: var(--orphi-deep-space);
+  border: 2px solid var(--orphi-midnight-blue);
+  border-radius: var(--orphi-radius-md);
+  color: var(--orphi-pure-white);
+  font-family: var(--orphi-font-secondary);
+  font-size: var(--orphi-text-base);
+  transition: all var(--orphi-transition-normal);
+}
+
+.orphi-form-input:focus {
+  outline: none;
+  border-color: var(--orphi-cyber-blue);
+  box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.2);
+}
+
+.orphi-form-input.is-valid {
+  border-color: var(--orphi-success-green);
+}
+
+.orphi-form-input.is-invalid {
+  border-color: var(--orphi-alert-red);
+}
+
+.orphi-form-feedback {
+  position: absolute;
+  font-size: var(--orphi-text-xs);
+  margin-top: 4px;
+  font-family: var(--orphi-font-secondary);
+}
+
+.orphi-form-feedback.valid {
+  color: var(--orphi-success-green);
+}
+
+.orphi-form-feedback.invalid {
+  color: var(--orphi-alert-red);
+}
+
+/* ================================
+   LOADING STATE STYLES
+   ================================ */
+
+.orphi-loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(10, 10, 10, 0.7);
+  backdrop-filter: blur(4px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  border-radius: var(--orphi-radius-md);
+}
+
+.orphi-loading-spinner {
+  width: 60px;
+  height: 60px;
+  border: 4px solid var(--orphi-deep-space);
+  border-top: 4px solid var(--orphi-cyber-blue);
+  border-radius: 50%;
+  animation: orphi-spin 1.2s linear infinite;
+}
+
+.orphi-loading-text {
+  margin-top: var(--orphi-spacing-md);
+  font-family: var(--orphi-font-primary);
+  font-weight: 600;
+  color: var(--orphi-cyber-blue);
+  text-align: center;
+  font-size: var(--orphi-text-base);
+}
+
+@keyframes orphi-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* ================================
+   OFFLINE/CONNECTION STATE STYLES
+   ================================ */
+
+.orphi-connection-status {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: var(--orphi-spacing-md);
+  text-align: center;
+  font-family: var(--orphi-font-primary);
+  font-weight: 600;
+  z-index: 1100;
+  transition: transform 0.3s ease-in-out;
+}
+
+.orphi-connection-status.online {
+  background-color: var(--orphi-success-green);
+  color: var(--orphi-true-black);
+  transform: translateY(100%);
+}
+
+.orphi-connection-status.offline {
+  background-color: var(--orphi-alert-red);
+  color: var(--orphi-pure-white);
+  transform: translateY(0);
+}
+
+.orphi-connection-status.reconnecting {
+  background-color: var(--orphi-energy-orange);
+  color: var(--orphi-true-black);
+  transform: translateY(0);
+}
+
+/* ================================
+   RETRY MECHANISM STYLES
+   ================================ */
+
+.orphi-retry-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--orphi-spacing-md);
+  background: var(--orphi-deep-space);
+  border-radius: var(--orphi-radius-md);
+  margin: var(--orphi-spacing-md) 0;
+}
+
+.orphi-retry-message {
+  font-family: var(--orphi-font-secondary);
+  color: var(--orphi-silver-mist);
+  margin-bottom: var(--orphi-spacing-md);
+  text-align: center;
+}
+
+.orphi-retry-button {
+  background: var(--orphi-royal-purple);
+  color: var(--orphi-pure-white);
+  border: none;
+  border-radius: var(--orphi-radius-sm);
+  padding: var(--orphi-spacing-sm) var(--orphi-spacing-lg);
+  font-family: var(--orphi-font-primary);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.orphi-retry-button:hover {
+  background: var(--orphi-cyber-blue);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.orphi-retry-countdown {
+  font-size: var(--orphi-text-sm);
+  color: var(--orphi-cyber-blue);
+  margin-top: var(--orphi-spacing-sm);
+}
+
+/* ================================
+   LOADING/PROGRESS INDICATORS
+   ================================ */
+.global-loading-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(10, 10, 30, 0.7);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.global-loading-spinner {
+  background: linear-gradient(90deg, #00D4FF, #7B2CBF);
+  color: #fff;
+  padding: 1.5rem 2.5rem;
+  border-radius: 1rem;
+  font-size: 1.3rem;
+  font-weight: 700;
+  box-shadow: 0 4px 32px rgba(0, 212, 255, 0.15);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.export-loading-indicator, .tree-loading-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 0;
+  font-size: 1.1rem;
+  color: #00D4FF;
+  font-weight: 600;
+}
+.spinner {
+  margin-right: 0.5rem;
+  animation: spin 1.2s linear infinite;
+  display: inline-block;
+}
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* ================================
+   INPUT ERROR MESSAGES
+   ================================ */
+.input-error-message {
+  color: #F44336;
+  background: rgba(244, 67, 54, 0.08);
+  border: 1px solid #F44336;
+  border-radius: 4px;
+  padding: 4px 10px;
+  margin-top: 4px;
+  font-size: 0.95em;
+  font-weight: 500;
+}
+
+/* === PUSH NOTIFICATION STYLES === */
+.push-notification {
+  position: fixed;
+  bottom: 2.5rem;
+  right: 1.5rem;
+  z-index: 1200;
+  background: var(--orphi-cyber-blue);
+  color: var(--orphi-pure-white);
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 212, 255, 0.18);
+  font-family: var(--orphi-font-primary);
+  font-size: var(--orphi-text-base);
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  animation: push-fade-in 0.4s ease;
+}
+@keyframes push-fade-in {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (max-width: 600px) {
+  .push-notification {
+    right: 0.5rem;
+    left: 0.5rem;
+    bottom: 1.2rem;
+    padding: 0.7rem 1rem;
+    font-size: 0.98em;
+    border-radius: 6px;
+  }
+}

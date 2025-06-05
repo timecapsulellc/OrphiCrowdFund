@@ -25,6 +25,10 @@ const GenealogyTreeBundle = ({
   const treeRef = useRef();
   const minimapRef = useRef();
 
+  // Validation state for search and selector
+  const [searchError, setSearchError] = useState('');
+  const [selectorError, setSelectorError] = useState('');
+
   useEffect(() => {
     // If search results, auto-focus/zoom to the first found node
     if (treeSearchResults.length && treeRef.current) {
@@ -34,6 +38,29 @@ const GenealogyTreeBundle = ({
       addAlert(`Found user: ${treeSearchResults[0].user}`, 'info');
     }
   }, [treeSearchResults, addAlert]);
+
+  // Enhanced search handler with validation
+  const handleValidatedTreeSearch = (query) => {
+    if (query && query.length < 3) {
+      setSearchError('Enter at least 3 characters to search.');
+      handleTreeSearch('');
+      return;
+    }
+    setSearchError('');
+    handleTreeSearch(query);
+  };
+
+  // Enhanced selector validation
+  const handleUserSelect = (value) => {
+    if (!value) {
+      setSelectorError('Please select a user.');
+      setSelectedTreeUser('');
+      return;
+    }
+    setSelectorError('');
+    setSelectedTreeUser(value);
+    focusOnTreeUser(value);
+  };
 
   return (
     <div className="genealogy-section" role="region" aria-label="Network Genealogy Tree Visualization" aria-live="polite">
@@ -95,18 +122,15 @@ const GenealogyTreeBundle = ({
             type="text"
             placeholder="Search user ID or address"
             value={treeSearch}
-            onChange={e => handleTreeSearch(e.target.value)}
+            onChange={e => handleValidatedTreeSearch(e.target.value)}
             aria-label="Search user in tree"
           />
+          {searchError && <div className="input-error-message">{searchError}</div>}
           <select 
             value={selectedTreeUser}
-            onChange={(e) => {
-              setSelectedTreeUser(e.target.value);
-              focusOnTreeUser(e.target.value);
-            }}
+            onChange={e => handleUserSelect(e.target.value)}
             className="tree-user-selector"
             aria-label="Select user to focus on in tree"
-            tabIndex={0}
           >
             <option value="">Select User to Focus</option>
             {realtimeData.registrations.slice(0, 10).map(reg => (
@@ -115,6 +139,7 @@ const GenealogyTreeBundle = ({
               </option>
             ))}
           </select>
+          {selectorError && <div className="input-error-message">{selectorError}</div>}
           <button 
             className="tree-minimap-toggle"
             onClick={() => setTreeMinimapVisible(v => !v)}
@@ -127,7 +152,11 @@ const GenealogyTreeBundle = ({
       
       <div className="genealogy-container" style={{ height: '500px', width: '100%' }}>
         {loading ? (
-          <div className="tree-skeleton shimmer" aria-hidden="true"></div>
+          <div className="tree-skeleton shimmer" aria-hidden="true">
+            <div className="tree-loading-indicator">
+              <span className="spinner" role="status" aria-live="polite">⏳ Loading tree...</span>
+            </div>
+          </div>
         ) : (
           <>
             <Tree

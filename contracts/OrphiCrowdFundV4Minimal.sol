@@ -4,13 +4,20 @@ pragma solidity ^0.8.22;
 import "./OrphiCrowdFundV2.sol";
 import "@chainlink/contracts/src/v0.8/automation/interfaces/AutomationCompatibleInterface.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 
 /**
  * @title OrphiCrowdFundV4Minimal
  * @dev Ultra-minimal automation version - only GHP automation
  */
-contract OrphiCrowdFundV4Minimal is OrphiCrowdFundV2, AutomationCompatibleInterface {
+contract OrphiCrowdFundV4Minimal is OrphiCrowdFundV2, AutomationCompatibleInterface, AccessControlUpgradeable {
     using SafeERC20 for IERC20;
+    
+    bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
+    
+    // Core state variables
+    IERC20 public paymentToken;
+    address public adminReserve;
     
     // Automation constants
     uint256 public constant GHP_AUTOMATION_INTERVAL = 7 days;
@@ -30,7 +37,8 @@ contract OrphiCrowdFundV4Minimal is OrphiCrowdFundV2, AutomationCompatibleInterf
     /**
      * @dev Initialize V4 minimal features
      */
-    function initializeV4() external onlyRole(ADMIN_ROLE) {
+    function initializeV4() external {
+        require(hasRole(ADMIN_ROLE, msg.sender), "Caller is not an admin");
         require(!automationEnabled, "Already initialized");
         automationEnabled = true;
         lastAutomationCheck = block.timestamp;
@@ -123,17 +131,20 @@ contract OrphiCrowdFundV4Minimal is OrphiCrowdFundV2, AutomationCompatibleInterf
     }
     
     // Admin functions
-    function setAutomationEnabled(bool _enabled) external onlyRole(ADMIN_ROLE) {
+    function setAutomationEnabled(bool _enabled) external {
+        require(hasRole(ADMIN_ROLE, msg.sender), "Caller is not an admin");
         automationEnabled = _enabled;
         emit AutomationStatusChanged(_enabled, block.timestamp);
     }
     
-    function resetAutomationFailures() external onlyRole(ADMIN_ROLE) {
+    function resetAutomationFailures() external {
+        require(hasRole(ADMIN_ROLE, msg.sender), "Caller is not an admin");
         automationFailureCount = 0;
     }
     
     // Emergency function
-    function emergencyDistributeGHP() external onlyRole(ADMIN_ROLE) {
+    function emergencyDistributeGHP() external {
+        require(hasRole(ADMIN_ROLE, msg.sender), "Caller is not an admin");
         require(!automationEnabled, "Disable automation first");
         _distributeGlobalHelpPoolSimple();
     }

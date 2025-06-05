@@ -11,5 +11,10 @@ import "./OrphiCrowdFundV4.sol";
 
 // Stubbed DownlineVisualization to avoid compilation errors
 contract DownlineVisualization is OrphiCrowdFundV4 {
+    constructor(address _token, address _admin, address _matrixRoot) 
+        OrphiCrowdFundV4(_token, _admin, _matrixRoot) {
+        // Initialization for downline visualization
+    }
+    
     // Disabled stub to prevent errors in missing definitions
 }
