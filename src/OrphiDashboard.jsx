@@ -104,6 +104,10 @@ const OrphiDashboard = ({ contractAddress, provider, userAddress, demoMode = fal
   // --- Demo Mode State ---
   const [activeMetric, setActiveMetric] = useState('users');
 
+  // --- Transaction Status State ---
+  const [txStatus, setTxStatus] = useState({ status: '', message: '', hash: '' });
+  const [progress, setProgress] = useState(0);
+
   // --- Event Handlers ---
   const handleNewRegistration = useCallback((registration) => {
     setRealtimeData(prevState => ({
@@ -123,6 +127,22 @@ const OrphiDashboard = ({ contractAddress, provider, userAddress, demoMode = fal
     setRealtimeData(prevState => ({
       ...prevState,
       alerts: [alert, ...prevState.alerts]
+    }));
+  }, []);
+
+  const handleRewardsClaimed = useCallback((user, amount, timestamp, txHash) => {
+    setRealtimeData(prevState => ({
+      ...prevState,
+      alerts: [
+        {
+          id: txHash || Math.random().toString(36).substr(2, 9),
+          type: 'Reward Claimed',
+          severity: 'success',
+          message: `User ${user} claimed ${amount / 1e6} USDT`,
+          time: new Date(timestamp.toNumber() * 1000).toLocaleString()
+        },
+        ...prevState.alerts
+      ]
     }));
   }, []);
 
@@ -245,16 +265,22 @@ const OrphiDashboard = ({ contractAddress, provider, userAddress, demoMode = fal
       handleAlert({ id: alertId.toString(), type: alertType, severity, message, time: new Date(timestamp.toNumber() * 1000).toLocaleString() });
     };
     
+    const onRewardsClaimed = (user, amount, timestamp, event) => {
+      handleRewardsClaimed(user, amount, timestamp, event.transactionHash);
+    };
+    
     contract.on('NewRegistration', onNewRegistration);
     contract.on('NewWithdrawal', onNewWithdrawal);
     contract.on('Alert', onAlert);
+    contract.on('RewardsClaimed', onRewardsClaimed);
     
     return () => {
       contract.off('NewRegistration', onNewRegistration);
       contract.off('NewWithdrawal', onNewWithdrawal);
       contract.off('Alert', onAlert);
+      contract.off('RewardsClaimed', onRewardsClaimed);
     };
-  }, [contract, handleNewRegistration, handleNewWithdrawal, handleAlert]);
+  }, [contract, handleNewRegistration, handleNewWithdrawal, handleAlert, handleRewardsClaimed]);
 
   // --- Fetch Data ---
   useEffect(() => {
@@ -480,6 +506,23 @@ const OrphiDashboard = ({ contractAddress, provider, userAddress, demoMode = fal
         <p>Data refreshed automatically • Last update: just now</p>
         {demoMode && <p className="demo-mode">Demo Mode: Displaying simulated data</p>}
       </div>
+      
+      {/* Transaction Status Banner */}
+      {txStatus.status && (
+        <div className={`tx-status-banner ${txStatus.status}`}>
+          <span>{txStatus.message}</span>
+          {txStatus.hash && (
+            <a href={`https://testnet.bscscan.com/tx/${txStatus.hash}`} target="_blank" rel="noopener noreferrer">View on BscScan</a>
+          )}
+        </div>
+      )}
+      {/* Progress Bar for Complex Operations */}
+      {progress > 0 && progress < 100 && (
+        <div className="progress-bar-container">
+          <div className="progress-bar" style={{ width: `${progress}%` }}></div>
+          <span>{progress}%</span>
+        </div>
+      )}
       
       <style jsx>{`
         .orphi-dashboard {
@@ -733,6 +776,35 @@ const OrphiDashboard = ({ contractAddress, provider, userAddress, demoMode = fal
           margin-top: 0.5rem;
           color: var(--orphi-energy-orange);
           font-weight: 500;
+        }
+        
+        .tx-status-banner {
+          padding: 0.75rem 1.5rem;
+          margin-bottom: 1rem;
+          border-radius: 8px;
+          font-weight: 500;
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+        }
+        .tx-status-banner.pending { background: #fffbe6; color: #bfa700; }
+        .tx-status-banner.confirmed { background: #e6fff2; color: #009e5c; }
+        .tx-status-banner.failed { background: #ffe6e6; color: #d32f2f; }
+        .progress-bar-container {
+          width: 100%;
+          background: #f0f0f0;
+          border-radius: 8px;
+          margin-bottom: 1rem;
+          overflow: hidden;
+          position: relative;
+          height: 24px;
+          display: flex;
+          align-items: center;
+        }
+        .progress-bar {
+          background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+          height: 100%;
+          transition: width 0.3s;
         }
         
         @media (max-width: 768px) {

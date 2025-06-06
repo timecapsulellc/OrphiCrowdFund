@@ -9,6 +9,7 @@ import OrphiDashboard from './OrphiDashboard'
 import TeamAnalyticsDashboard from './TeamAnalyticsDashboard'
 import GenealogyTreeDemo from './GenealogyTreeDemo'
 import NetworkVisualization from './NetworkVisualization'
+import MatrixDashboard from './MatrixDashboard'
 
 function App() {
   const tabs = [
@@ -16,7 +17,8 @@ function App() {
     { id: 'dashboard', label: 'Orphi Dashboard' },
     { id: 'analytics', label: 'Team Analytics' },
     { id: 'genealogy', label: 'Genealogy Tree' },
-    { id: 'network', label: 'Network Visualization' }
+    { id: 'network', label: 'Network Visualization' },
+    { id: 'matrix', label: 'Matrix Dashboard' }
   ]
   const [activeTab, setActiveTab] = useState('logo')
 
@@ -65,6 +67,13 @@ function App() {
         <ErrorBoundary>
           <Suspense fallback={<LoadingFallback />}>
             <NetworkVisualization demoMode={true} />
+          </Suspense>
+        </ErrorBoundary>
+      )
+      case 'matrix': return (
+        <ErrorBoundary>
+          <Suspense fallback={<LoadingFallback />}>
+            <MatrixDashboard demoMode={true} />
           </Suspense>
         </ErrorBoundary>
       )

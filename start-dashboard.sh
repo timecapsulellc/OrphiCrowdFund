@@ -12,25 +12,28 @@ if [ ! -f "package.json" ]; then
     exit 1
 fi
 
-# Check if node_modules exists
+# Install dependencies if missing
 if [ ! -d "node_modules" ]; then
     echo "📦 Installing dependencies..."
-    npm install
+    npm install --legacy-peer-deps
 fi
 
 echo "🔧 Building the project..."
 npm run build
 
-echo "🌐 Starting development server on port 3000..."
+# Change into build output directory
+cd dist || { echo "❌ dist directory not found. Build may have failed."; exit 1; }
+
+echo "🌐 Starting static server on port 3000 serving dist..."
 echo "📱 Dashboard will open automatically in your browser"
 echo "🔗 Manual URL: http://localhost:3000"
 
-# Try multiple server options
+# Serve from dist directory
 if command -v python3 &> /dev/null; then
-    echo "Using Python 3 server..."
+    echo "Using Python 3 http.server..."
     python3 -m http.server 3000
 elif command -v python &> /dev/null; then
-    echo "Using Python 2 server..."
+    echo "Using Python 2 SimpleHTTPServer..."
     python -m SimpleHTTPServer 3000
 elif command -v npx &> /dev/null; then
     echo "Using npx serve..."

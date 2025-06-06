@@ -22,7 +22,7 @@ contract OrphiAccessControl is AccessControlEnumerable, Pausable {
 
     // ===== STATE VARIABLES =====
     mapping(bytes32 => uint256) public roleQuorums; // Role => required signatures
-    mapping(bytes32 => mapping(bytes32 => bool)) public pendingRoleGrants; // proposalId => granted
+    mapping(bytes32 => bool) public pendingRoleGrants; // proposalId => granted
     mapping(bytes32 => uint256) public proposalExpiry; // proposalId => expiry time
     mapping(address => uint256) public lastActivityTime;
     
@@ -171,7 +171,7 @@ contract OrphiAccessControl is AccessControlEnumerable, Pausable {
                lastActivityTime[_account] >= block.timestamp - MAX_INACTIVE_PERIOD;
     }
 
-    function getRoleMembers(bytes32 _role) external view returns (address[] memory) {
+    function getRoleMembers(bytes32 _role) public view override returns (address[] memory) {
         uint256 count = getRoleMemberCount(_role);
         address[] memory members = new address[](count);
         
@@ -283,7 +283,7 @@ contract OrphiAccessControl is AccessControlEnumerable, Pausable {
     function grantRole(
         bytes32 _role,
         address _account
-    ) public override onlyRole(getRoleAdmin(_role)) validRole(_role) {
+    ) public override(AccessControl, IAccessControl) onlyRole(getRoleAdmin(_role)) validRole(_role) {
         super.grantRole(_role, _account);
         _recordActivity(_account);
     }
@@ -291,7 +291,7 @@ contract OrphiAccessControl is AccessControlEnumerable, Pausable {
     function revokeRole(
         bytes32 _role,
         address _account
-    ) public override onlyRole(getRoleAdmin(_role)) validRole(_role) {
+    ) public override(AccessControl, IAccessControl) onlyRole(getRoleAdmin(_role)) validRole(_role) {
         super.revokeRole(_role, _account);
     }
 }

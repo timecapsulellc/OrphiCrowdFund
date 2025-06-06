@@ -125,6 +125,37 @@ function SimpleOrphiDashboard() {
     children: 0
   });
 
+  // Function to filter tree data by status
+  const filterTreeByStatus = (node, status) => {
+    if (!node) return null;
+
+    // If the current node matches the status, or status is 'all'
+    if (status === 'all' || node.attributes?.status === status) {
+      let filteredChildren = [];
+      if (node.children) {
+        filteredChildren = node.children
+          .map(child => filterTreeByStatus(child, status))
+          .filter(child => child !== null);
+      }
+      // Return a new node object to avoid mutating the original treeData
+      return { ...node, children: filteredChildren.length > 0 ? filteredChildren : undefined };
+    } else {
+      // If the current node doesn't match, but its children might
+      let filteredChildren = [];
+      if (node.children) {
+        filteredChildren = node.children
+          .map(child => filterTreeByStatus(child, status))
+          .filter(child => child !== null);
+      }
+      // If any children match, we need to include this node as a pathway,
+      // but only if it has matching children. Otherwise, filter it out.
+      if (filteredChildren.length > 0) {
+        return { ...node, children: filteredChildren };
+      }
+      return null; // This node and its subtree don't match
+    }
+  };
+
   // OrphiChain Binary Tree Data Structure
   const treeData = {
     name: 'YOU',
@@ -246,6 +277,56 @@ function SimpleOrphiDashboard() {
       }
     ]
   };
+
+  const calculateTreeMetrics = (node) => {
+    if (!node) { // Added a check for null or undefined node
+      return {
+        totalNodes: 0,
+        activeNodes: 0,
+        pendingNodes: 0,
+        maxDepth: 0,
+        totalVolume: 0,
+        avgEarnings: 0 // Added avgEarnings
+      };
+    }
+    let totalNodes = 1;
+    let activeNodes = node.attributes?.status === 'active' ? 1 : 0;
+    let pendingNodes = node.attributes?.status === 'pending' ? 1 : 0;
+    let maxDepth = 0;
+    let totalVolume = parseFloat(node.attributes?.package?.replace('$', '') || '0');
+
+    const traverse = (currentNode, depth) => {
+      maxDepth = Math.max(maxDepth, depth);
+      if (currentNode.children) {
+        currentNode.children.forEach(child => {
+          totalNodes++;
+          if (child.attributes?.status === 'active') activeNodes++;
+          if (child.attributes?.status === 'pending') pendingNodes++;
+          totalVolume += parseFloat(child.attributes?.package?.replace('$', '') || '0');
+          traverse(child, depth + 1);
+        });
+      }
+    };
+
+    traverse(node, 0);
+    const avgEarnings = totalNodes > 0 ? (totalVolume * 0.3 / totalNodes) : 0; // Calculate avgEarnings
+    return { totalNodes, activeNodes, pendingNodes, maxDepth, totalVolume, avgEarnings }; // Added avgEarnings
+  };
+
+  const getFilteredTreeData = () => {
+    let filteredData = treeData; // Use the main treeData
+    if (filterStatus !== 'all') {
+      filteredData = filterTreeByStatus(treeData, filterStatus);
+    }
+    // Ensure filteredData is not null before returning
+    return filteredData || { name: 'No Data', attributes: {}, children: [] };
+  };
+  
+  const currentMetrics = React.useMemo(() => {
+    const filteredData = getFilteredTreeData();
+    // Ensure calculateTreeMetrics is called with a valid node structure
+    return calculateTreeMetrics(filteredData);
+  }, [treeData, filterStatus, selectedPackage]); // Added selectedPackage to dependencies
 
   // Custom node rendering with enhanced features
   const renderCustomNodeElement = ({ nodeDatum, toggleNode }) => {
@@ -463,232 +544,6 @@ function SimpleOrphiDashboard() {
         'achieved milestone'
       ];
 
-  // Advanced Tree Helper Functions
-  const searchTreeNodes = (node, term) => {
-    if (!term) return [];
-    
-    let matches = [];
-    if (node.name.toLowerCase().includes(term.toLowerCase()) ||
-        node.attributes?.package?.toLowerCase().includes(term.toLowerCase()) ||
-        node.attributes?.status?.toLowerCase().includes(term.toLowerCase())) {
-      matches.push(node);
-    }
-    
-    if (node.children) {
-      node.children.forEach(child => {
-        matches = matches.concat(searchTreeNodes(child, term));
-      });
-    }
-    
-    return matches;
-  };
-
-  const filterTreeByStatus = (node, status) => {
-    if (status === 'all') return node;
-    
-    const filteredNode = { ...node };
-    
-    // Always include the root node and filter children recursively
-    if (node.children) {
-      filteredNode.children = node.children
-        .filter(child => child.attributes?.status === status || child.name === 'YOU')
-        .map(child => filterTreeByStatus(child, status));
-    }
-    
-    return filteredNode;
-  };
-
-  const calculateTreeMetrics = (node) => {
-    if (!node) {
-      return {
-        totalNodes: 0,
-        activeNodes: 0,
-        pendingNodes: 0,
-        totalVolume: 0,
-        maxDepth: 0,
-        avgEarnings: 0
-      };
-    }
-    
-    let metrics = {
-      totalNodes: 0,
-      activeNodes: 0,
-      pendingNodes: 0,
-      totalVolume: 0,
-      maxDepth: 0,
-      avgEarnings: 0
-    };
-    
-    const traverse = (currentNode, depth = 0) => {
-      metrics.totalNodes++;
-      metrics.maxDepth = Math.max(metrics.maxDepth, depth);
-      
-      if (currentNode.attributes?.status === 'active') {
-        metrics.activeNodes++;
-      } else if (currentNode.attributes?.status === 'pending') {
-        metrics.pendingNodes++;
-      }
-      
-      const packageValue = parseFloat(currentNode.attributes?.package?.replace('$', '') || '0');
-      metrics.totalVolume += packageValue;
-      
-      if (currentNode.children) {
-        currentNode.children.forEach(child => traverse(child, depth + 1));
-      }
-    };
-    
-    traverse(node);
-    metrics.avgEarnings = metrics.totalNodes > 0 ? (metrics.totalVolume * 0.3 / metrics.totalNodes) : 0;
-    return metrics;
-  };
-
-  const exportTreeData = (format) => {
-    const treeElement = document.querySelector('.rd3t-tree-container svg');
-    if (!treeElement) return;
-    
-    switch (format) {
-      case 'png':
-        // Convert SVG to PNG
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        const svgData = new XMLSerializer().serializeToString(treeElement);
-        const img = new Image();
-        const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
-        const url = URL.createObjectURL(svgBlob);
-        
-        img.onload = () => {
-          canvas.width = img.width;
-          canvas.height = img.height;
-          ctx.drawImage(img, 0, 0);
-          
-          const link = document.createElement('a');
-          link.download = 'orphichain-tree.png';
-          link.href = canvas.toDataURL('image/png');
-          link.click();
-          
-          URL.revokeObjectURL(url);
-        };
-        img.src = url;
-        break;
-        
-      case 'svg':
-        const svgString = new XMLSerializer().serializeToString(treeElement);
-        const svgBlob2 = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
-        const link2 = document.createElement('a');
-        link2.download = 'orphichain-tree.svg';
-        link2.href = URL.createObjectURL(svgBlob2);
-        link2.click();
-        break;
-        
-      case 'json':
-        const jsonData = JSON.stringify(treeData, null, 2);
-        const jsonBlob = new Blob([jsonData], { type: 'application/json' });
-        const link3 = document.createElement('a');
-        link3.download = 'orphichain-tree-data.json';
-        link3.href = URL.createObjectURL(jsonBlob);
-        link3.click();
-        break;
-    }
-  };
-
-  // Simple tree data for testing
-  const simpleTreeData = {
-    name: 'YOU',
-    attributes: {
-      package: '$100',
-      earnings: '$30',
-      level: 0,
-      status: 'active'
-    },
-    children: [
-      {
-        name: 'L1',
-        attributes: { package: '$100', earnings: '$30', level: 1, status: 'active' }
-      },
-      {
-        name: 'R1',
-        attributes: { package: '$50', earnings: '$15', level: 1, status: 'active' }
-      }
-    ]
-  };
-
-  // Get filtered tree data
-  const getFilteredTreeData = () => {
-    // Use simple tree for now to debug
-    const dataToUse = simpleTreeData;
-    
-    // Add debug logging
-    console.log('Using tree data:', dataToUse);
-    console.log('Filter status:', filterStatus);
-    console.log('Tree translate:', treeTranslate);
-    
-    return dataToUse;
-  };
-
-  // Calculate current tree metrics
-  const currentMetrics = React.useMemo(() => {
-    const filteredData = getFilteredTreeData();
-    return calculateTreeMetrics(filteredData);
-  }, [filterStatus]);
-
-  // Handle node right-click
-  const handleNodeRightClick = (nodeData, event) => {
-    event.preventDefault();
-    setContextMenu({
-      node: nodeData,
-      x: event.clientX,
-      y: event.clientY
-    });
-  };
-
-  // Handle keyboard shortcuts
-  React.useEffect(() => {
-    const handleKeyPress = (event) => {
-      if (event.ctrlKey || event.metaKey) {
-        switch (event.key) {
-          case 'f':
-            event.preventDefault();
-            document.querySelector('input[placeholder*="Search"]')?.focus();
-            break;
-          case 'e':
-            event.preventDefault();
-            exportTreeData('png');
-            break;
-          case 'r':
-            event.preventDefault();
-            setOrientation(orientation === 'vertical' ? 'horizontal' : 'vertical');
-            break;
-          case 'h':
-            event.preventDefault();
-            setShowStats(!showStats);
-            break;
-        }
-      }
-      if (event.key === 'Escape') {
-        setContextMenu(null);
-        setSelectedNode(null);
-        setSearchTerm('');
-        setHighlightedNodes(new Set());
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyPress);
-    return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [orientation, showStats]);
-
-  // Close context menu on outside click
-  React.useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (contextMenu && !event.target.closest('.context-menu')) {
-        setContextMenu(null);
-      }
-    };
-
-    if (contextMenu) {
-      document.addEventListener('click', handleClickOutside);
-      return () => document.removeEventListener('click', handleClickOutside);
-    }
-  }, [contextMenu]);
       const colors = ['#FF6B35', '#00D4FF', '#7B2CBF', '#00FF88'];
       
       const newActivity = {
@@ -1289,685 +1144,125 @@ function SimpleOrphiDashboard() {
               fontSize: '0.9rem',
               color: '#7B2CBF'
             }}>
-              🔍 Filter: {filterStatus}
+              🔄 Filter: {filterStatus.charAt(0).toUpperCase() + filterStatus.slice(1)}
             </div>
           )}
-          
-          {searchTerm && (
-            <div style={{
-              background: 'rgba(255, 215, 0, 0.1)',
-              border: '1px solid #FFD700',
-              borderRadius: '20px',
-              padding: '5px 15px',
-              fontSize: '0.9rem',
-              color: '#FFD700'
-            }}>
-              🔍 Search: "{searchTerm}" ({highlightedNodes.size} matches)
-            </div>
-          )}
-          
-          <div style={{
-            background: 'rgba(0, 255, 136, 0.1)',
-            border: '1px solid #00FF88',
-            borderRadius: '20px',
-            padding: '5px 15px',
-            fontSize: '0.9rem',
-            color: '#00FF88'
-          }}>
-            📈 Zoom: {(treeZoom * 100).toFixed(0)}%
-          </div>
         </div>
-
-        {/* Enhanced D3 Tree Visualization */}
+        
+        {/* Tree Component */}
         <div style={{
-          background: 'rgba(0, 0, 0, 0.3)',
-          borderRadius: '15px',
-          padding: '10px',
-          marginBottom: '20px',
-          border: '1px solid rgba(0, 212, 255, 0.3)',
-          height: '500px',
           width: '100%',
+          height: '500px',
           position: 'relative',
-          overflow: 'hidden'
+          overflow: 'hidden',
+          borderRadius: '12px',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+          background: 'rgba(255, 255, 255, 0.02)',
+          boxShadow: '0 4px 30px rgba(0, 0, 0, 0.1)'
         }}>
-          <div style={{
-            position: 'absolute',
-            top: '10px',
-            left: '20px',
-            zIndex: 10,
-            background: 'rgba(0, 212, 255, 0.1)',
-            padding: '8px 15px',
-            borderRadius: '20px',
-            border: '1px solid #00D4FF',
-            color: '#00D4FF',
-            fontSize: '0.9rem',
-            fontWeight: 'bold'
-          }}>
-            🌳 Interactive Binary Tree Network
-          </div>
-          
-          <div style={{
-            width: '100%',
-            height: '100%',
-            position: 'relative'
-          }}>
-            <Tree
-              data={getFilteredTreeData()}
-              orientation={orientation}
-              translate={treeTranslate}
-              pathFunc="diagonal"
-              nodeSize={{ x: 150, y: 100 }}
-              separation={{ siblings: 1.5, nonSiblings: 2 }}
-              zoom={treeZoom}
-              scaleExtent={{ min: 0.2, max: 3 }}
-              transitionDuration={500}
-              depthFactor={orientation === 'vertical' ? 120 : 200}
-              renderCustomNodeElement={renderCustomNodeElement}
-              collapsible={false}
-              initialDepth={3}
-              styles={{
-                links: {
-                  stroke: '#00D4FF',
-                  strokeWidth: 2,
-                  strokeOpacity: 0.8
+          <Tree
+            data={treeData}
+            orientation={orientation}
+            translate={treeTranslate}
+            zoom={treeZoom}
+            onNodeClick={handleNodeClick}
+            renderCustomNodeElement={renderCustomNodeElement}
+            pathFunc="diagonal"
+            styles={{
+              nodes: {
+                node: {
+                  stroke: 'none',
+                  strokeWidth: 0,
+                  fill: 'none'
+                },
+                leafNode: {
+                  stroke: 'none',
+                  strokeWidth: 0,
+                  fill: 'none'
                 }
-              }}
-            />
+              },
+              links: {
+                stroke: '#00D4FF',
+                strokeWidth: 2,
+                fill: 'none',
+                opacity: 0.8
+              }
+            }}
+          />
+        </div>
+      </div>
+      
+      {/* Context Menu for Node Actions */}
+      {contextMenu && (
+        <div style={{
+          position: 'absolute',
+          top: contextMenu.y,
+          left: contextMenu.x,
+          background: 'rgba(255, 255, 255, 0.1)',
+          borderRadius: '10px',
+          padding: '10px',
+          border: '1px solid rgba(255, 255, 255, 0.3)',
+          backdropFilter: 'blur(10px)',
+          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.2)',
+          zIndex: 1000
+        }}
+        onMouseLeave={() => setContextMenu(null)}
+        >
+          <div style={{ color: '#FFD700', fontSize: '0.9rem', marginBottom: '8px' }}>
+            ⚙️ Node Actions
           </div>
-          
-          {/* Right-Click Context Menu */}
-          {contextMenu && (
-            <div
-              className="context-menu"
-              style={{
-                position: 'fixed',
-                top: contextMenu.y,
-                left: contextMenu.x,
-                background: 'rgba(0, 0, 0, 0.95)',
-                border: '2px solid #00D4FF',
-                borderRadius: '10px',
-                padding: '10px',
-                zIndex: 1000,
-                boxShadow: '0 8px 25px rgba(0, 212, 255, 0.4)',
-                minWidth: '200px'
-              }}
-            >
-              <div style={{
-                color: '#00D4FF',
-                fontSize: '0.9rem',
-                fontWeight: 'bold',
-                marginBottom: '10px',
-                paddingBottom: '8px',
-                borderBottom: '1px solid rgba(0, 212, 255, 0.3)'
-              }}>
-                {contextMenu.node.name} Actions
-              </div>
-              
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
-                <button
-                  onClick={() => {
-                    navigator.clipboard.writeText(JSON.stringify(contextMenu.node, null, 2));
-                    setContextMenu(null);
-                    alert('Node data copied to clipboard!');
-                  }}
-                  style={{
-                    background: 'rgba(0, 255, 136, 0.2)',
-                    border: '1px solid #00FF88',
-                    borderRadius: '5px',
-                    color: 'white',
-                    padding: '8px 12px',
-                    cursor: 'pointer',
-                    fontSize: '0.8rem',
-                    textAlign: 'left'
-                  }}
-                >
-                  📋 Copy Node Data
-                </button>
-                
-                <button
-                  onClick={() => {
-                    setHighlightedNodes(new Set([contextMenu.node.name]));
-                    setContextMenu(null);
-                  }}
-                  style={{
-                    background: 'rgba(255, 215, 0, 0.2)',
-                    border: '1px solid #FFD700',
-                    borderRadius: '5px',
-                    color: 'white',
-                    padding: '8px 12px',
-                    cursor: 'pointer',
-                    fontSize: '0.8rem',
-                    textAlign: 'left'
-                  }}
-                >
-                  ⭐ Highlight Node
-                </button>
-                
-                <button
-                  onClick={() => {
-                    console.log('Viewing details for:', contextMenu.node);
-                    setSelectedNode(contextMenu.node);
-                    setContextMenu(null);
-                  }}
-                  style={{
-                    background: 'rgba(0, 212, 255, 0.2)',
-                    border: '1px solid #00D4FF',
-                    borderRadius: '5px',
-                    color: 'white',
-                    padding: '8px 12px',
-                    cursor: 'pointer',
-                    fontSize: '0.8rem',
-                    textAlign: 'left'
-                  }}
-                >
-                  👁️ View Details
-                </button>
-                
-                <button
-                  onClick={() => {
-                    const siblingNodes = [];
-                    const findSiblings = (node, targetName, parent = null) => {
-                      if (parent && parent.children) {
-                        parent.children.forEach(child => {
-                          if (child.name !== targetName) {
-                            siblingNodes.push(child.name);
-                          }
-                        });
-                      }
-                      if (node.children) {
-                        node.children.forEach(child => findSiblings(child, targetName, node));
-                      }
-                    };
-                    findSiblings(treeData, contextMenu.node.name);
-                    setHighlightedNodes(new Set(siblingNodes));
-                    setContextMenu(null);
-                  }}
-                  style={{
-                    background: 'rgba(123, 44, 191, 0.2)',
-                    border: '1px solid #7B2CBF',
-                    borderRadius: '5px',
-                    color: 'white',
-                    padding: '8px 12px',
-                    cursor: 'pointer',
-                    fontSize: '0.8rem',
-                    textAlign: 'left'
-                  }}
-                >
-                  👥 Show Siblings
-                </button>
-              </div>
-            </div>
-          )}
-          
-          {/* Node Information Tooltip */}
-          {selectedNode && (
-            <div style={{
-              position: 'absolute',
-              top: '20px',
-              right: '20px',
-              background: 'rgba(0, 0, 0, 0.9)',
-              border: '2px solid #00D4FF',
-              borderRadius: '10px',
-              padding: '15px',
-              color: 'white',
-              fontSize: '0.9rem',
-              maxWidth: '200px',
-              zIndex: 20,
-              boxShadow: '0 8px 25px rgba(0, 212, 255, 0.4)'
-            }}>
-              <h4 style={{ 
-                color: '#00D4FF', 
-                margin: '0 0 10px 0',
-                fontSize: '1rem'
-              }}>
-                {selectedNode.name === 'YOU' ? '👑 Your Position' : `📍 ${selectedNode.name}`}
-              </h4>
-              <div style={{ marginBottom: '8px' }}>
-                <strong>Package:</strong> {selectedNode.attributes?.package || 'N/A'}
-              </div>
-              <div style={{ marginBottom: '8px' }}>
-                <strong>Earnings:</strong> <span style={{ color: '#00FF88' }}>
-                  {selectedNode.attributes?.earnings || 'N/A'}
-                </span>
-              </div>
-              <div style={{ marginBottom: '8px' }}>
-                <strong>Level:</strong> {selectedNode.attributes?.level || 0}
-              </div>
-              <div>
-                <strong>Status:</strong> <span style={{ 
-                  color: selectedNode.attributes?.status === 'active' ? '#00FF88' : '#FF6B35'
-                }}>
-                  {selectedNode.attributes?.status || 'pending'}
-                </span>
-              </div>
-            </div>
-          )}
-          
-          {/* Tree Controls */}
-          <div style={{
-            position: 'absolute',
-            bottom: '15px',
-            right: '20px',
-            display: 'flex',
-            gap: '10px',
-            zIndex: 10
+          <div style={{ 
+            display: 'flex', 
+            flexDirection: 'column', 
+            gap: '8px' 
           }}>
             <button
-              onClick={() => setTreeZoom(Math.min(treeZoom + 0.2, 2))}
+              onClick={() => {
+                handleNodeEdit(selectedNode);
+                setContextMenu(null);
+              }}
               style={{
                 background: 'linear-gradient(45deg, #00FF88, #00D4FF)',
                 color: 'white',
                 border: 'none',
-                borderRadius: '50%',
-                width: '40px',
-                height: '40px',
-                cursor: 'pointer',
-                fontSize: '1.2rem',
-                fontWeight: 'bold',
-                boxShadow: '0 4px 12px rgba(0, 255, 136, 0.3)'
-              }}
-            >
-              +
-            </button>
-            
-            <button
-              onClick={() => setTreeZoom(Math.max(treeZoom - 0.2, 0.3))}
-              style={{
-                background: 'linear-gradient(45deg, #FF6B35, #7B2CBF)',
-                color: 'white',
-                border: 'none',
-                borderRadius: '50%',
-                width: '40px',
-                height: '40px',
-                cursor: 'pointer',
-                fontSize: '1.2rem',
-                fontWeight: 'bold',
-                boxShadow: '0 4px 12px rgba(255, 107, 53, 0.3)'
-              }}
-            >
-              -
-            </button>
-            
-            <button
-              onClick={() => setOrientation(orientation === 'vertical' ? 'horizontal' : 'vertical')}
-              style={{
-                background: 'linear-gradient(45deg, #00D4FF, #7B2CBF)',
-                color: 'white',
-                border: 'none',
-                borderRadius: '20px',
-                padding: '8px 15px',
+                borderRadius: '12px',
+                padding: '8px 12px',
                 cursor: 'pointer',
                 fontSize: '0.8rem',
-                fontWeight: 'bold',
-                boxShadow: '0 4px 12px rgba(0, 212, 255, 0.3)',
-                minWidth: '100px'
+                fontWeight: '500',
+                transition: 'background 0.3s ease'
               }}
+              title="Edit Node"
             >
-              {orientation === 'vertical' ? '↔️ Horizontal' : '↕️ Vertical'}
+              ✏️ Edit Node
+            </button>
+            
+            <button
+              onClick={() => {
+                handleNodeDelete(selectedNode);
+                setContextMenu(null);
+              }}
+              style={{
+                background: 'linear-gradient(45deg, #FF6B35, #FF3B30)',
+                color: 'white',
+                border: 'none',
+                borderRadius: '12px',
+                padding: '8px 12px',
+                cursor: 'pointer',
+                fontSize: '0.8rem',
+                fontWeight: '500',
+                transition: 'background 0.3s ease'
+              }}
+              title="Delete Node"
+            >
+              🗑️ Delete Node
             </button>
           </div>
         </div>
-        
-        <div style={{
-          display: 'flex',
-          justifyContent: 'center',
-          gap: '10px',
-          flexWrap: 'wrap',
-          marginTop: '20px'
-        }}>
-          <h3 style={{ 
-            width: '100%', 
-            textAlign: 'center', 
-            color: '#00D4FF', 
-            marginBottom: '15px',
-            fontSize: '1.2rem'
-          }}>
-            📦 Package Tiers
-          </h3>
-          {[
-            { amount: '$30', color: '#FF6B35', desc: 'Starter' },
-            { amount: '$50', color: '#00D4FF', desc: 'Basic' },
-            { amount: '$100', color: '#7B2CBF', desc: 'Premium' },
-            { amount: '$200', color: '#00FF88', desc: 'Elite' }
-          ].map(({ amount, color, desc }) => (
-            <div 
-              key={amount} 
-              onClick={() => setSelectedPackage(amount)}
-              style={{
-                background: selectedPackage === amount 
-                  ? `linear-gradient(45deg, ${color}, #00D4FF)` 
-                  : `rgba(${color === '#FF6B35' ? '255, 107, 53' : color === '#00D4FF' ? '0, 212, 255' : color === '#7B2CBF' ? '123, 44, 191' : '0, 255, 136'}, 0.2)`,
-                border: `2px solid ${selectedPackage === amount ? color : 'rgba(255,255,255,0.1)'}`,
-                color: 'white',
-                padding: '15px 20px',
-                borderRadius: '12px',
-                fontSize: '1rem',
-                fontWeight: '600',
-                cursor: 'pointer',
-                transition: 'all 0.3s ease',
-                textAlign: 'center',
-                minWidth: '100px',
-                transform: selectedPackage === amount ? 'scale(1.05)' : 'scale(1)',
-                boxShadow: selectedPackage === amount ? `0 8px 25px rgba(${color === '#FF6B35' ? '255, 107, 53' : color === '#00D4FF' ? '0, 212, 255' : color === '#7B2CBF' ? '123, 44, 191' : '0, 255, 136'}, 0.4)` : 'none'
-              }}
-            >
-              <div style={{ fontSize: '1.2rem', marginBottom: '5px' }}>{amount}</div>
-              <div style={{ fontSize: '0.8rem', opacity: 0.8 }}>{desc}</div>
-            </div>
-          ))}
-        </div>
-
-        {/* Enhanced Network Statistics Panel */}
-        <div style={{
-          marginTop: '20px',
-          background: 'rgba(255, 255, 255, 0.05)',
-          borderRadius: '15px',
-          padding: '20px',
-          border: '1px solid rgba(0, 212, 255, 0.2)'
-        }}>
-          <h3 style={{ 
-            color: '#00D4FF', 
-            textAlign: 'center', 
-            marginBottom: '20px',
-            fontSize: '1.2rem'
-          }}>
-            📊 Network Tree Analytics
-          </h3>
-          
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-            gap: '15px'
-          }}>
-            {/* Total Nodes */}
-            <div style={{
-              background: 'rgba(0, 212, 255, 0.1)',
-              borderRadius: '10px',
-              padding: '15px',
-              textAlign: 'center',
-              border: '1px solid #00D4FF'
-            }}>
-              <div style={{ color: '#00D4FF', fontSize: '0.9rem', marginBottom: '5px' }}>
-                🌟 Total Nodes
-              </div>
-              <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'white' }}>
-                12
-              </div>
-              <div style={{ fontSize: '0.7rem', color: '#B0B0B0' }}>
-                Active network positions
-              </div>
-            </div>
-
-            {/* Tree Depth */}
-            <div style={{
-              background: 'rgba(255, 107, 53, 0.1)',
-              borderRadius: '10px',
-              padding: '15px',
-              textAlign: 'center',
-              border: '1px solid #FF6B35'
-            }}>
-              <div style={{ color: '#FF6B35', fontSize: '0.9rem', marginBottom: '5px' }}>
-                📏 Max Depth
-              </div>
-              <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'white' }}>
-                3
-              </div>
-              <div style={{ fontSize: '0.7rem', color: '#B0B0B0' }}>
-                Genealogy levels
-              </div>
-            </div>
-
-            {/* Binary Balance */}
-            <div style={{
-              background: 'rgba(123, 44, 191, 0.1)',
-              borderRadius: '10px',
-              padding: '15px',
-              textAlign: 'center',
-              border: '1px solid #7B2CBF'
-            }}>
-              <div style={{ color: '#7B2CBF', fontSize: '0.9rem', marginBottom: '5px' }}>
-                ⚖️ Tree Balance
-              </div>
-              <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'white' }}>
-                L6:R5
-              </div>
-              <div style={{ fontSize: '0.7rem', color: '#B0B0B0' }}>
-                Left vs Right leg
-              </div>
-            </div>
-
-            {/* Total Volume */}
-            <div style={{
-              background: 'rgba(0, 255, 136, 0.1)',
-              borderRadius: '10px',
-              padding: '15px',
-              textAlign: 'center',
-              border: '1px solid #00FF88'
-            }}>
-              <div style={{ color: '#00FF88', fontSize: '0.9rem', marginBottom: '5px' }}>
-                💰 Tree Volume
-              </div>
-              <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'white' }}>
-                $1,240
-              </div>
-              <div style={{ fontSize: '0.7rem', color: '#B0B0B0' }}>
-                Combined package value
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Network Growth Progress */}
-        <div style={{
-          marginTop: '30px',
-          background: 'rgba(255, 255, 255, 0.05)',
-          borderRadius: '15px',
-          padding: '20px',
-          border: '1px solid rgba(0, 212, 255, 0.2)'
-        }}>
-          <h3 style={{ 
-            color: '#00D4FF', 
-            textAlign: 'center', 
-            marginBottom: '20px',
-            fontSize: '1.2rem'
-          }}>
-            📊 Network Growth Progress
-          </h3>
-          
-          <div style={{ marginBottom: '15px' }}>
-            <div style={{ 
-              display: 'flex', 
-              justifyContent: 'space-between', 
-              marginBottom: '5px',
-              color: '#B0B0B0',
-              fontSize: '0.9rem'
-            }}>
-              <span>Current: {animatedStats.users} users</span>
-              <span>Target: 2,000 users</span>
-            </div>
-            
-            <div style={{
-              background: 'rgba(255, 255, 255, 0.1)',
-              borderRadius: '10px',
-              height: '20px',
-              overflow: 'hidden'
-            }}>
-              <div style={{
-                background: 'linear-gradient(90deg, #00D4FF, #00FF88)',
-                height: '100%',
-                width: `${(animatedStats.users / 2000) * 100}%`,
-                borderRadius: '10px',
-                transition: 'width 2s ease-out',
-                boxShadow: '0 0 10px rgba(0, 212, 255, 0.5)'
-              }}></div>
-            </div>
-            
-            <div style={{ 
-              textAlign: 'center', 
-              marginTop: '10px',
-              color: '#00FF88',
-              fontSize: '0.9rem',
-              fontWeight: 'bold'
-            }}>
-              {((animatedStats.users / 2000) * 100).toFixed(1)}% Complete
-            </div>
-          </div>
-        </div>
-
-        {/* Enhanced Network Activity Feed */}
-        <div style={{
-          marginTop: '30px',
-          background: 'rgba(255, 255, 255, 0.05)',
-          borderRadius: '15px',
-          padding: '20px',
-          border: '1px solid rgba(0, 212, 255, 0.2)'
-        }}>
-          <h3 style={{ 
-            color: '#00D4FF', 
-            textAlign: 'center', 
-            marginBottom: '20px',
-            fontSize: '1.2rem'
-          }}>
-            🔥 Live Network Activity
-          </h3>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            {networkActivity.map((activity, index) => (
-              <div 
-                key={index}
-                style={{
-                  background: 'rgba(255, 255, 255, 0.03)',
-                  borderRadius: '8px',
-                  padding: '12px',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  border: `1px solid ${activity.color}20`,
-                  transition: 'all 0.3s ease'
-                }}
-                onMouseEnter={(e) => {
-                  e.target.style.background = `${activity.color}15`;
-                  e.target.style.transform = 'translateX(5px)';
-                }}
-                onMouseLeave={(e) => {
-                  e.target.style.background = 'rgba(255, 255, 255, 0.03)';
-                  e.target.style.transform = 'translateX(0)';
-                }}
-              >
-                <div>
-                  <span style={{ color: activity.color, fontWeight: 'bold' }}>{activity.user}</span>
-                  <span style={{ color: '#B0B0B0', marginLeft: '8px' }}>{activity.action}</span>
-                </div>
-                <span style={{ color: '#888', fontSize: '0.8rem' }}>{activity.time}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Enhanced Earnings Calculator */}
-        <div style={{
-          marginTop: '30px',
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-          gap: '20px'
-        }}>
-          {/* Personal Earnings */}
-          <div style={{
-            background: 'linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(123, 44, 191, 0.1))',
-            borderRadius: '15px',
-            padding: '20px',
-            border: '1px solid rgba(0, 212, 255, 0.3)',
-            textAlign: 'center'
-          }}>
-            <h4 style={{ color: '#00D4FF', marginBottom: '15px' }}>💰 Your Earnings</h4>
-            <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#00FF88', marginBottom: '10px' }}>
-              ${(parseFloat(selectedPackage.replace('$', '')) * 0.3).toFixed(0)}
-            </div>
-            <p style={{ color: '#B0B0B0', fontSize: '0.9rem' }}>
-              Direct commission from {selectedPackage} package
-            </p>
-            <div style={{ 
-              background: 'rgba(0, 255, 136, 0.1)', 
-              borderRadius: '8px', 
-              padding: '10px', 
-              marginTop: '10px' 
-            }}>
-              <small style={{ color: '#00FF88' }}>
-                Total Lifetime: ${(animatedStats.volume * 0.15).toFixed(0)}
-              </small>
-            </div>
-          </div>
-
-          {/* Network Growth */}
-          <div style={{
-            background: 'linear-gradient(135deg, rgba(255, 107, 53, 0.1), rgba(0, 255, 136, 0.1))',
-            borderRadius: '15px',
-            padding: '20px',
-            border: '1px solid rgba(255, 107, 53, 0.3)',
-            textAlign: 'center'
-          }}>
-            <h4 style={{ color: '#FF6B35', marginBottom: '15px' }}>📈 Network Growth</h4>
-            <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#FF6B35', marginBottom: '10px' }}>
-              +{Math.floor(animatedStats.users * 0.1)}%
-            </div>
-            <p style={{ color: '#B0B0B0', fontSize: '0.9rem' }}>
-              Growth this month
-            </p>
-            <div style={{ 
-              background: 'rgba(255, 107, 53, 0.1)', 
-              borderRadius: '8px', 
-              padding: '10px', 
-              marginTop: '10px' 
-            }}>
-              <small style={{ color: '#FF6B35' }}>
-                Next milestone: {animatedStats.users + 253} users
-              </small>
-            </div>
-          </div>
-        </div>
-
-      </div>
-
-      <div style={{
-        marginTop: '30px',
-        textAlign: 'center',
-        color: '#B0B0B0',
-        background: 'rgba(0, 212, 255, 0.05)',
-        padding: '15px',
-        borderRadius: '10px',
-        border: '1px solid rgba(0, 212, 255, 0.2)'
-      }}>
-        <div style={{ fontSize: '1.1rem', marginBottom: '5px' }}>
-          ✅ <span style={{ color: '#00FF88' }}>React Enhanced Dashboard Active</span> ✅
-        </div>
-        <div style={{ fontSize: '0.9rem' }}>
-          🚀 OrphiChain Binary Tree Network | Selected Package: <span style={{ color: '#00D4FF', fontWeight: 'bold' }}>{selectedPackage}</span>
-        </div>
-      </div>
+      )}
     </div>
   );
 }
 
-// Check if the root element exists
-const rootElement = document.getElementById('root');
-if (!rootElement) {
-  console.error('Root element not found! Creating one...');
-  const newRoot = document.createElement('div');
-  newRoot.id = 'root';
-  document.body.appendChild(newRoot);
-  console.log('Created #root element.');
-} else {
-  console.log('#root element found.');
-}
-
-console.log('About to render OrphiDashboard...');
-
-try {
-  ReactDOM.createRoot(document.getElementById('root')).render(
-    <React.StrictMode>
-      <SimpleOrphiDashboard />
-    </React.StrictMode>,
-  );
-  console.log('OrphiDashboard rendered successfully!');
-} catch (error) {
-  console.error('Error rendering OrphiDashboard:', error);
-}
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<SimpleOrphiDashboard />);

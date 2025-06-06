@@ -383,4 +383,188 @@ describe("OrphiCrowdFundV4UltraSecure - Security Enhanced Tests", function () {
         .to.emit(v4UltraSecure, "UserRegistered");
     });
   });
+
+  describe("🚦 Enhanced Stress Test: Realistic Withdrawal Scenarios", function () {
+    it("should handle realistic earning and withdrawal scenarios under load", async function () {
+      this.timeout(0); // Disable timeout for stress test
+      
+      // Use available users (hardhat provides 20 accounts by default)
+      const availableUsers = users.length;
+      const NUM_USERS = Math.min(availableUsers, 15); // Reduced for realistic sponsor relationships
+      const testUsers = users.slice(0, NUM_USERS);
+      
+      console.log(`🧪 Starting enhanced stress test with ${NUM_USERS} users...`);
+      console.log(`📊 Phase 1: Setting up sponsor hierarchy and generating earnings...`);
+      
+      // Phase 1: Create sponsor hierarchy to generate earnings
+      for (let i = 0; i < NUM_USERS; i++) {
+        const user = testUsers[i];
+        await mockUSDT.mint(user.address, ethers.parseUnits("2000", 6));
+        await mockUSDT.connect(user).approve(await v4UltraSecure.getAddress(), ethers.parseUnits("2000", 6));
+        await v4UltraSecure.connect(admin).setKYCStatus(user.address, true);
+        
+        // Create sponsor relationships to generate earnings
+        let sponsor = ethers.ZeroAddress;
+        if (i > 0) {
+          // Each user sponsors the next one to create earning opportunities
+          sponsor = testUsers[Math.floor(i / 3)].address; // Group sponsors to maximize earnings
+        }
+        
+        await v4UltraSecure.connect(user).register(sponsor, 2); // Use tier 2 (200 USDT) for higher commissions
+        
+        if (i % 5 === 0) console.log(`✓ Registered ${i + 1}/${NUM_USERS} users with sponsor relationships...`);
+      }
+
+      console.log(`📊 Phase 2: Generating additional earnings through secondary registrations...`);
+      
+      // Phase 2: Create secondary registrations to generate more sponsor commissions
+      // This simulates users with existing withdrawable amounts
+      for (let i = 0; i < Math.min(NUM_USERS, 10); i++) {
+        const sponsorIndex = i % 5; // Rotate among first 5 users as sponsors
+        const sponsor = testUsers[sponsorIndex];
+        
+        // Create additional "virtual" earnings by having multiple registrations under key sponsors
+        for (let j = 0; j < 2; j++) {
+          const newUserIndex = NUM_USERS + (i * 2) + j;
+          if (newUserIndex < users.length) {
+            const newUser = users[newUserIndex];
+            await mockUSDT.mint(newUser.address, ethers.parseUnits("500", 6));
+            await mockUSDT.connect(newUser).approve(await v4UltraSecure.getAddress(), ethers.parseUnits("500", 6));
+            await v4UltraSecure.connect(admin).setKYCStatus(newUser.address, true);
+            await v4UltraSecure.connect(newUser).register(sponsor.address, 1); // Tier 1 to create sponsor commissions
+          }
+        }
+      }
+
+      console.log(`📊 Phase 3: Checking withdrawable amounts and performing stress test...`);
+
+      // Phase 3: Check which users have withdrawable amounts and attempt withdrawals
+      let usersWithEarnings = 0;
+      let totalWithdrawableAmount = ethers.parseUnits("0", 6);
+      const withdrawableUsers = [];
+
+      for (let i = 0; i < NUM_USERS; i++) {
+        const user = testUsers[i];
+        const userInfo = await v4UltraSecure.getUserInfo(user.address);
+        
+        if (userInfo.withdrawable > 0) {
+          usersWithEarnings++;
+          totalWithdrawableAmount = totalWithdrawableAmount + userInfo.withdrawable;
+          withdrawableUsers.push({ user, amount: userInfo.withdrawable });
+          console.log(`💰 User ${i}: ${ethers.formatUnits(userInfo.withdrawable, 6)} USDT withdrawable`);
+        }
+      }
+
+      console.log(`\n📈 Earnings Summary:`);
+      console.log(`   • Users with withdrawable amounts: ${usersWithEarnings}/${NUM_USERS}`);
+      console.log(`   • Total withdrawable amount: ${ethers.formatUnits(totalWithdrawableAmount, 6)} USDT`);
+
+      // Phase 4: Stress test withdrawals for users with earnings
+      console.log(`\n🔥 Phase 4: Stress testing withdrawals for users with earnings...`);
+      
+      let successfulWithdrawals = 0;
+      let failedWithdrawals = 0;
+      let totalWithdrawn = ethers.parseUnits("0", 6);
+
+      for (let i = 0; i < withdrawableUsers.length; i++) {
+        const { user, amount } = withdrawableUsers[i];
+        try {
+          const tx = await v4UltraSecure.connect(user).withdraw();
+          await tx.wait();
+          successfulWithdrawals++;
+          totalWithdrawn = totalWithdrawn + amount;
+          
+          if (i % 3 === 0) {
+            console.log(`✅ Processed ${i + 1}/${withdrawableUsers.length} withdrawals...`);
+          }
+        } catch (e) {
+          failedWithdrawals++;
+          console.log(`❌ Withdrawal failed for user ${i}: ${e.message.slice(0, 100)}...`);
+        }
+      }
+
+      // Phase 5: Test system resilience with rapid sequential withdrawals
+      console.log(`\n⚡ Phase 5: Testing rapid sequential withdrawals (system resilience)...`);
+      
+      // Create a few more sponsored registrations to generate fresh earnings
+      for (let i = 0; i < 3; i++) {
+        if (NUM_USERS + 20 + i < users.length) {
+          const rapidUser = users[NUM_USERS + 20 + i];
+          await mockUSDT.mint(rapidUser.address, ethers.parseUnits("300", 6));
+          await mockUSDT.connect(rapidUser).approve(await v4UltraSecure.getAddress(), ethers.parseUnits("300", 6));
+          await v4UltraSecure.connect(admin).setKYCStatus(rapidUser.address, true);
+          await v4UltraSecure.connect(rapidUser).register(testUsers[0].address, 1); // All sponsor under first user
+        }
+      }
+
+      // Try withdrawal on first user who should now have additional earnings
+      try {
+        const firstUserInfo = await v4UltraSecure.getUserInfo(testUsers[0].address);
+        if (firstUserInfo.withdrawable > 0) {
+          await v4UltraSecure.connect(testUsers[0]).withdraw();
+          successfulWithdrawals++;
+          console.log(`✅ Rapid withdrawal test successful`);
+        } else {
+          console.log(`ℹ️  First user has no additional withdrawable amount for rapid test`);
+        }
+      } catch (e) {
+        console.log(`❌ Rapid withdrawal test failed: ${e.message.slice(0, 100)}...`);
+        failedWithdrawals++;
+      }
+
+      // Final Results
+      console.log(`\n🎯 STRESS TEST RESULTS:`);
+      console.log(`   • Total users tested: ${NUM_USERS}`);
+      console.log(`   • Users with earnings: ${usersWithEarnings}`);
+      console.log(`   • Successful withdrawals: ${successfulWithdrawals}`);
+      console.log(`   • Failed withdrawals: ${failedWithdrawals}`);
+      console.log(`   • Total amount withdrawn: ${ethers.formatUnits(totalWithdrawn, 6)} USDT`);
+      console.log(`   • System performance: ${((successfulWithdrawals / (successfulWithdrawals + failedWithdrawals)) * 100).toFixed(1)}%`);
+
+      // Test expectations - should have at least some successful withdrawals from sponsored registrations
+      expect(usersWithEarnings).to.be.greaterThan(0, "No users had withdrawable earnings - sponsor commission system may be broken");
+      expect(successfulWithdrawals).to.be.greaterThan(0, "No successful withdrawals - withdrawal system may be broken");
+      
+      // Allow some failures but expect majority success
+      const successRate = successfulWithdrawals / (successfulWithdrawals + failedWithdrawals);
+      expect(successRate).to.be.greaterThan(0.8, "Success rate below 80% - system may have performance issues");
+    });
+
+    it("should handle edge case: rapid consecutive withdrawals", async function () {
+      this.timeout(30000);
+      
+      console.log(`🔄 Testing rapid consecutive withdrawal attempts...`);
+      
+      // Setup a user with earnings
+      const testUser = users[0];
+      await mockUSDT.mint(testUser.address, ethers.parseUnits("1000", 6));
+      await mockUSDT.connect(testUser).approve(await v4UltraSecure.getAddress(), ethers.parseUnits("1000", 6));
+      await v4UltraSecure.connect(admin).setKYCStatus(testUser.address, true);
+      await v4UltraSecure.connect(testUser).register(ethers.ZeroAddress, 2);
+      
+      // Create earnings through sponsored registrations
+      for (let i = 1; i <= 3; i++) {
+        const sponsor = users[i];
+        await mockUSDT.mint(sponsor.address, ethers.parseUnits("300", 6));
+        await mockUSDT.connect(sponsor).approve(await v4UltraSecure.getAddress(), ethers.parseUnits("300", 6));
+        await v4UltraSecure.connect(admin).setKYCStatus(sponsor.address, true);
+        await v4UltraSecure.connect(sponsor).register(testUser.address, 1);
+      }
+      
+      const userInfo = await v4UltraSecure.getUserInfo(testUser.address);
+      console.log(`💰 Test user has ${ethers.formatUnits(userInfo.withdrawable, 6)} USDT withdrawable`);
+      
+      if (userInfo.withdrawable > 0) {
+        // First withdrawal should succeed
+        await expect(v4UltraSecure.connect(testUser).withdraw()).to.not.be.reverted;
+        console.log(`✅ First withdrawal successful`);
+        
+        // Second immediate withdrawal should fail (no remaining balance or rate limiting)
+        await expect(v4UltraSecure.connect(testUser).withdraw()).to.be.reverted;
+        console.log(`✅ Second immediate withdrawal correctly rejected`);
+      } else {
+        console.log(`⚠️  User has no withdrawable amount - skipping rapid withdrawal test`);
+      }
+    });
+  });
 });

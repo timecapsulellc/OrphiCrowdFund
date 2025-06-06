@@ -1,7 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.22;
-import "./MockInterfaces.sol";
-// import "./MockUSDT.sol"; // Removed to avoid conflicts
+
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/Pausable.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "@chainlink/contracts/src/v0.8/automation/interfaces/AutomationCompatibleInterface.sol";
 
 /**
  * @title OrphiCrowdFundV4UltraSecure
@@ -31,6 +35,7 @@ contract OrphiCrowdFundV4UltraSecure is Ownable, ReentrancyGuard, Pausable, Auto
     // ===== IMMUTABLE STATE =====
     IERC20 public immutable token;
     address public immutable admin;
+    address public immutable trezorAdmin;
     
     // ===== ENHANCED PACKED STATE =====
     struct GlobalState {
@@ -81,6 +86,18 @@ contract OrphiCrowdFundV4UltraSecure is Ownable, ReentrancyGuard, Pausable, Auto
     // Package amounts (5 tiers) - with overflow checks
     uint64[5] public packages = [100e6, 200e6, 500e6, 1000e6, 2000e6];
 
+    // ===== CLUB POOL SYSTEM =====
+    struct ClubPool {
+        uint64 balance;
+        uint32 lastDistributionTime;
+        uint32 distributionInterval;
+        uint16 memberCount;
+        bool active;
+    }
+    
+    ClubPool public clubPool;
+    mapping(address => bool) public clubMembers;
+
     // ===== SECURITY MAPPINGS =====
     mapping(address => uint256) public lastWithdrawalTime;
     mapping(address => uint256) public dailyWithdrawalAmount;
@@ -124,9 +141,9 @@ contract OrphiCrowdFundV4UltraSecure is Ownable, ReentrancyGuard, Pausable, Auto
     error RateLimitExceeded();
 
     // ===== CONSTRUCTOR =====
-    constructor(address _token, address _admin) Ownable(msg.sender) {
+    constructor(address _token, address _trezorAdmin) Ownable(msg.sender) {
         token = IERC20(_token);
-        admin = _admin;
+        trezorAdmin = _trezorAdmin;
         
         // Initialize root user with security features
         users[address(0)] = User({
@@ -152,46 +169,32 @@ contract OrphiCrowdFundV4UltraSecure is Ownable, ReentrancyGuard, Pausable, Auto
     }
 
     // ===== ENHANCED REGISTRATION =====
-    function register(address sponsor, uint16 tier) external nonReentrant whenNotPaused onlyKYCVerified {
+    function _registerInternal(address sponsor, uint16 tier) internal {
         if (state.systemLocked) revert SystemLockedError();
         if (state.totalUsers >= MAX_USERS) revert MaxUsersReached();
         if (block.timestamp < registrationCooldown[msg.sender]) revert RateLimitExceeded();
-        
         require(tier > 0 && tier <= 5, "Invalid tier");
         require(users[msg.sender].id == 0, "Already registered");
         require(users[sponsor].id > 0 || sponsor == address(0), "Invalid sponsor");
-        
-        // Rate limiting
         registrationCooldown[msg.sender] = block.timestamp + REGISTRATION_COOLDOWN;
-        
         uint256 amount = packages[tier - 1];
-        
-        // Overflow protection
         if (state.totalVolume + amount < state.totalVolume) revert OverflowDetected();
-        
         token.safeTransferFrom(msg.sender, address(this), amount);
-        
-        // Create user with enhanced security
         uint32 newId = ++state.lastUserId;
         _createUserSecure(msg.sender, users[sponsor].id, tier, newId);
-        
-        // Enhanced matrix placement with overflow protection
         uint32 matrixPos = _findSecureMatrixPosition();
         users[msg.sender].matrixPos = matrixPos;
-        
-        // Update matrix relationships securely
         _updateMatrixSecure(msg.sender, matrixPos);
-        
-        // Update sponsor team with validation
         if (sponsor != address(0)) {
             _updateSponsorTeamSecure(sponsor);
         }
-        
-        // Enhanced fund distribution with leftover handling
         _distributeFundsSecure(sponsor, amount);
-        
         emit UserRegistered(msg.sender, newId, sponsor, tier);
         emit MatrixPlacement(msg.sender, newId, matrixPos, userAddress[matrixParent[newId]]);
+    }
+
+    function register(address sponsor, uint16 tier) external virtual nonReentrant whenNotPaused onlyKYCVerified {
+        _registerInternal(sponsor, tier);
     }
 
     // ===== ENHANCED INTERNAL FUNCTIONS =====
@@ -436,14 +439,47 @@ contract OrphiCrowdFundV4UltraSecure is Ownable, ReentrancyGuard, Pausable, Auto
         _;
     }
     
-    function setKYCStatus(address user, bool status) external onlyOwner {
+    // ===== ADMIN FUNCTIONS (HARDWARE WALLET ONLY) =====
+    modifier onlyTrezorAdmin() {
+        require(msg.sender == trezorAdmin, "Only Trezor admin allowed");
+        _;
+    }
+    
+    function suspendUser(address user, uint8 level) external onlyTrezorAdmin {
+        require(level <= 2, "Invalid suspension level");
+        users[user].suspensionLevel = level;
+        emit SecurityViolation(user, level == 1 ? "Warning issued" : "Account suspended", block.timestamp);
+    }
+
+    function setWithdrawalLimit(uint256 limit) external onlyTrezorAdmin {
+        require(limit >= 1000e6, "Minimum 1000 USDT"); // Minimum limit
+        withdrawalLimit = limit;
+        emit WithdrawalLimitUpdated(limit, block.timestamp);
+    }
+
+    function enableAutomation(bool enabled) external onlyTrezorAdmin {
+        autoConfig.enabled = enabled;
+        state.automationOn = enabled;
+        emit AutomationEnabled(enabled, block.timestamp);
+    }
+
+    /**
+     * @dev Update automation gas limit and batch size
+     */
+    function updateAutomationConfig(uint256 gasLimit, uint32 maxUsers) external onlyTrezorAdmin {
+        autoConfig.gasLimitConfig = gasLimit;
+        autoConfig.maxUsersPerDistribution = maxUsers;
+        emit AutomationConfigUpdated(gasLimit, maxUsers, block.timestamp);
+    }
+
+    function setKYCStatus(address user, bool status) external onlyTrezorAdmin {
         kycVerified[user] = status;
         users[user].isKYCVerified = status;
         kycTimestamp[user] = block.timestamp;
         emit KYCVerified(user, block.timestamp);
     }
     
-    function setBatchKYCStatus(address[] calldata userList, bool status) external onlyOwner {
+    function setBatchKYCStatus(address[] calldata userList, bool status) external onlyTrezorAdmin {
         for(uint i = 0; i < userList.length; i++) {
             kycVerified[userList[i]] = status;
             users[userList[i]].isKYCVerified = status;
@@ -455,7 +491,7 @@ contract OrphiCrowdFundV4UltraSecure is Ownable, ReentrancyGuard, Pausable, Auto
     /**
      * @dev Enable or disable KYC requirement
      */
-    function setKYCRequirement(bool required) external onlyOwner {
+    function setKYCRequirement(bool required) external onlyTrezorAdmin {
         kycRequired = required;
         emit KYCRequirementUpdated(required, block.timestamp);
     }
@@ -464,48 +500,42 @@ contract OrphiCrowdFundV4UltraSecure is Ownable, ReentrancyGuard, Pausable, Auto
     uint256 public withdrawalLimit = 10000e6; // 10,000 USDT daily limit
     uint256 public constant MAX_WITHDRAWAL_PER_TX = 5000e6; // 5,000 USDT per transaction
     
-    function withdraw() external nonReentrant onlyKYCVerified {
+    function _withdrawInternal() internal {
         if (state.systemLocked) revert SystemLockedError();
         require(!emergencyMode, "Use emergencyWithdraw in emergency mode");
         require(users[msg.sender].suspensionLevel == 0, "Account suspended");
-        
-        // Reset daily limit if needed
         if (block.timestamp >= lastDailyReset[msg.sender] + 1 days) {
             dailyWithdrawalAmount[msg.sender] = 0;
             lastDailyReset[msg.sender] = block.timestamp;
         }
-        
         uint256 amount = users[msg.sender].withdrawable;
         require(amount > 0, "No withdrawable amount");
         require(amount <= MAX_WITHDRAWAL_PER_TX, "Amount exceeds per-transaction limit");
-        
-        // Check daily limit
         require(dailyWithdrawalAmount[msg.sender] + amount <= withdrawalLimit, "Daily withdrawal limit exceeded");
-        
-        // Rate limiting - minimum 1 hour between withdrawals
         require(block.timestamp >= lastWithdrawalTime[msg.sender] + 1 hours, "Withdrawal rate limit");
-        
         users[msg.sender].withdrawable = 0;
         dailyWithdrawalAmount[msg.sender] += amount;
         lastWithdrawalTime[msg.sender] = block.timestamp;
-        
         token.safeTransfer(msg.sender, amount);
-        
         emit Withdrawal(msg.sender, amount, block.timestamp);
+    }
+
+    function withdraw() external virtual nonReentrant onlyKYCVerified {
+        _withdrawInternal();
     }
 
     // ===== EMERGENCY CONTROLS =====
     bool public emergencyMode = false;
     uint256 public emergencyFee = 1000; // 10% in emergency mode
     
-    function activateEmergencyMode(string calldata reason) external onlyOwner {
+    function activateEmergencyMode(string calldata reason) external onlyTrezorAdmin {
         emergencyMode = true;
         state.systemLocked = true;
         _pause();
         emit SystemLocked(reason, block.timestamp);
     }
     
-    function deactivateEmergencyMode() external onlyOwner {
+    function deactivateEmergencyMode() external onlyTrezorAdmin {
         emergencyMode = false;
         state.systemLocked = false;
         _unpause();
@@ -531,7 +561,7 @@ contract OrphiCrowdFundV4UltraSecure is Ownable, ReentrancyGuard, Pausable, Auto
     }
 
     // ===== LEFTOVER DISTRIBUTION =====
-    function distributeLeftovers() external onlyOwner {
+    function distributeLeftovers() external onlyTrezorAdmin {
         require(pools.leftover > 0, "No leftover funds");
         
         uint256 amount = pools.leftover;
@@ -689,111 +719,441 @@ contract OrphiCrowdFundV4UltraSecure is Ownable, ReentrancyGuard, Pausable, Auto
         }
     }
 
-    // ===== CLUB POOL (ENHANCED) =====
-    struct ClubPool {
-        uint64 balance;
-        uint32 lastDistributionTime;
-        uint32 distributionInterval;
-        uint16 memberCount;
-        bool active;
+    // ===== ENHANCED AUTO-COMPOUNDING SYSTEM =====
+    struct AutoCompoundConfig {
+        bool enabled;
+        uint16 levelPoolShare;    // Basis points (default: 4000 = 40%)
+        uint16 uplinePoolShare;   // Basis points (default: 3000 = 30%)
+        uint16 ghpPoolShare;      // Basis points (default: 3000 = 30%)
+        uint256 minCompoundAmount; // Minimum amount to trigger compounding
+        uint32 compoundingCooldown; // Cooldown between compounds
     }
+    AutoCompoundConfig public autoCompoundConfig;
     
-    ClubPool public clubPool;
-    mapping(address => bool) public clubMembers;
+    mapping(address => uint256) public lastCompoundTime;
+    mapping(address => uint256) public totalCompounded;
     
-    function createClubPool(uint32 distributionInterval) external onlyOwner {
-        require(!clubPool.active, "Club pool already exists");
+    event AutoCompoundConfigured(bool enabled, uint16[3] shares, uint256 minAmount, uint32 cooldown);
+    event EarningsCompounded(address indexed user, uint256 amount, uint256 timestamp);
+    event OverflowDistributed(uint256 amount, uint16[3] poolShares, uint256 timestamp);
+    
+    // ===== AUTO-COMPOUND FUNCTIONS =====
+    function configureAutoCompound(
+        bool _enabled,
+        uint16 _levelShare,
+        uint16 _uplineShare, 
+        uint16 _ghpShare,
+        uint256 _minAmount,
+        uint32 _cooldown
+    ) external onlyTrezorAdmin {
+        require(_levelShare + _uplineShare + _ghpShare == 10000, "Shares must equal 100%");
+        require(_minAmount >= 10e6, "Minimum amount too low"); // At least 10 USDT
+        require(_cooldown >= 1 hours, "Cooldown too short");
         
-        clubPool = ClubPool({
-            balance: 0,
-            lastDistributionTime: uint32(block.timestamp),
-            distributionInterval: distributionInterval,
-            memberCount: 0,
-            active: true
+        autoCompoundConfig = AutoCompoundConfig({
+            enabled: _enabled,
+            levelPoolShare: _levelShare,
+            uplinePoolShare: _uplineShare,
+            ghpPoolShare: _ghpShare,
+            minCompoundAmount: _minAmount,
+            compoundingCooldown: _cooldown
         });
         
-        emit ClubPoolCreated(distributionInterval, block.timestamp);
+        emit AutoCompoundConfigured(_enabled, [_levelShare, _uplineShare, _ghpShare], _minAmount, _cooldown);
     }
     
-    function addToClubPool() external nonReentrant onlyKYCVerified {
-        require(clubPool.active, "Club pool not active");
-        require(!clubMembers[msg.sender], "Already club member");
-        require(users[msg.sender].id > 0, "Not registered");
-        require(users[msg.sender].packageTier >= 3, "Minimum tier 3 required");
-        require(users[msg.sender].suspensionLevel == 0, "Account suspended");
+    function _handleCapOverflow(address user, uint256 overflow) internal {
+        if (!autoCompoundConfig.enabled || overflow < autoCompoundConfig.minCompoundAmount) {
+            // Default distribution if auto-compound disabled or amount too small
+            _distributeOverflowToGlobalPools(overflow);
+            return;
+        }
         
-        clubMembers[msg.sender] = true;
-        clubPool.memberCount++;
+        // Check if user is eligible for compounding (cooldown passed)
+        if (block.timestamp >= lastCompoundTime[user] + autoCompoundConfig.compoundingCooldown) {
+            _executeAutoCompound(user, overflow);
+        } else {
+            _distributeOverflowToGlobalPools(overflow);
+        }
+    }
+    
+    function _executeAutoCompound(address user, uint256 amount) internal {
+        lastCompoundTime[user] = block.timestamp;
+        totalCompounded[user] += amount;
         
-        emit ClubMemberAdded(msg.sender, block.timestamp);
+        // Distribute with enhanced auto-compounding logic
+        uint256 levelAmount = (amount * autoCompoundConfig.levelPoolShare) / 10000;
+        uint256 uplineAmount = (amount * autoCompoundConfig.uplinePoolShare) / 10000;
+        uint256 ghpAmount = amount - levelAmount - uplineAmount;
+        
+        // Enhanced distribution with priority to active uplines
+        _distributeToActiveUplines(user, levelAmount);
+        _distributeToQualifiedUplines(user, uplineAmount);
+        
+        // Add to GHP with enhanced targeting
+        pools.ghp += uint64(ghpAmount);
+        
+        emit EarningsCompounded(user, amount, block.timestamp);
+        emit OverflowDistributed(amount, 
+            [autoCompoundConfig.levelPoolShare, autoCompoundConfig.uplinePoolShare, autoCompoundConfig.ghpPoolShare], 
+            block.timestamp);
+    }
+    
+    function _distributeOverflowToGlobalPools(uint256 amount) internal {
+        // Default 40%/30%/30% distribution for global pools
+        uint256 levelAmount = (amount * 4000) / 10000;
+        uint256 uplineAmount = (amount * 3000) / 10000;
+        uint256 ghpAmount = amount - levelAmount - uplineAmount;
+        
+        pools.level += uint64(levelAmount);
+        pools.upline += uint64(uplineAmount);
+        pools.ghp += uint64(ghpAmount);
+        
+        emit OverflowDistributed(amount, [4000, 3000, 3000], block.timestamp);
+    }
+    
+    function _distributeToActiveUplines(address user, uint256 amount) internal {
+        // Find active uplines and distribute proportionally
+        uint32 currentUplineId = users[user].sponsor;
+        uint256 distributed = 0;
+        uint8 level = 0;
+        uint256 maxLevels = 10; // Limit distribution levels
+        
+        while (currentUplineId != 0 && level < maxLevels && distributed < amount) {
+            address currentUpline = userAddress[currentUplineId];
+            if (currentUpline != address(0) &&
+                users[currentUpline].suspensionLevel == 0 && 
+                !users[currentUpline].isCapped &&
+                users[currentUpline].lastActivity >= block.timestamp - 30 days) {
+                
+                uint256 share = amount / maxLevels; // Equal distribution
+                if (share > 0 && distributed + share <= amount) {
+                    _creditEarningsSecure(currentUpline, share);
+                    distributed += share;
+                }
+            }
+            currentUplineId = users[currentUpline].sponsor;
+            level++;
+        }
+        
+        // Add remaining to level pool
+        if (distributed < amount) {
+            pools.level += uint64(amount - distributed);
+        }
+    }
+    
+    function _distributeToQualifiedUplines(address user, uint256 amount) internal {
+        // Enhanced upline distribution based on qualification criteria
+        uint32 currentUplineId = users[user].sponsor;
+        uint256 distributed = 0;
+        uint8 qualifiedCount = 0;
+        
+        // First pass: count qualified uplines
+        uint32 tempUplineId = currentUplineId;
+        uint8 level = 0;
+        while (tempUplineId != 0 && level < 10) {
+            address tempUpline = userAddress[tempUplineId];
+            if (_isQualifiedForUplineBonus(tempUpline)) {
+                qualifiedCount++;
+            }
+            tempUplineId = users[tempUpline].sponsor;
+            level++;
+        }
+        
+        if (qualifiedCount == 0) {
+            pools.upline += uint64(amount);
+            return;
+        }
+        
+        // Second pass: distribute to qualified uplines
+        uint256 sharePerQualified = amount / qualifiedCount;
+        currentUplineId = users[user].sponsor;
+        level = 0;
+        
+        while (currentUplineId != 0 && level < 10 && distributed < amount) {
+            address currentUpline = userAddress[currentUplineId];
+            if (_isQualifiedForUplineBonus(currentUpline)) {
+                _creditEarningsSecure(currentUpline, sharePerQualified);
+                distributed += sharePerQualified;
+            }
+            currentUplineId = users[currentUpline].sponsor;
+            level++;
+        }
+        
+        // Add any remainder to upline pool
+        if (distributed < amount) {
+            pools.upline += uint64(amount - distributed);
+        }
+    }
+    
+    function _isQualifiedForUplineBonus(address user) internal view returns (bool) {
+        return users[user].suspensionLevel == 0 &&
+               !users[user].isCapped &&
+               users[user].lastActivity >= block.timestamp - 60 days && // Active within 2 months
+               users[user].packageTier >= 3; // Minimum package requirement
+    }
+    
+    function getAutoCompoundStats(address user) external view returns (
+        uint256 totalCompoundedAmount,
+        uint256 lastCompoundTimestamp,
+        bool canCompoundNow,
+        uint256 nextCompoundTime
+    ) {
+        totalCompoundedAmount = totalCompounded[user];
+        lastCompoundTimestamp = lastCompoundTime[user];
+        nextCompoundTime = lastCompoundTime[user] + autoCompoundConfig.compoundingCooldown;
+        canCompoundNow = block.timestamp >= nextCompoundTime && autoCompoundConfig.enabled;
     }
 
-    /**
-     * @dev Claim available club pool share after interval
-     */
-    function claimClubPool() external nonReentrant onlyKYCVerified {
-        require(clubPool.active, "Club pool not active");
-        require(clubMembers[msg.sender], "Not a club member");
-        require(block.timestamp >= clubPool.lastDistributionTime + clubPool.distributionInterval, "Club pool locked");
-        require(clubPool.memberCount > 0, "No members in club pool");
-
-        uint256 share = clubPool.balance / clubPool.memberCount;
-        require(share > 0, "No funds to claim");
-
-        clubPool.balance -= uint64(share);
-        clubPool.lastDistributionTime = uint32(block.timestamp);
-        token.safeTransfer(msg.sender, share);
-
-        emit ClubPoolDistributed(share, clubPool.memberCount, block.timestamp);
+    // ===== BLACKLIST & WHITELIST SYSTEM =====
+    mapping(address => bool) public blacklistedAddresses;
+    mapping(address => bool) public whitelistedAddresses;
+    mapping(address => string) public blacklistReasons;
+    mapping(address => uint256) public blacklistTimestamp;
+    
+    bool public whitelistMode = false; // When true, only whitelisted addresses can interact
+    
+    event AddressBlacklisted(address indexed user, string reason, uint256 timestamp);
+    event AddressWhitelisted(address indexed user, uint256 timestamp);
+    event AddressRemovedFromBlacklist(address indexed user, uint256 timestamp);
+    event AddressRemovedFromWhitelist(address indexed user, uint256 timestamp);
+    event WhitelistModeToggled(bool enabled, uint256 timestamp);
+    
+    modifier notBlacklisted() {
+        require(!blacklistedAddresses[msg.sender], "Address is blacklisted");
+        _;
+    }
+    
+    modifier whitelistCheck() {
+        if (whitelistMode) {
+            require(whitelistedAddresses[msg.sender], "Address not whitelisted");
+        }
+        _;
+    }
+    
+    function blacklistAddress(address user, string calldata reason) external onlyTrezorAdmin {
+        require(user != address(0), "Invalid address");
+        require(user != admin && user != trezorAdmin, "Cannot blacklist admin");
+        require(!blacklistedAddresses[user], "Already blacklisted");
+        
+        blacklistedAddresses[user] = true;
+        blacklistReasons[user] = reason;
+        blacklistTimestamp[user] = block.timestamp;
+        
+        emit AddressBlacklisted(user, reason, block.timestamp);
+    }
+    
+    function removeFromBlacklist(address user) external onlyTrezorAdmin {
+        require(blacklistedAddresses[user], "Not blacklisted");
+        
+        blacklistedAddresses[user] = false;
+        delete blacklistReasons[user];
+        delete blacklistTimestamp[user];
+        
+        emit AddressRemovedFromBlacklist(user, block.timestamp);
+    }
+    
+    function addToWhitelist(address user) external onlyTrezorAdmin {
+        require(user != address(0), "Invalid address");
+        require(!whitelistedAddresses[user], "Already whitelisted");
+        
+        whitelistedAddresses[user] = true;
+        emit AddressWhitelisted(user, block.timestamp);
+    }
+    
+    function removeFromWhitelist(address user) external onlyTrezorAdmin {
+        require(whitelistedAddresses[user], "Not whitelisted");
+        
+        whitelistedAddresses[user] = false;
+        emit AddressRemovedFromWhitelist(user, block.timestamp);
+    }
+    
+    function toggleWhitelistMode() external onlyTrezorAdmin {
+        whitelistMode = !whitelistMode;
+        emit WhitelistModeToggled(whitelistMode, block.timestamp);
+    }
+    
+    function batchBlacklistAddresses(address[] calldata addresses, string calldata reason) external onlyTrezorAdmin {
+        for (uint256 i = 0; i < addresses.length; i++) {
+            if (addresses[i] != address(0) && 
+                addresses[i] != admin && 
+                addresses[i] != trezorAdmin && 
+                !blacklistedAddresses[addresses[i]]) {
+                
+                blacklistedAddresses[addresses[i]] = true;
+                blacklistReasons[addresses[i]] = reason;
+                blacklistTimestamp[addresses[i]] = block.timestamp;
+                
+                emit AddressBlacklisted(addresses[i], reason, block.timestamp);
+            }
+        }
+    }
+    
+    function batchWhitelistAddresses(address[] calldata addresses) external onlyTrezorAdmin {
+        for (uint256 i = 0; i < addresses.length; i++) {
+            if (addresses[i] != address(0) && !whitelistedAddresses[addresses[i]]) {
+                whitelistedAddresses[addresses[i]] = true;
+                emit AddressWhitelisted(addresses[i], block.timestamp);
+            }
+        }
+    }
+    
+    function getBlacklistInfo(address user) external view returns (
+        bool isBlacklisted,
+        string memory reason,
+        uint256 timestamp
+    ) {
+        return (blacklistedAddresses[user], blacklistReasons[user], blacklistTimestamp[user]);
+    }
+    
+    function isAddressRestricted(address user) external view returns (bool) {
+        if (blacklistedAddresses[user]) return true;
+        if (whitelistMode && !whitelistedAddresses[user]) return true;
+        return false;
     }
 
-    // ===== VIEW FUNCTIONS =====
-    function getUserInfo(address user) external view returns (User memory) {
-        return users[user];
+    // ===== ENHANCED CIRCUIT BREAKER SYSTEM =====
+    struct CircuitBreakerConfig {
+        bool enabled;
+        uint256 maxDailyRegistrations;
+        uint256 maxDailyWithdrawals;
+        uint256 maxSingleWithdrawal;
+        uint256 maxDailyVolume;
+        uint256 consecutiveFailureThreshold;
+        uint256 cooldownPeriod;
     }
-
-    function getPoolBalances() external view returns (uint64[6] memory) {
-        return [pools.sponsor, pools.level, pools.upline, pools.leader, pools.ghp, pools.leftover];
-    }
-
-    function getSecurityInfo(address user) external view returns (bool kyc, uint8 suspension, uint256 lastActivity, uint256 cooldown) {
-        return (
-            users[user].isKYCVerified,
-            users[user].suspensionLevel,
-            users[user].lastActivity,
-            registrationCooldown[user]
+    CircuitBreakerConfig public circuitBreakerConfig;
+    
+    mapping(uint256 => uint256) public dailyRegistrations; // day => count
+    mapping(uint256 => uint256) public dailyWithdrawalCount; // day => count
+    mapping(uint256 => uint256) public dailyVolume; // day => volume
+    mapping(address => uint256) public userDailyWithdrawals; // user => count today
+    
+    uint256 public consecutiveFailures = 0;
+    uint256 public lastFailureTime = 0;
+    bool public circuitBreakerTripped = false;
+    
+    event CircuitBreakerConfigured(bool enabled, uint256[5] limits, uint256 threshold, uint256 cooldown);
+    event CircuitBreakerTripped(string reason, uint256 value, uint256 limit, uint256 timestamp);
+    event CircuitBreakerReset(uint256 timestamp);
+    event ThresholdExceeded(string metric, uint256 value, uint256 limit, uint256 timestamp);
+    
+    function configureCircuitBreaker(
+        bool _enabled,
+        uint256 _maxDailyRegistrations,
+        uint256 _maxDailyWithdrawals,
+        uint256 _maxSingleWithdrawal,
+        uint256 _maxDailyVolume,
+        uint256 _failureThreshold,
+        uint256 _cooldownPeriod
+    ) external onlyTrezorAdmin {
+        require(_maxDailyRegistrations > 0, "Invalid registration limit");
+        require(_maxDailyWithdrawals > 0, "Invalid withdrawal limit");
+        require(_maxSingleWithdrawal >= 1000e6, "Single withdrawal too low"); // Min 1000 USDT
+        require(_maxDailyVolume > 0, "Invalid volume limit");
+        require(_failureThreshold >= 3, "Failure threshold too low");
+        require(_cooldownPeriod >= 1 hours, "Cooldown too short");
+        
+        circuitBreakerConfig = CircuitBreakerConfig({
+            enabled: _enabled,
+            maxDailyRegistrations: _maxDailyRegistrations,
+            maxDailyWithdrawals: _maxDailyWithdrawals,
+            maxSingleWithdrawal: _maxSingleWithdrawal,
+            maxDailyVolume: _maxDailyVolume,
+            consecutiveFailureThreshold: _failureThreshold,
+            cooldownPeriod: _cooldownPeriod
+        });
+        
+        emit CircuitBreakerConfigured(
+            _enabled,
+            [_maxDailyRegistrations, _maxDailyWithdrawals, _maxSingleWithdrawal, _maxDailyVolume, _failureThreshold],
+            _failureThreshold,
+            _cooldownPeriod
         );
     }
-
-    function getGlobalStats() external view returns (uint32 users, uint96 volume, bool automation, bool locked) {
-        return (state.totalUsers, state.totalVolume, state.automationOn, state.systemLocked);
+    
+    function _checkCircuitBreaker(string memory operation, uint256 value, uint256 limit) internal returns (bool) {
+        if (!circuitBreakerConfig.enabled || circuitBreakerTripped) {
+            return circuitBreakerTripped;
+        }
+        
+        if (value > limit) {
+            _tripCircuitBreaker(operation, value, limit);
+            return true;
+        }
+        
+        return false;
     }
-
-    // ===== ADMIN FUNCTIONS =====
-    function suspendUser(address user, uint8 level) external onlyOwner {
-        require(level <= 2, "Invalid suspension level");
-        users[user].suspensionLevel = level;
-        emit SecurityViolation(user, level == 1 ? "Warning issued" : "Account suspended", block.timestamp);
+    
+    function _tripCircuitBreaker(string memory reason, uint256 value, uint256 limit) internal {
+        consecutiveFailures++;
+        lastFailureTime = block.timestamp;
+        
+        if (consecutiveFailures >= circuitBreakerConfig.consecutiveFailureThreshold) {
+            circuitBreakerTripped = true;
+            _pause(); // Emergency pause
+            emit CircuitBreakerTripped(reason, value, limit, block.timestamp);
+        } else {
+            emit ThresholdExceeded(reason, value, limit, block.timestamp);
+        }
     }
-
-    function setWithdrawalLimit(uint256 limit) external onlyOwner {
-        require(limit >= 1000e6, "Minimum 1000 USDT"); // Minimum limit
-        withdrawalLimit = limit;
-        emit WithdrawalLimitUpdated(limit, block.timestamp);
+    
+    function resetCircuitBreaker() external onlyTrezorAdmin {
+        require(circuitBreakerTripped, "Circuit breaker not tripped");
+        require(block.timestamp >= lastFailureTime + circuitBreakerConfig.cooldownPeriod, "Cooldown not met");
+        
+        circuitBreakerTripped = false;
+        consecutiveFailures = 0;
+        _unpause();
+        
+        emit CircuitBreakerReset(block.timestamp);
     }
-
-    function enableAutomation(bool enabled) external onlyOwner {
-        autoConfig.enabled = enabled;
-        state.automationOn = enabled;
-        emit AutomationEnabled(enabled, block.timestamp);
+    
+    function _recordDailyActivity(string memory activityType, uint256 amount) internal {
+        uint256 today = block.timestamp / 1 days;
+        
+        if (keccak256(bytes(activityType)) == keccak256(bytes("REGISTRATION"))) {
+            dailyRegistrations[today]++;
+            _checkCircuitBreaker("DAILY_REGISTRATIONS", dailyRegistrations[today], circuitBreakerConfig.maxDailyRegistrations);
+        } else if (keccak256(bytes(activityType)) == keccak256(bytes("WITHDRAWAL"))) {
+            dailyWithdrawalCount[today]++;
+            userDailyWithdrawals[msg.sender]++;
+            _checkCircuitBreaker("DAILY_WITHDRAWALS", dailyWithdrawalCount[today], circuitBreakerConfig.maxDailyWithdrawals);
+            _checkCircuitBreaker("SINGLE_WITHDRAWAL", amount, circuitBreakerConfig.maxSingleWithdrawal);
+        } else if (keccak256(bytes(activityType)) == keccak256(bytes("VOLUME"))) {
+            dailyVolume[today] += amount;
+            _checkCircuitBreaker("DAILY_VOLUME", dailyVolume[today], circuitBreakerConfig.maxDailyVolume);
+        }
     }
-
-    /**
-     * @dev Update automation gas limit and batch size
-     */
-    function updateAutomationConfig(uint256 gasLimit, uint32 maxUsers) external onlyOwner {
-        autoConfig.gasLimitConfig = gasLimit;
-        autoConfig.maxUsersPerDistribution = maxUsers;
-        emit AutomationConfigUpdated(gasLimit, maxUsers, block.timestamp);
+    
+    function getCircuitBreakerStatus() external view returns (
+        bool enabled,
+        bool tripped,
+        uint256 consecutiveFailureCount,
+        uint256 lastFailure,
+        uint256 nextResetTime
+    ) {
+        return (
+            circuitBreakerConfig.enabled,
+            circuitBreakerTripped,
+            consecutiveFailures,
+            lastFailureTime,
+            lastFailureTime + circuitBreakerConfig.cooldownPeriod
+        );
+    }
+    
+    function getDailyMetrics() external view returns (
+        uint256 todayRegistrations,
+        uint256 todayWithdrawals,
+        uint256 todayVolume,
+        uint256 userWithdrawalsToday
+    ) {
+        uint256 today = block.timestamp / 1 days;
+        return (
+            dailyRegistrations[today],
+            dailyWithdrawalCount[today],
+            dailyVolume[today],
+            userDailyWithdrawals[msg.sender]
+        );
     }
 }

@@ -185,11 +185,12 @@ contract OrphiMatrix is Ownable, ReentrancyGuard {
      * @return teamSize Total team size including user
      */
     function calculateTeamSize(address user) external view returns (uint256 teamSize) {
-        return MatrixLibrary.calculateTeamSize(
-            user,
-            _getLeftChildMapping(),
-            _getRightChildMapping()
-        );
+        // return MatrixLibrary.calculateTeamSize(
+        //     user,
+        //     _getLeftChildMapping(),
+        //     _getRightChildMapping()
+        // );
+        revert("calculateTeamSize not implemented: mapping workaround required");
     }
     
     /**
@@ -330,27 +331,26 @@ contract OrphiMatrix is Ownable, ReentrancyGuard {
     /**
      * @dev Helper to get left child mapping for library
      */
-    function _getLeftChildMapping() internal view returns (mapping(address => address) storage) {
-        // This is a workaround for library compatibility
-        // In practice, we'd pass the mapping directly
-        mapping(address => address) storage leftChildren;
-        assembly {
-            leftChildren.slot := 0 // This would be handled differently in practice
-        }
-        return leftChildren;
-    }
-    
+    // function _getLeftChildMapping() internal view returns (mapping(address => address) storage) {
+    //     // This is a workaround for library compatibility
+    //     // In practice, we'd pass the mapping directly
+    //     mapping(address => address) storage leftChildren;
+    //     assembly {
+    //         leftChildren.slot := 0 // This would be handled differently in practice
+    //     }
+    //     return leftChildren;
+    // }
     /**
      * @dev Helper to get right child mapping for library
      */
-    function _getRightChildMapping() internal view returns (mapping(address => address) storage) {
-        // This is a workaround for library compatibility
-        mapping(address => address) storage rightChildren;
-        assembly {
-            rightChildren.slot := 0 // This would be handled differently in practice
-        }
-        return rightChildren;
-    }
+    // function _getRightChildMapping() internal view returns (mapping(address => address) storage) {
+    //     // This is a workaround for library compatibility
+    //     mapping(address => address) storage rightChildren;
+    //     assembly {
+    //         rightChildren.slot := 0 // This would be handled differently in practice
+    //     }
+    //     return rightChildren;
+    // }
     
     // ===== VIEW FUNCTIONS =====
     

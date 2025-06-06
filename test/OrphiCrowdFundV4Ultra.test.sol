@@ -1,14 +1,6 @@
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.22;
-
-import "@nomicfoundation/hardhat-chai-matchers/fuzz";
-import "@nomicfoundation/hardhat-toolbox/network-helpers";
-import "@openzeppelin/hardhat-upgrades";
-import "@nomiclabs/hardhat-ethers";
-import "chai";
-
-import "../contracts/OrphiCrowdFundV4Ultra.sol";
-import "../contracts/MockUSDT.sol";
+const { expect } = require("chai");
+const { ethers } = require("hardhat");
+const { loadFixture } = require("@nomicfoundation/hardhat-network-helpers");
 
 contract OrphiCrowdFundV4UltraTest {
     OrphiCrowdFundV4Ultra public v4Ultra;

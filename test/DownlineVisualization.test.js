@@ -5,6 +5,9 @@ describe("DownlineVisualization", function () {
     let downlineVisualization;
     let owner, user1, user2, user3, user4, user5;
     let mockUSDT;
+    let usdt;
+    let matrixRoot;
+    let users = [];
 
     beforeEach(async function () {
         [owner, user1, user2, user3, user4, user5] = await ethers.getSigners();
@@ -261,9 +264,7 @@ describe("DownlineVisualization", function () {
         });
     });
 
-    let usdt;
-    let matrixRoot, user1, user2, user3, user4, user5;
-    let users = [];
+    // Variables moved to top of file to avoid duplication
 
     const PackageTier = {
         PACKAGE_50: 1,
