@@ -119,6 +119,166 @@
       "artifacts": [
         "MockUSDT"
       ]
+    },
+    "/Users/dadou/Orphi CrowdFund/standalone-v4ultra/MinimalInterfaces.sol": {
+      "lastModificationDate": 1749191975807,
+      "contentHash": "1e3efd72edabf5c3f24286ccfb136bb0",
+      "sourceName": "standalone-v4ultra/MinimalInterfaces.sol",
+      "solcConfig": {
+        "version": "0.8.22",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 1
+          },
+          "viaIR": true,
+          "evmVersion": "paris",
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.22"
+      ],
+      "artifacts": [
+        "AutomationCompatibleInterface",
+        "IERC20",
+        "Ownable",
+        "Pausable",
+        "ReentrancyGuard",
+        "SafeERC20"
+      ]
+    },
+    "/Users/dadou/Orphi CrowdFund/standalone-v4ultra/OrphiCrowdFundV4UltraSecureTest.sol": {
+      "lastModificationDate": 1749191975808,
+      "contentHash": "55a8b582d54148dd286bdb78379d13a5",
+      "sourceName": "standalone-v4ultra/OrphiCrowdFundV4UltraSecureTest.sol",
+      "solcConfig": {
+        "version": "0.8.22",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 1
+          },
+          "viaIR": true,
+          "evmVersion": "paris",
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "./MinimalInterfaces.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.22"
+      ],
+      "artifacts": [
+        "OrphiCrowdFundV4UltraSecureTest"
+      ]
+    },
+    "/Users/dadou/Orphi CrowdFund/standalone-v4ultra/MockUSDTTest.sol": {
+      "lastModificationDate": 1749191975810,
+      "contentHash": "0f38412e6154335db5d04d3c3860a68e",
+      "sourceName": "standalone-v4ultra/MockUSDTTest.sol",
+      "solcConfig": {
+        "version": "0.8.22",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 1
+          },
+          "viaIR": true,
+          "evmVersion": "paris",
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "./MinimalInterfaces.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.22"
+      ],
+      "artifacts": [
+        "MockUSDTTest"
+      ]
+    },
+    "/Users/dadou/Orphi CrowdFund/standalone-v4ultra/OrphiCrowdFundV4UltraSecure.sol": {
+      "lastModificationDate": 1749208940173,
+      "contentHash": "2779ef6b66ae487e1b0fc7893415e169",
+      "sourceName": "standalone-v4ultra/OrphiCrowdFundV4UltraSecure.sol",
+      "solcConfig": {
+        "version": "0.8.22",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 1
+          },
+          "viaIR": true,
+          "evmVersion": "paris",
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "./MockInterfaces.sol",
+        "./MockUSDT.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.22"
+      ],
+      "artifacts": [
+        "OrphiCrowdFundV4UltraSecure"
+      ]
     }
   }
 }

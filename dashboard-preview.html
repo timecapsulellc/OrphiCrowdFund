@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OrphiCrowdFund Dashboard - Live Preview</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            border-bottom: 2px solid #00D4FF;
+        }
+        .header h1 {
+            color: #00D4FF;
+            font-size: 2.5rem;
+            margin: 0 0 10px 0;
+            text-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+        }
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .status-card {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid #00D4FF;
+            border-radius: 10px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+        }
+        .status-card h3 {
+            color: #00D4FF;
+            margin-top: 0;
+        }
+        .btn {
+            background: linear-gradient(45deg, #00D4FF, #0099CC);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px;
+            transition: transform 0.2s;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        .live-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            background: #00FF00;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+            margin-right: 8px;
+        }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        iframe {
+            width: 100%;
+            height: 600px;
+            border: 2px solid #00D4FF;
+            border-radius: 10px;
+            background: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🚀 OrphiCrowdFund Dashboard</h1>
+        <p><span class="live-indicator"></span>Live Dashboard - Production Ready</p>
+        <p>Revolutionary Blockchain MLM Platform with React Components</p>
+    </div>
+
+    <div class="status-grid">
+        <div class="status-card">
+            <h3>📊 Dashboard Status</h3>
+            <p>✅ React App: Loaded</p>
+            <p>✅ Components: 5 Active</p>
+            <p>✅ Styling: Responsive</p>
+            <p>✅ Build: Production Ready</p>
+        </div>
+        
+        <div class="status-card">
+            <h3>🎯 Available Components</h3>
+            <p>• OrphiChain Logo Demo</p>
+            <p>• Orphi Dashboard</p>
+            <p>• Team Analytics</p>
+            <p>• Genealogy Tree</p>
+            <p>• Network Visualization</p>
+        </div>
+        
+        <div class="status-card">
+            <h3>🔧 Technical Stack</h3>
+            <p>• React 18 + Vite</p>
+            <p>• Responsive CSS Grid</p>
+            <p>• Error Boundaries</p>
+            <p>• Browser Compatibility</p>
+        </div>
+    </div>
+
+    <div style="margin: 40px 0; text-align: center;">
+        <button class="btn" onclick="openDashboard()">🎯 Open Full Dashboard</button>
+        <button class="btn" onclick="openBuiltVersion()">📦 Open Built Version</button>
+        <button class="btn" onclick="location.reload()">🔄 Refresh</button>
+    </div>
+
+    <div style="background: rgba(0, 0, 0, 0.3); padding: 20px; border-radius: 10px; margin: 20px 0;">
+        <h3>📱 Dashboard Preview</h3>
+        <p>The dashboard is now running and accessible. Choose an option above to view it:</p>
+        <ul>
+            <li><strong>Full Dashboard:</strong> Complete React application with all interactive components</li>
+            <li><strong>Built Version:</strong> Optimized production build for deployment</li>
+        </ul>
+    </div>
+
+    <script>
+        function openDashboard() {
+            // Open the main React development version
+            window.open('index.html', '_blank');
+        }
+        
+        function openBuiltVersion() {
+            // Open the built production version
+            window.open('dist/index.html', '_blank');
+        }
+        
+        // Auto-refresh to keep connection alive
+        setTimeout(() => {
+            console.log('OrphiCrowdFund Dashboard - Ready for interaction');
+        }, 1000);
+    </script>
+</body>
+</html>

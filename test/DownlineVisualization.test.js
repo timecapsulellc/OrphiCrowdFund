@@ -260,7 +260,7 @@ describe("DownlineVisualization", function () {
              .withArgs(user1.address, anyValue, anyValue);
         });
     });
-});
+
     let usdt;
     let matrixRoot, user1, user2, user3, user4, user5;
     let users = [];
