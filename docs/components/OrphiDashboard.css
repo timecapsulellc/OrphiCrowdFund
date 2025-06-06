@@ -2,7 +2,7 @@
 
 .orphi-dashboard {
   font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+  background: linear-gradient(135deg, var(--orphi-deep-space) 0%, var(--orphi-midnight-blue) 50%, var(--orphi-royal-purple) 100%);
   min-height: 100vh;
   color: var(--orphi-text-primary);
   padding: 1.5rem;
@@ -10,15 +10,58 @@
   margin: 0 auto;
 }
 
+/* Light Mode Theme Support */
+.orphi-dashboard.light-theme {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #cbd5e1 100%);
+  color: #1a202c;
+}
+
+.orphi-dashboard.light-theme .dashboard-header {
+  background: linear-gradient(135deg, var(--orphi-energy-orange) 0%, var(--orphi-cyber-blue) 100%);
+  color: var(--orphi-pure-white);
+}
+
+.orphi-dashboard.light-theme .metric-card {
+  background: rgba(255, 255, 255, 0.9);
+  color: #2d3748;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.orphi-dashboard.light-theme .stats-card {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  color: #2d3748;
+}
+
+.orphi-dashboard.light-theme .genealogy-section {
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.orphi-dashboard.light-theme .network-stats-display {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.orphi-dashboard.light-theme .package-tier-stats {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.orphi-dashboard.light-theme .tree-legend {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
 /* Enhanced Dashboard Header with OrphiChain Branding */
 .dashboard-header {
-  background: linear-gradient(135deg, rgba(0, 212, 255, 0.1) 0%, rgba(123, 44, 191, 0.1) 100%);
+  background: linear-gradient(135deg, var(--orphi-energy-orange) 0%, var(--orphi-cyber-blue) 100%);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 1rem;
   padding: 2rem;
   margin-bottom: 2rem;
-  box-shadow: 0 8px 32px rgba(0, 212, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(255, 107, 53, 0.3);
 }
 
 .header-content {
@@ -250,6 +293,43 @@
   font-size: 0.85rem;
   color: var(--orphi-text-secondary);
   font-weight: 400;
+}
+
+/* Joining Amount Styling */
+.joining-amount-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.amount-option {
+  background: linear-gradient(135deg, var(--orphi-cyber-blue), var(--orphi-royal-purple));
+  color: var(--orphi-pure-white);
+  padding: 0.4rem 0.8rem;
+  border-radius: 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  font-weight: 700;
+  font-size: 0.9rem;
+  box-shadow: 0 2px 8px rgba(0, 212, 255, 0.3);
+  transition: all 0.3s ease;
+}
+
+.amount-option:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 212, 255, 0.5);
+  border-color: var(--orphi-cyber-blue);
+}
+
+.metric-description {
+  color: var(--orphi-silver-mist);
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-top: 0.5rem;
+  text-align: center;
 }
 
 /* Enhanced Charts Section */
@@ -668,6 +748,306 @@
   animation: rotate 2s linear infinite;
 }
 
+/* Compensation Breakdown Panel */
+.compensation-breakdown-panel {
+  background: var(--orphi-bg-panel, #181c24);
+  border-radius: 1.5rem;
+  box-shadow: 0 2px 16px 0 rgba(0,0,0,0.10);
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.comp-plan-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 2rem;
+}
+
+.comp-plan-section {
+  background: var(--orphi-bg-card, #23283a);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 1px 6px 0 rgba(0,0,0,0.07);
+  min-width: 220px;
+}
+
+.comp-plan-list {
+  list-style: disc inside;
+  margin: 0.5rem 0 0 1rem;
+  color: var(--orphi-text-secondary, #b8c5d1);
+}
+
+.comp-plan-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0.5rem 0;
+  font-size: 0.95rem;
+}
+
+.comp-plan-table th, .comp-plan-table td {
+  border: 1px solid #2d3748;
+  padding: 0.4rem 0.7rem;
+  text-align: center;
+}
+
+.comp-plan-table th {
+  background: #222a3a;
+  color: var(--orphi-cyber-blue, #00D4FF);
+}
+
+.comp-plan-table td {
+  background: #23283a;
+  color: var(--orphi-text-secondary, #b8c5d1);
+}
+
+.cap-status {
+  margin-top: 0.5rem;
+  font-size: 1rem;
+  color: var(--orphi-warning, #FFD700);
+}
+
+.reinvest-breakdown {
+  margin-top: 0.5rem;
+  font-size: 0.95rem;
+  color: var(--orphi-text-secondary, #b8c5d1);
+}
+
+.leader-rank-status {
+  margin-top: 0.7rem;
+  font-weight: 600;
+  color: var(--orphi-success, #00FF88);
+}
+
+.comp-plan-help {
+  margin-top: 1.5rem;
+  text-align: right;
+}
+
+.comp-plan-section h3 span {
+  font-size: 1rem;
+  cursor: help;
+  margin-left: 0.3rem;
+  color: var(--orphi-cyber-blue, #00D4FF);
+}
+
+@media (max-width: 900px) {
+  .comp-plan-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Network Statistics Display */
+.network-stats-display {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.stats-card {
+  background: linear-gradient(135deg, var(--orphi-deep-space), var(--orphi-midnight-blue));
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  text-align: center;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.stats-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--orphi-cyber-blue), var(--orphi-royal-purple));
+}
+
+.stats-card:hover {
+  transform: translateY(-5px);
+  border-color: var(--orphi-cyber-blue);
+  box-shadow: 0 10px 30px rgba(0, 212, 255, 0.3);
+}
+
+.stats-value {
+  font-size: 2.5rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--orphi-cyber-blue), var(--orphi-energy-orange));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 0.5rem;
+  font-family: var(--orphi-font-primary);
+}
+
+.stats-label {
+  font-size: 0.9rem;
+  color: var(--orphi-silver-mist);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Package Tier Statistics */
+.package-tier-stats {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.package-tier-stats h4 {
+  color: var(--orphi-cyber-blue);
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.tier-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.tier-stat {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.tier-stat:hover {
+  transform: translateY(-2px);
+  border-color: var(--orphi-cyber-blue);
+  box-shadow: 0 5px 20px rgba(0, 212, 255, 0.2);
+}
+
+.tier-color {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid var(--orphi-pure-white);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.tier-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.tier-count {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--orphi-pure-white);
+}
+
+.tier-label {
+  font-size: 0.85rem;
+  color: var(--orphi-silver-mist);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Enhanced tree legend */
+.tree-legend h4 {
+  color: var(--orphi-cyber-blue);
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.legend-items {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.9rem;
+  color: var(--orphi-silver-mist);
+  font-weight: 600;
+}
+
+.legend-color {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid var(--orphi-pure-white);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* Theme Toggle Button */
+.theme-toggle-btn {
+  position: fixed;
+  top: 20px;
+  right: 80px;
+  background: linear-gradient(135deg, var(--orphi-cyber-blue), var(--orphi-royal-purple));
+  color: var(--orphi-pure-white);
+  border: none;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
+  transition: all 0.3s ease;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.theme-toggle-btn:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 6px 20px rgba(0, 212, 255, 0.4);
+}
+
+/* Help Button */
+.help-btn {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: linear-gradient(135deg, var(--orphi-energy-orange), var(--orphi-royal-purple));
+  color: var(--orphi-pure-white);
+  border: none;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+  transition: all 0.3s ease;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.help-btn:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4);
+}
+
 /* Responsive Design */
 @media (max-width: 1200px) {
   .charts-section {
@@ -675,7 +1055,7 @@
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   .orphi-dashboard {
     padding: 1rem;
   }
@@ -730,30 +1110,46 @@
   }
 }
 
-@media (max-width: 480px) {
-  .metrics-grid {
-    grid-template-columns: 1fr;
+@media (max-width: 600px) {
+  .orphi-dashboard {
+    padding: 0.5rem;
+    min-width: 0;
   }
-
-  .logo-section {
+  .dashboard-header {
+    padding: 1rem;
     flex-direction: column;
-    text-align: center;
+    gap: 0.5rem;
   }
-
-  .orphi-logo {
-    width: 50px;
-    height: 50px;
+  .header-content {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
   }
-
   .main-title {
-    font-size: 1.5rem;
+    font-size: 1.3rem;
   }
+  .logo-section {
+    flex-direction: row;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+  .orphi-logo {
+    width: 40px;
+    height: 40px;
+  }
+}
 
-  .activity-meta {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.25rem;
-  }
+/* Touch target improvements */
+.dashboard-header button, .nav-tabs button {
+  min-height: 44px;
+  min-width: 44px;
+  font-size: 1rem;
+}
+
+/* Safe area insets for iOS */
+.orphi-dashboard {
+  padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
+  padding-top: max(1.5rem, env(safe-area-inset-top));
 }
 
 /* Accessibility Features */

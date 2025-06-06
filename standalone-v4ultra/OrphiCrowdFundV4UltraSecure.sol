@@ -108,8 +108,8 @@ contract OrphiCrowdFundV4UltraSecure is Ownable, ReentrancyGuard, Pausable, Auto
     error InvalidMatrixPosition();
     error OverflowDetected();
     error InsufficientUplineChain();
-    error SystemLocked();
-    error SecurityViolation();
+    error ErrSystemLocked();
+    error ErrSecurityViolation();
     error RateLimitExceeded();
 
     // ===== CONSTRUCTOR =====
@@ -142,7 +142,7 @@ contract OrphiCrowdFundV4UltraSecure is Ownable, ReentrancyGuard, Pausable, Auto
 
     // ===== ENHANCED REGISTRATION =====
     function register(address sponsor, uint16 tier) external nonReentrant whenNotPaused onlyKYCVerified {
-        if (state.systemLocked) revert SystemLocked();
+        if (state.systemLocked) revert ErrSystemLocked();
         if (state.totalUsers >= MAX_USERS) revert MaxUsersReached();
         if (block.timestamp < registrationCooldown[msg.sender]) revert RateLimitExceeded();
         
@@ -446,7 +446,7 @@ contract OrphiCrowdFundV4UltraSecure is Ownable, ReentrancyGuard, Pausable, Auto
     uint256 public constant MAX_WITHDRAWAL_PER_TX = 5000e6; // 5,000 USDT per transaction
     
     function withdraw() external nonReentrant onlyKYCVerified {
-        if (state.systemLocked) revert SystemLocked();
+        if (state.systemLocked) revert ErrSystemLocked();
         require(!emergencyMode, "Use emergencyWithdraw in emergency mode");
         require(users[msg.sender].suspensionLevel == 0, "Account suspended");
         
@@ -553,7 +553,7 @@ contract OrphiCrowdFundV4UltraSecure is Ownable, ReentrancyGuard, Pausable, Auto
     }
 
     function performUpkeep(bytes calldata performData) external override {
-        if (state.systemLocked) revert SystemLocked();
+        if (state.systemLocked) revert ErrSystemLocked();
         
         (uint8 poolType, uint32 startId, uint32 batchSize) = abi.decode(performData, (uint8, uint32, uint32));
         
@@ -569,7 +569,7 @@ contract OrphiCrowdFundV4UltraSecure is Ownable, ReentrancyGuard, Pausable, Auto
         
         if (poolType == 1) { // GHP
             _distributeGHPSecure(startId, endId);
-        } else if (poolType == 2) { // Leader
+        } else if (poolType == 2) {
             _distributeLeaderSecure(startId, endId);
         }
         

@@ -1,0 +1,53 @@
+/* PushNotificationSystem.css - Mobile and accessibility enhancements */
+.push-notification-system {
+  position: fixed;
+  z-index: 1200;
+  top: 80px;
+  right: 20px;
+  max-width: 350px;
+  width: 100%;
+  pointer-events: none;
+}
+
+@media (max-width: 600px) {
+  .push-notification-system {
+    top: 60px;
+    right: 5px;
+    left: 5px;
+    max-width: none;
+    width: auto;
+  }
+}
+
+.push-notification {
+  background: #fff;
+  border-radius: 10px;
+  margin-bottom: 12px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  pointer-events: auto;
+  transition: box-shadow 0.2s;
+}
+
+.push-notification button {
+  min-width: 44px;
+  min-height: 44px;
+  font-size: 1rem;
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: #888;
+  cursor: pointer;
+}
+
+.push-notification[role="alert"] {
+  outline: 2px solid #00D4FF;
+}
+
+/* Safe area insets for iOS */
+.push-notification-system {
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-top: env(safe-area-inset-top);
+}

@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OrphiCrowdFund - Admin Dashboard</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #2C1810 0%, #8B0000 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        
+        .admin-header {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 15px 30px;
+            border-bottom: 2px solid #FF6B35;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .admin-header h1 {
+            color: #FF6B35;
+            font-size: 1.8rem;
+            margin: 0;
+        }
+        
+        .admin-badge {
+            background: #FF6B35;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .admin-controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 30px;
+        }
+        
+        .control-panel {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid #FF6B35;
+            border-radius: 10px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .control-panel h3 {
+            color: #FF6B35;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+        
+        .control-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .control-item:last-child {
+            border-bottom: none;
+        }
+        
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #00FF00;
+            display: inline-block;
+            margin-right: 8px;
+        }
+        
+        .status-indicator.warning {
+            background: #FFA500;
+        }
+        
+        .status-indicator.error {
+            background: #FF0000;
+        }
+        
+        .btn-admin {
+            background: linear-gradient(45deg, #FF6B35, #FF4500);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: transform 0.2s;
+        }
+        
+        .btn-admin:hover {
+            transform: translateY(-1px);
+        }
+        
+        .dashboard-embed {
+            margin: 20px 30px;
+            border: 2px solid #FF6B35;
+            border-radius: 10px;
+            overflow: hidden;
+            background: white;
+        }
+        
+        .dashboard-embed iframe {
+            width: 100%;
+            height: 600px;
+            border: none;
+        }
+        
+        .admin-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            padding: 0 30px 30px;
+        }
+        
+        .stat-card {
+            background: rgba(255, 107, 53, 0.1);
+            border: 1px solid #FF6B35;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #FF6B35;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-header">
+        <h1>⚙️ OrphiCrowdFund Admin Dashboard</h1>
+        <div class="admin-badge">ADMIN ACCESS</div>
+    </div>
+    
+    <div class="admin-stats">
+        <div class="stat-card">
+            <div class="stat-value">12,458</div>
+            <div class="stat-label">Total Users</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">$2.4M</div>
+            <div class="stat-label">Total Volume</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">98.5%</div>
+            <div class="stat-label">System Uptime</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">42</div>
+            <div class="stat-label">Active Nodes</div>
+        </div>
+    </div>
+    
+    <div class="admin-controls">
+        <div class="control-panel">
+            <h3>🔐 System Controls</h3>
+            <div class="control-item">
+                <span><span class="status-indicator"></span>Contract Status</span>
+                <button class="btn-admin">Active</button>
+            </div>
+            <div class="control-item">
+                <span><span class="status-indicator"></span>Network Health</span>
+                <button class="btn-admin">Monitor</button>
+            </div>
+            <div class="control-item">
+                <span><span class="status-indicator warning"></span>Pending Rewards</span>
+                <button class="btn-admin">Process</button>
+            </div>
+            <div class="control-item">
+                <span><span class="status-indicator"></span>User Registrations</span>
+                <button class="btn-admin">Manage</button>
+            </div>
+        </div>
+        
+        <div class="control-panel">
+            <h3>📊 Analytics Control</h3>
+            <div class="control-item">
+                <span>Performance Monitoring</span>
+                <button class="btn-admin">View</button>
+            </div>
+            <div class="control-item">
+                <span>Transaction Analytics</span>
+                <button class="btn-admin">Export</button>
+            </div>
+            <div class="control-item">
+                <span>User Activity Reports</span>
+                <button class="btn-admin">Generate</button>
+            </div>
+            <div class="control-item">
+                <span>Financial Auditing</span>
+                <button class="btn-admin">Audit</button>
+            </div>
+        </div>
+        
+        <div class="control-panel">
+            <h3>👥 User Management</h3>
+            <div class="control-item">
+                <span>KYC Approvals</span>
+                <button class="btn-admin">Review</button>
+            </div>
+            <div class="control-item">
+                <span>Account Verification</span>
+                <button class="btn-admin">Process</button>
+            </div>
+            <div class="control-item">
+                <span>Suspended Accounts</span>
+                <button class="btn-admin">Manage</button>
+            </div>
+            <div class="control-item">
+                <span>Bulk Operations</span>
+                <button class="btn-admin">Execute</button>
+            </div>
+        </div>
+        
+        <div class="control-panel">
+            <h3>🛡️ Security & Compliance</h3>
+            <div class="control-item">
+                <span><span class="status-indicator"></span>Security Monitoring</span>
+                <button class="btn-admin">Active</button>
+            </div>
+            <div class="control-item">
+                <span>Audit Logs</span>
+                <button class="btn-admin">View</button>
+            </div>
+            <div class="control-item">
+                <span>Compliance Reports</span>
+                <button class="btn-admin">Generate</button>
+            </div>
+            <div class="control-item">
+                <span>Risk Assessment</span>
+                <button class="btn-admin">Run</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="dashboard-embed">
+        <iframe src="index.html" title="Embedded Dashboard View"></iframe>
+    </div>
+    
+    <script>
+        console.log('Admin Dashboard loaded');
+        
+        // Simulate real-time updates
+        setInterval(() => {
+            const indicators = document.querySelectorAll('.status-indicator:not(.warning):not(.error)');
+            indicators.forEach(indicator => {
+                indicator.style.opacity = '0.5';
+                setTimeout(() => {
+                    indicator.style.opacity = '1';
+                }, 500);
+            });
+        }, 3000);
+        
+        // Add click handlers to admin buttons
+        document.querySelectorAll('.btn-admin').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const action = this.textContent;
+                alert(`Admin Action: ${action}\n\nThis would trigger the ${action.toLowerCase()} functionality in the production admin system.`);
+            });
+        });
+    </script>
+</body>
+</html>

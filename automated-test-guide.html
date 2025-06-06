@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OrphiCrowdFund V4UltraSecure - Automated Testing Guide</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%);
+            color: white;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 15px;
+            padding: 30px;
+            border: 2px solid #ff6b35;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .header h1 {
+            color: #ff6b35;
+            text-shadow: 0 0 20px #ff6b35;
+            margin-bottom: 10px;
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 25px;
+            background: rgba(255, 107, 53, 0.1);
+            border-radius: 12px;
+            border-left: 4px solid #ff6b35;
+        }
+        .test-step {
+            display: flex;
+            align-items: center;
+            margin: 15px 0;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            border: 1px solid #333;
+        }
+        .step-number {
+            background: #ff6b35;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+        .step-content {
+            flex: 1;
+        }
+        .step-title {
+            font-weight: bold;
+            color: #ff6b35;
+            margin-bottom: 5px;
+        }
+        .step-description {
+            color: #ccc;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        .expected-result {
+            background: rgba(0, 255, 0, 0.1);
+            border-left: 3px solid #00ff00;
+            padding: 8px 12px;
+            margin: 8px 0;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+        .warning {
+            background: rgba(255, 193, 7, 0.1);
+            border-left: 3px solid #ffc107;
+            padding: 8px 12px;
+            margin: 8px 0;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+        .error-check {
+            background: rgba(255, 0, 0, 0.1);
+            border-left: 3px solid #ff0000;
+            padding: 8px 12px;
+            margin: 8px 0;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+        .status-indicator {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-left: 15px;
+            border: 2px solid #666;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .status-indicator.pending {
+            background: #666;
+        }
+        .status-indicator.success {
+            background: #00ff00;
+            border-color: #00ff00;
+        }
+        .status-indicator.error {
+            background: #ff0000;
+            border-color: #ff0000;
+        }
+        .control-panel {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #ff6b35;
+            min-width: 250px;
+        }
+        .control-panel h3 {
+            margin-top: 0;
+            color: #ff6b35;
+        }
+        .status-summary {
+            margin-bottom: 20px;
+        }
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            margin: 8px 0;
+            font-size: 14px;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #333;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff6b35, #ffa500);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        .button {
+            background: #ff6b35;
+            border: none;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 12px;
+            transition: background 0.3s;
+        }
+        .button:hover {
+            background: #e55a2b;
+        }
+        .button:disabled {
+            background: #666;
+            cursor: not-allowed;
+        }
+        .checklist {
+            margin-top: 20px;
+        }
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            margin: 5px 0;
+            font-size: 12px;
+        }
+        .checklist-item input[type="checkbox"] {
+            margin-right: 8px;
+        }
+        @media (max-width: 768px) {
+            .control-panel {
+                position: relative;
+                top: auto;
+                right: auto;
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="control-panel">
+        <h3>🧪 Test Control Panel</h3>
+        <div class="status-summary">
+            <div class="status-item">
+                <span>Total Tests:</span>
+                <span id="totalTests">0</span>
+            </div>
+            <div class="status-item">
+                <span>Completed:</span>
+                <span id="completedTests">0</span>
+            </div>
+            <div class="status-item">
+                <span>Success Rate:</span>
+                <span id="successRate">0%</span>
+            </div>
+        </div>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <button class="button" onclick="resetAllTests()">🔄 Reset All</button>
+        <button class="button" onclick="exportResults()">📊 Export Results</button>
+        
+        <div class="checklist">
+            <h4>Pre-Test Checklist:</h4>
+            <div class="checklist-item">
+                <input type="checkbox" id="metamaskInstalled">
+                <label>MetaMask installed</label>
+            </div>
+            <div class="checklist-item">
+                <input type="checkbox" id="testnetBNB">
+                <label>Have testnet BNB</label>
+            </div>
+            <div class="checklist-item">
+                <input type="checkbox" id="testInterface">
+                <label>Test interface open</label>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>🚀 OrphiCrowdFund V4UltraSecure</h1>
+            <h2>Comprehensive Automated Testing Guide</h2>
+            <p>Follow this step-by-step guide to test all contract functions systematically</p>
+        </div>
+
+        <!-- Phase 1: Initial Setup -->
+        <div class="test-section">
+            <h2>🔧 Phase 1: Initial Setup & Connection</h2>
+            
+            <div class="test-step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <div class="step-title">Open Test Interface</div>
+                    <div class="step-description">Navigate to the test interface and verify it loads correctly</div>
+                    <div class="expected-result">✅ Expected: Interface loads with all sections visible, Web3 initializes</div>
+                    <div class="warning">⚠️ If blank page: Check browser console for errors</div>
+                </div>
+                <div class="status-indicator pending" onclick="toggleStatus(this)" data-test="interface-load"></div>
+            </div>
+
+            <div class="test-step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <div class="step-title">Connect MetaMask Wallet</div>
+                    <div class="step-description">Click "Connect MetaMask" button and approve connection</div>
+                    <div class="expected-result">✅ Expected: Status changes to "Connected ✅", wallet address displayed</div>
+                    <div class="error-check">❌ Troubleshoot: Ensure MetaMask is unlocked and account has funds</div>
+                </div>
+                <div class="status-indicator pending" onclick="toggleStatus(this)" data-test="wallet-connect"></div>
+            </div>
+
+            <div class="test-step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <div class="step-title">Switch to BSC Testnet</div>
+                    <div class="step-description">Click "Switch to BSC Testnet" and approve network change</div>
+                    <div class="expected-result">✅ Expected: Network switches to BSC Testnet (Chain ID: 97)</div>
+                    <div class="warning">⚠️ Network will be added automatically if not present</div>
+                </div>
+                <div class="status-indicator pending" onclick="toggleStatus(this)" data-test="network-switch"></div>
+            </div>
+
+            <div class="test-step">
+                <div class="step-number">4</div>
+                <div class="step-content">
+                    <div class="step-title">Verify Initial Balances</div>
+                    <div class="step-description">Check BNB and USDT balances are displayed</div>
+                    <div class="expected-result">✅ Expected: BNB balance > 0, USDT balance may be 0</div>
+                    <div class="error-check">❌ Need testnet BNB? Get from BSC testnet faucet</div>
+                </div>
+                <div class="status-indicator pending" onclick="toggleStatus(this)" data-test="initial-balance"></div>
+            </div>
+        </div>
+
+        <!-- Phase 2: Contract Data Loading -->
+        <div class="test-section">
+            <h2>📊 Phase 2: Contract Data & Status Verification</h2>
+            
+            <div class="test-step">
+                <div class="step-number">5</div>
+                <div class="step-content">
+                    <div class="step-title">Load Contract Data</div>
+                    <div class="step-description">Click "📊 Load Contract Data" button</div>
+                    <div class="expected-result">✅ Expected: Shows total users, volume, system status, automation status</div>
+                    <div class="warning">⚠️ First deployment may show 0 users and volume</div>
+                </div>
+                <div class="status-indicator pending" onclick="toggleStatus(this)" data-test="contract-data"></div>
+            </div>
+
+            <div class="test-step">
+                <div class="step-number">6</div>
+                <div class="step-content">
+                    <div class="step-title">Check User Registration Status</div>
+                    <div class="step-description">Click "👤 Check Registration Status" button</div>
+                    <div class="expected-result">✅ Expected: Shows "❌ Not Registered" for new wallet</div>
+                    <div class="error-check">❌ If error: Check contract address and network</div>
+                </div>
+                <div class="status-indicator pending" onclick="toggleStatus(this)" data-test="registration-status"></div>
+            </div>
+        </div>
+
+        <!-- Phase 3: USDT Operations -->
+        <div class="test-section">
+            <h2>💰 Phase 3: USDT Operations Testing</h2>
+            
+            <div class="test-step">
+                <div class="step-number">7</div>
+                <div class="step-content">
+                    <div class="step-title">Mint Test USDT</div>
+                    <div class="step-description">Click "🪙 Mint 1000 USDT" button and confirm transaction</div>
+                    <div class="expected-result">✅ Expected: Transaction succeeds, USDT balance shows 1000.00 USDT</div>
+                    <div class="warning">⚠️ Requires BNB for gas fees (~0.001 BNB)</div>
+                </div>
+                <div class="status-indicator pending" onclick="toggleStatus(this)" data-test="mint-usdt"></div>
+            </div>
+
+            <div class="test-step">
+                <div class="step-number">8</div>
+                <div class="step-content">
+                    <div class="step-title">Approve USDT Spending</div>
+                    <div class="step-description">Click "✅ Approve 500 USDT" button and confirm</div>
+                    <div class="expected-result">✅ Expected: Approval transaction succeeds, logs show success</div>
+                    <div class="error-check">❌ This step is required before registration</div>
+                </div>
+                <div class="status-indicator pending" onclick="toggleStatus(this)" data-test="approve-usdt"></div>
+            </div>
+
+            <div class="test-step">
+                <div class="step-number">9</div>
+                <div class="step-content">
+                    <div class="step-title">Update Balances</div>
+                    <div class="step-description">Click "💰 Update Balances" to refresh display</div>
+                    <div class="expected-result">✅ Expected: Current BNB and USDT balances update correctly</div>
+                </div>
+                <div class="status-indicator pending" onclick="toggleStatus(this)" data-test="update-balance"></div>
+            </div>
+        </div>
+
+        <!-- Phase 4: User Registration -->
+        <div class="test-section">
+            <h2>📝 Phase 4: User Registration Testing</h2>
+            
+            <div class="test-step">
+                <div class="step-number">10</div>
+                <div class="step-content">
+                    <div class="step-title">Select Package Tier</div>
+                    <div class="step-description">Choose a package tier from dropdown (recommend Basic - $100)</div>
+                    <div class="expected-result">✅ Expected: Dropdown shows 5 package options</div>
+                    <div class="warning">⚠️ Higher tiers require more USDT, start with Basic</div>
+                </div>
+                <div class="status-indicator pending" onclick="toggleStatus(this)" data-test="select-package"></div>
+            </div>
+
+            <div class="test-step">
+                <div class="step-number">11</div>
+                <div class="step-content">
+                    <div class="step-title">Register User (Without Sponsor)</div>
+                    <div class="step-description">Leave sponsor field empty and click "🚀 Register"</div>
+                    <div class="expected-result">✅ Expected: Two transactions - USDT approval + registration</div>
+                    <div class="error-check">❌ If fails: Check USDT balance and approval amount</div>
+                </div>
+                <div class="status-indicator pending" onclick="toggleStatus(this)" data-test="register-user"></div>
+            </div>
+
+            <div class="test-step">
+                <div class="step-number">12</div>
+                <div class="step-content">
+                    <div class="step-title">Verify Registration Success</div>
+                    <div class="step-description">Check that registration status updates automatically</div>
+                    <div class="expected-result">✅ Expected: Shows "✅ Registered", user info grid appears</div>
+                    <div class="expected-result">✅ User ID > 0, package tier matches selection</div>
+                </div>
+                <div class="status-indicator pending" onclick="toggleStatus(this)" data-test="verify-registration"></div>
+            </div>
+        </div>
+
+        <!-- Phase 5: User Data Verification -->
+        <div class="test-section">
+            <h2>👤 Phase 5: User Data & Profile Verification</h2>
+            
+            <div class="test-step">
+                <div class="step-number">13</div>
+                <div class="step-content">
+                    <div class="step-title">Verify User Profile Data</div>
+                    <div class="step-description">Check all user info fields are populated correctly</div>
+                    <div class="expected-result">✅ User ID: Should be 1 (if first user)</div>
+                    <div class="expected-result">✅ Package Tier: Matches your selection</div>
+                    <div class="expected-result">✅ Team Size: Initially 1</div>
+                    <div class="expected-result">✅ Direct Referrals: Initially 0</div>
+                </div>
+                <div class="status-indicator pending" onclick="toggleStatus(this)" data-test="profile-data"></div>
+            </div>
+
+            <div class="test-step">
+                <div class="step-number">14</div>
+                <div class="step-content">
+                    <div class="step-title">Check Initial Earnings</div>
+                    <div class="step-description">Verify earnings and withdrawal amounts</div>
+                    <div class="expected-result">✅ Total Earnings: $0.00 (initially)</div>
+                    <div class="expected-result">✅ Withdrawable: $0.00 (initially)</div>
+                    <div class="expected-result">✅ KYC Status: ❌ Pending</div>
+                    <div class="expected-result">✅ Leader Rank: None</div>
+                </div>
+                <div class="status-indicator pending" onclick="toggleStatus(this)" data-test="initial-earnings"></div>
+            </div>
+        </div>
+
+        <!-- Phase 6: Contract State Updates -->
+        <div class="test-section">
+            <h2>🔄 Phase 6: Contract State Update Verification</h2>
+            
+            <div class="test-step">
+                <div class="step-number">15</div>
+                <div class="step-content">
+                    <div class="step-title">Reload Contract Data</div>
+                    <div class="step-description">Click "📊 Load Contract Data" again to see updated stats</div>
+                    <div class="expected-result">✅ Expected: Total Users incremented by 1</div>
+                    <div class="expected-result">✅ Total Volume increased by package amount</div>
+                    <div class="expected-result">✅ System Status: ✅ Active</div>
+                </div>
+                <div class="status-indicator pending" onclick="toggleStatus(this)" data-test="reload-contract"></div>
+            </div>
+
+            <div class="test-step">
+                <div class="step-number">16</div>
+                <div class="step-content">
+                    <div class="step-title">Verify Balance Changes</div>
+                    <div class="step-description">Check that USDT balance decreased by package amount</div>
+                    <div class="expected-result">✅ Expected: USDT balance = 1000 - package amount</div>
+                    <div class="expected-result">✅ BNB balance slightly decreased (gas fees)</div>
+                </div>
+                <div class="status-indicator pending" onclick="toggleStatus(this)" data-test="balance-changes"></div>
+            </div>
+        </div>
+
+        <!-- Phase 7: Withdrawal Testing -->
+        <div class="test-section">
+            <h2>💸 Phase 7: Withdrawal Functionality Testing</h2>
+            
+            <div class="test-step">
+                <div class="step-number">17</div>
+                <div class="step-content">
+                    <div class="step-title">Attempt Withdrawal (Expected to Fail)</div>
+                    <div class="step-description">Click "💸 Withdraw Earnings" button</div>
+                    <div class="expected-result">✅ Expected: Transaction fails or shows "No earnings to withdraw"</div>
+                    <div class="warning">⚠️ New users have no earnings initially - this is correct behavior</div>
+                </div>
+                <div class="status-indicator pending" onclick="toggleStatus(this)" data-test="withdrawal-test"></div>
+            </div>
+        </div>
+
+        <!-- Phase 8: Error Handling -->
+        <div class="test-section">
+            <h2>🛡️ Phase 8: Error Handling & Edge Cases</h2>
+            
+            <div class="test-step">
+                <div class="step-number">18</div>
+                <div class="step-content">
+                    <div class="step-title">Test Duplicate Registration</div>
+                    <div class="step-description">Try registering again with the same wallet</div>
+                    <div class="expected-result">✅ Expected: Transaction should fail with "Already registered" error</div>
+                    <div class="error-check">✅ This proves the contract prevents duplicate registrations</div>
+                </div>
+                <div class="status-indicator pending" onclick="toggleStatus(this)" data-test="duplicate-registration"></div>
+            </div>
+
+            <div class="test-step">
+                <div class="step-number">19</div>
+                <div class="step-content">
+                    <div class="step-title">Test Insufficient USDT</div>
+                    <div class="step-description">Try approving less USDT than package cost</div>
+                    <div class="expected-result">✅ Expected: Registration should fail with insufficient allowance</div>
+                    <div class="warning">⚠️ Test with a new wallet or reset approvals</div>
+                </div>
+                <div class="status-indicator pending" onclick="toggleStatus(this)" data-test="insufficient-usdt"></div>
+            </div>
+
+            <div class="test-step">
+                <div class="step-number">20</div>
+                <div class="step-content">
+                    <div class="step-title">Test Transaction Logging</div>
+                    <div class="step-description">Verify all transactions appear in the log with correct timestamps</div>
+                    <div class="expected-result">✅ Expected: All successful/failed transactions logged with colors</div>
+                    <div class="expected-result">✅ Transaction hashes clickable on BSCScan</div>
+                </div>
+                <div class="status-indicator pending" onclick="toggleStatus(this)" data-test="transaction-logging"></div>
+            </div>
+        </div>
+
+        <!-- Phase 9: Advanced Testing -->
+        <div class="test-section">
+            <h2>🔬 Phase 9: Advanced Features Testing</h2>
+            
+            <div class="test-step">
+                <div class="step-number">21</div>
+                <div class="step-content">
+                    <div class="step-title">Test Account Switching</div>
+                    <div class="step-description">Switch to different MetaMask account and reconnect</div>
+                    <div class="expected-result">✅ Expected: Interface updates with new account info</div>
+                    <div class="expected-result">✅ Registration status resets for new account</div>
+                </div>
+                <div class="status-indicator pending" onclick="toggleStatus(this)" data-test="account-switching"></div>
+            </div>
+
+            <div class="test-step">
+                <div class="step-number">22</div>
+                <div class="step-content">
+                    <div class="step-title">Test Network Changes</div>
+                    <div class="step-description">Temporarily switch to different network and back</div>
+                    <div class="expected-result">✅ Expected: Interface handles network changes gracefully</div>
+                    <div class="warning">⚠️ Page may reload automatically on network change</div>
+                </div>
+                <div class="status-indicator pending" onclick="toggleStatus(this)" data-test="network-changes"></div>
+            </div>
+
+            <div class="test-step">
+                <div class="step-number">23</div>
+                <div class="step-content">
+                    <div class="step-title">Test Referral Registration</div>
+                    <div class="step-description">Use second account with first account as sponsor</div>
+                    <div class="expected-result">✅ Expected: Registration succeeds with sponsor reference</div>
+                    <div class="expected-result">✅ First account's direct count increases to 1</div>
+                </div>
+                <div class="status-indicator pending" onclick="toggleStatus(this)" data-test="referral-registration"></div>
+            </div>
+
+            <div class="test-step">
+                <div class="step-number">24</div>
+                <div class="step-content">
+                    <div class="step-title">Performance & Gas Usage</div>
+                    <div class="step-description">Monitor gas usage for all transactions</div>
+                    <div class="expected-result">✅ Registration: ~150,000-200,000 gas</div>
+                    <div class="expected-result">✅ USDT operations: ~50,000-80,000 gas</div>
+                    <div class="expected-result">✅ View functions: No gas cost</div>
+                </div>
+                <div class="status-indicator pending" onclick="toggleStatus(this)" data-test="gas-usage"></div>
+            </div>
+        </div>
+
+        <!-- Final Verification -->
+        <div class="test-section">
+            <h2>🎯 Phase 10: Final Verification & Cleanup</h2>
+            
+            <div class="test-step">
+                <div class="step-number">25</div>
+                <div class="step-content">
+                    <div class="step-title">Verify BSCScan Integration</div>
+                    <div class="step-description">Check all transaction links work on BSCScan testnet</div>
+                    <div class="expected-result">✅ Expected: All transaction hashes link to BSCScan correctly</div>
+                    <div class="expected-result">✅ Contract address page shows recent transactions</div>
+                </div>
+                <div class="status-indicator pending" onclick="toggleStatus(this)" data-test="bscscan-integration"></div>
+            </div>
+
+            <div class="test-step">
+                <div class="step-number">26</div>
+                <div class="step-content">
+                    <div class="step-title">Complete Test Summary</div>
+                    <div class="step-description">Document all test results and any issues found</div>
+                    <div class="expected-result">✅ All core functions working</div>
+                    <div class="expected-result">✅ Error handling appropriate</div>
+                    <div class="expected-result">✅ UI responsive and informative</div>
+                    <div class="expected-result">✅ Ready for mainnet deployment</div>
+                </div>
+                <div class="status-indicator pending" onclick="toggleStatus(this)" data-test="test-summary"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let testResults = {};
+        let totalTests = 26;
+
+        // Initialize
+        document.getElementById('totalTests').textContent = totalTests;
+        updateProgress();
+
+        function toggleStatus(element) {
+            const testId = element.getAttribute('data-test');
+            const currentClass = element.className;
+            
+            if (currentClass.includes('pending')) {
+                element.className = 'status-indicator success';
+                testResults[testId] = 'success';
+            } else if (currentClass.includes('success')) {
+                element.className = 'status-indicator error';
+                testResults[testId] = 'error';
+            } else {
+                element.className = 'status-indicator pending';
+                delete testResults[testId];
+            }
+            
+            updateProgress();
+        }
+
+        function updateProgress() {
+            const completed = Object.keys(testResults).length;
+            const successful = Object.values(testResults).filter(r => r === 'success').length;
+            const successRate = completed > 0 ? Math.round((successful / completed) * 100) : 0;
+            const progress = Math.round((completed / totalTests) * 100);
+
+            document.getElementById('completedTests').textContent = completed;
+            document.getElementById('successRate').textContent = successRate + '%';
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        function resetAllTests() {
+            testResults = {};
+            document.querySelectorAll('.status-indicator').forEach(el => {
+                el.className = 'status-indicator pending';
+            });
+            updateProgress();
+        }
+
+        function exportResults() {
+            const results = {
+                timestamp: new Date().toISOString(),
+                totalTests: totalTests,
+                completed: Object.keys(testResults).length,
+                results: testResults,
+                summary: generateSummary()
+            };
+
+            const dataStr = JSON.stringify(results, null, 2);
+            const dataBlob = new Blob([dataStr], {type:'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'orphi-test-results-' + new Date().toISOString().split('T')[0] + '.json';
+            link.click();
+        }
+
+        function generateSummary() {
+            const completed = Object.keys(testResults).length;
+            const successful = Object.values(testResults).filter(r => r === 'success').length;
+            const failed = Object.values(testResults).filter(r => r === 'error').length;
+
+            return {
+                completion_rate: Math.round((completed / totalTests) * 100) + '%',
+                success_rate: completed > 0 ? Math.round((successful / completed) * 100) + '%' : '0%',
+                tests_passed: successful,
+                tests_failed: failed,
+                tests_pending: totalTests - completed,
+                ready_for_mainnet: failed === 0 && completed >= 20
+            };
+        }
+
+        // Auto-save progress
+        setInterval(() => {
+            localStorage.setItem('orphi-test-progress', JSON.stringify(testResults));
+        }, 5000);
+
+        // Load saved progress
+        window.addEventListener('load', () => {
+            const saved = localStorage.getItem('orphi-test-progress');
+            if (saved) {
+                testResults = JSON.parse(saved);
+                Object.keys(testResults).forEach(testId => {
+                    const element = document.querySelector(`[data-test="${testId}"]`);
+                    if (element) {
+                        element.className = `status-indicator ${testResults[testId]}`;
+                    }
+                });
+                updateProgress();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -7,7 +7,6 @@ import ErrorBoundary from './ErrorBoundary';
 import TransactionRetryHandler from './TransactionRetryHandler';
 import NetworkStatusMonitor from './NetworkStatusMonitor';
 import { ABIProvider } from './ABIManager';
-import { io } from 'socket.io-client';
 
 // Lazy load heavy components for code splitting
 const ChartsBundle = React.lazy(() => import('./ChartsBundle'));
@@ -117,6 +116,9 @@ const OrphiDashboard = ({ contractAddress, provider, userAddress, demoMode = fal
     },
     children: []
   });
+
+  // Add state for genealogy tree orientation
+  const [treeOrientation, setTreeOrientation] = useState('vertical');
 
   // Theme (dark or light)
   const [theme, setTheme] = useState('dark');
@@ -513,33 +515,40 @@ const OrphiDashboard = ({ contractAddress, provider, userAddress, demoMode = fal
       userMap.set(reg.user, userNode);
     });
 
-    // Build tree structure based on sponsor relationships
+    // Helper: insert node in binary tree fashion
+    function insertBinary(parent, child) {
+      if (!parent.children) parent.children = [];
+      if (parent.children.length < 2) {
+        parent.children.push(child);
+        return true;
+      } else {
+        // Try left, then right subtree
+        for (let i = 0; i < 2; i++) {
+          if (insertBinary(parent.children[i], child)) return true;
+        }
+        return false;
+      }
+    }
+
+    // Build tree structure based on sponsor relationships (binary)
     const addedToTree = new Set();
-    
     realtimeData.registrations.forEach(reg => {
       const userNode = userMap.get(reg.user);
       if (!userNode || addedToTree.has(reg.user)) return;
-
       // Find sponsor in the map
-      const sponsorNode = userMap.get(reg.sponsor);
-      
-      if (sponsorNode && !addedToTree.has(reg.sponsor)) {
-        // Add sponsor to tree first if not already added
-        if (reg.sponsor !== 'Root') {
-          sponsorNode.children = sponsorNode.children || [];
-          rootNode.children.push(sponsorNode);
-          addedToTree.add(reg.sponsor);
-        }
-      }
-
-      // Add user under sponsor or root
-      if (sponsorNode && sponsorNode.children) {
-        sponsorNode.children.push(userNode);
+      const sponsorNode = reg.sponsor === 'Root' ? rootNode : userMap.get(reg.sponsor);
+      if (sponsorNode) {
+        insertBinary(sponsorNode, userNode);
       } else {
-        rootNode.children.push(userNode);
+        // If sponsor not found, attach to root
+        insertBinary(rootNode, userNode);
       }
       addedToTree.add(reg.user);
     });
+
+    // Debug: Log the tree structure to console
+    console.log('Binary Tree Structure:', JSON.stringify(rootNode, null, 2));
+    console.log('Total registrations processed:', realtimeData.registrations.length);
 
     setNetworkTreeData(rootNode);
     setCached(cacheKey, rootNode);
@@ -631,12 +640,38 @@ const OrphiDashboard = ({ contractAddress, provider, userAddress, demoMode = fal
 
   // --- Genealogy Tree Stats Popover ---
   const [showTreeStats, setShowTreeStats] = useState(false);
-  const treeStats = {
-    totalUsers: networkTreeData.children?.length || 0,
-    totalVolume: systemStats.totalVolume,
-    maxDepth: 3, // Example, replace with real calculation if available
-    directChildren: networkTreeData.children?.length || 0
-  };
+  
+  // Calculate comprehensive tree statistics
+  const calculateTreeStats = useCallback((treeData) => {
+    let totalUsers = 0;
+    let totalVolume = 0;
+    let maxDepth = 0;
+    
+    const traverseTree = (node, depth = 0) => {
+      if (node.name !== 'OrphiChain Network') {
+        totalUsers++;
+        // Add package tier value to total volume calculation
+        const packageValues = { 1: 30, 2: 50, 3: 100, 4: 200 };
+        totalVolume += packageValues[node.attributes?.packageTier] || 0;
+      }
+      maxDepth = Math.max(maxDepth, depth);
+      
+      if (node.children) {
+        node.children.forEach(child => traverseTree(child, depth + 1));
+      }
+    };
+    
+    traverseTree(treeData);
+    
+    return {
+      totalUsers,
+      totalVolume,
+      maxDepth,
+      directChildren: treeData.children?.length || 0
+    };
+  }, []);
+  
+  const treeStats = calculateTreeStats(networkTreeData);
 
   // Off-chain analytics state
   const [analytics, setAnalytics] = useState(null);
@@ -801,6 +836,18 @@ const OrphiDashboard = ({ contractAddress, provider, userAddress, demoMode = fal
               <div className="metric-value" aria-live="polite">{systemStats.dailyWithdrawals}</div>
               {analytics && <div className="metric-analytics">Off-chain: {analytics.dailyWithdrawals}</div>}
             </div>
+            <div className="metric-card" title="Available package joining amounts">
+              <h3>Joining Amount</h3>
+              <div className="metric-value" aria-live="polite">
+                <div className="joining-amount-options">
+                  <span className="amount-option">$30</span>
+                  <span className="amount-option">$50</span>
+                  <span className="amount-option">$100</span>
+                  <span className="amount-option">$200</span>
+                </div>
+              </div>
+              <div className="metric-description">Package Tiers</div>
+            </div>
           </>
         )}
         {analyticsError && (
@@ -839,6 +886,20 @@ const OrphiDashboard = ({ contractAddress, provider, userAddress, demoMode = fal
               </div>
             </div>
           }>
+            {/* Orientation toggle UI */}
+            <div className="tree-orientation-toggle" style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
+              <label htmlFor="tree-orientation-select" style={{ fontWeight: 600 }}>Tree Layout:</label>
+              <select
+                id="tree-orientation-select"
+                value={treeOrientation}
+                onChange={e => setTreeOrientation(e.target.value)}
+                style={{ padding: '0.4rem 1rem', borderRadius: 6, fontWeight: 600 }}
+                aria-label="Select genealogy tree orientation"
+              >
+                <option value="vertical">Vertical</option>
+                <option value="horizontal">Horizontal</option>
+              </select>
+            </div>
             <GenealogyTreeBundle
               networkTreeData={networkTreeData}
               treeExpanded={treeExpanded}
@@ -858,6 +919,7 @@ const OrphiDashboard = ({ contractAddress, provider, userAddress, demoMode = fal
               showTreeStats={showTreeStats}
               setShowTreeStats={setShowTreeStats}
               treeStats={treeStats}
+              orientation={treeOrientation}
             />
           </Suspense>
         </ErrorBoundary>
@@ -1030,6 +1092,85 @@ const OrphiDashboard = ({ contractAddress, provider, userAddress, demoMode = fal
           <span style={{ fontSize: '0.85em', opacity: 0.7 }}>{pushNotification.timestamp}</span>
         </div>
       )}
+
+      {/* === COMPENSATION BREAKDOWN PANEL === */}
+      <div className="compensation-breakdown-panel orphi-card orphi-theme-dark" style={{margin: '2rem 0', padding: '2rem'}}>
+        <h2 className="orphi-h2">Compensation Plan Breakdown</h2>
+        <div className="comp-plan-grid">
+          <div className="comp-plan-section">
+            <h3>Pool Distribution <span title="How each registration is split among pools">🛈</span></h3>
+            <ul className="comp-plan-list">
+              <li><b>Sponsor Commission</b>: 40% <span title="Direct referral bonus to sponsor">🛈</span></li>
+              <li><b>Level Bonus</b>: 10% <span title="Distributed to 10 uplines: 3% (L1), 1% (L2-6), 0.5% (L7-10)">🛈</span></li>
+              <li><b>Global Upline Bonus</b>: 10% <span title="Split equally among first 30 uplines">🛈</span></li>
+              <li><b>Leader Bonus Pool</b>: 10% <span title="Bi-monthly, 50/50 split between Shining/Silver Stars">🛈</span></li>
+              <li><b>Global Help Pool</b>: 30% <span title="Weekly, distributed to active, non-capped users">🛈</span></li>
+            </ul>
+          </div>
+          <div className="comp-plan-section">
+            <h3>Earnings Cap <span title="Maximum 4x of total investment">🛈</span></h3>
+            <div className="cap-status">
+              {/* Example: show capped status for user if available */}
+              {myStats && myStats.tier && (
+                <>
+                  <span>Status: <b>{myStats.isCapped ? 'Capped' : 'Active'}</b></span>
+                  <span>Cap: 4x of total invested</span>
+                </>
+              )}
+              {!myStats && <span>Login to see your cap status.</span>}
+            </div>
+          </div>
+          <div className="comp-plan-section">
+            <h3>Withdrawal & Reinvestment <span title="Withdrawal and reinvestment rates based on direct sponsors">🛈</span></h3>
+            <table className="comp-plan-table">
+              <thead>
+                <tr><th>Direct Sponsors</th><th>Withdrawal</th><th>Reinvestment</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>0-4</td><td>70%</td><td>30%</td></tr>
+                <tr><td>5-19</td><td>75%</td><td>25%</td></tr>
+                <tr><td>20+</td><td>80%</td><td>20%</td></tr>
+              </tbody>
+            </table>
+            <div className="reinvest-breakdown">
+              <span>Reinvested funds split:</span>
+              <ul>
+                <li>40% → Level Bonus Pool</li>
+                <li>30% → Global Upline Pool</li>
+                <li>30% → Global Help Pool</li>
+              </ul>
+            </div>
+          </div>
+          <div className="comp-plan-section">
+            <h3>Leader Ranks <span title="Qualification and pool share">🛈</span></h3>
+            <table className="comp-plan-table">
+              <thead>
+                <tr><th>Rank</th><th>Team Size</th><th>Directs</th><th>Pool Share</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Shining Star</td><td>250+</td><td>10+</td><td>50%</td></tr>
+                <tr><td>Silver Star</td><td>500+</td><td>Any</td><td>50%</td></tr>
+              </tbody>
+            </table>
+            {/* Example: show user rank if available */}
+            {myStats && myStats.leaderRank && (
+              <div className="leader-rank-status">Your Rank: <b>{myStats.leaderRank}</b></div>
+            )}
+          </div>
+          <div className="comp-plan-section">
+            <h3>Distribution Schedule <span title="When pools are distributed">🛈</span></h3>
+            <ul className="comp-plan-list">
+              <li><b>Global Help Pool</b>: Weekly (7 days)</li>
+              <li><b>Leader Bonus</b>: Bi-monthly (14 days)</li>
+            </ul>
+          </div>
+        </div>
+        <div className="comp-plan-help">
+          <button className="orphi-btn orphi-btn-secondary" onClick={() => setShowHelp(true)}>
+            Learn more about the compensation plan
+          </button>
+        </div>
+      </div>
         </div>
       </ErrorBoundary>
     </ABIProvider>

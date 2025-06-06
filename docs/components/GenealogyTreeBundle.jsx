@@ -20,7 +20,8 @@ const GenealogyTreeBundle = ({
   addAlert,
   showTreeStats,
   setShowTreeStats,
-  treeStats
+  treeStats,
+  orientation = 'vertical' // NEW: orientation prop
 }) => {
   const treeRef = useRef();
   const minimapRef = useRef();
@@ -60,6 +61,67 @@ const GenealogyTreeBundle = ({
     setSelectorError('');
     setSelectedTreeUser(value);
     focusOnTreeUser(value);
+  };
+
+  // Brand color logic
+  const getPackageTierColor = (tier) => {
+    const colors = [
+      '#FF6B35', // 1: Energy Orange
+      '#00D4FF', // 2: Cyber Blue
+      '#7B2CBF', // 3: Royal Purple
+      '#00FF88'  // 4: Success Green
+    ];
+    return colors[(tier || 1) - 1] || '#666';
+  };
+
+  // Custom node renderer: always two lines (name, then address/tier)
+  const renderCustomNode = (rd3tProps) => {
+    const { nodeDatum } = rd3tProps;
+    const isRoot = nodeDatum.name === 'OrphiChain Network';
+    return (
+      <g data-tooltip={`Address: ${nodeDatum.attributes?.address} | Tier: ${nodeDatum.attributes?.packageTier}`}
+         className={treeSearchResults.some(r => r.user === nodeDatum.attributes?.address) ? 'tree-node-highlight' : ''}
+      >
+        <circle
+          r={20}
+          fill={getPackageTierColor(nodeDatum.attributes?.packageTier)}
+          stroke="#fff"
+          strokeWidth={3}
+          style={{ filter: 'drop-shadow(0 0 8px rgba(255,255,255,0.4))' }}
+          className="tree-node-animated"
+          tabIndex={0}
+          aria-label={`User node: ${nodeDatum.name}`}
+        />
+        {/* Line 1: User name/ID */}
+        <text
+          fill="#fff"
+          fontSize="16"
+          fontWeight="bold"
+          textAnchor="middle"
+          y="-2"
+          stroke="#000"
+          strokeWidth="3"
+          paintOrder="stroke fill"
+          style={{ filter: 'drop-shadow(0 2px 2px #000)', textShadow: '0 2px 8px #000, 0 0 4px #fff' }}
+        >
+          {nodeDatum.name}
+        </text>
+        {/* Line 2: Short address or package tier */}
+        <text
+          fill="#fff"
+          fontSize="13"
+          fontWeight="600"
+          textAnchor="middle"
+          y="15"
+          stroke="#000"
+          strokeWidth="2"
+          paintOrder="stroke fill"
+          style={{ filter: 'drop-shadow(0 1px 1px #000)', textShadow: '0 1px 4px #000, 0 0 3px #fff' }}
+        >
+          {nodeDatum.attributes?.address ? `${nodeDatum.attributes.address.slice(0, 8)}...` : (nodeDatum.attributes?.packageTier ? `$${[30,50,100,200][nodeDatum.attributes.packageTier-1]}` : '')}
+        </text>
+      </g>
+    );
   };
 
   return (
@@ -104,6 +166,26 @@ const GenealogyTreeBundle = ({
         </div>
       )}
       
+      {/* Network Statistics Display */}
+      <div className="network-stats-display">
+        <div className="stats-card">
+          <div className="stats-value">{treeStats.totalUsers}</div>
+          <div className="stats-label">TOTAL USERS</div>
+        </div>
+        <div className="stats-card">
+          <div className="stats-value">${(treeStats.totalVolume / 1000).toFixed(1)}K</div>
+          <div className="stats-label">TOTAL VOLUME</div>
+        </div>
+        <div className="stats-card">
+          <div className="stats-value">{treeStats.maxDepth}</div>
+          <div className="stats-label">MAX DEPTH</div>
+        </div>
+        <div className="stats-card">
+          <div className="stats-value">{treeStats.directChildren}</div>
+          <div className="stats-label">DIRECT CHILDREN</div>
+        </div>
+      </div>
+
       <div className="genealogy-header">
         <h3>Network Genealogy Tree</h3>
         <div className="genealogy-controls">
@@ -162,89 +244,32 @@ const GenealogyTreeBundle = ({
             <Tree
               ref={treeRef}
               data={networkTreeData}
-              orientation="vertical"
+              orientation={orientation} // vertical or horizontal
               pathFunc="diagonal"
-              nodeSize={{ x: 200, y: 100 }}
+              nodeSize={orientation === 'vertical' ? { x: 200, y: 100 } : { x: 100, y: 200 }}
               separation={{ siblings: 1.5, nonSiblings: 2 }}
-              translate={{ x: 400, y: 50 }}
+              translate={orientation === 'vertical' ? { x: 400, y: 50 } : { x: 100, y: 250 }}
               zoom={0.8}
               scaleExtent={{ min: 0.1, max: 3 }}
               enableLegacyTransitions={true}
-              renderCustomNodeElement={(rd3tProps) => (
-                <g data-tooltip={`Address: ${rd3tProps.nodeDatum.attributes?.address} | Tier: ${rd3tProps.nodeDatum.attributes?.packageTier}`}
-                  className={treeSearchResults.some(r => r.user === rd3tProps.nodeDatum.attributes?.address) ? 'tree-node-highlight' : ''}
-                >
-                  <circle
-                    r={20}
-                    fill={rd3tProps.nodeDatum.attributes?.packageTier ? ['#FF6B35', '#00D4FF', '#7B2CBF', '#00FF88'][rd3tProps.nodeDatum.attributes.packageTier - 1] : '#666'}
-                    stroke="#fff"
-                    strokeWidth={3}
-                    style={{
-                      filter: 'drop-shadow(0 0 8px rgba(255,255,255,0.4))'
-                    }}
-                    className="tree-node-animated"
-                    tabIndex={0}
-                    aria-label={`User node: ${rd3tProps.nodeDatum.name}`}
-                  />
-                  <text
-                    fill="#fff"
-                    fontSize="18"
-                    fontWeight="bold"
-                    textAnchor="middle"
-                    y="7" 
-                    dominantBaseline="middle"
-                    alignmentBaseline="middle"
-                    stroke="#000"
-                    strokeWidth="4"
-                    paintOrder="stroke fill"
-                    style={{
-                      filter: 'drop-shadow(0 2px 2px #000)',
-                      textShadow: '0 2px 8px #000, 0 0 4px #fff',
-                      letterSpacing: '1px',
-                      wordSpacing: '2px',
-                    }}
-                  >
-                    {rd3tProps.nodeDatum.name}
-                  </text>
-                  <text
-                    fill="#fff"
-                    fontSize="14"
-                    fontWeight="600"
-                    textAnchor="middle"
-                    y="-24" 
-                    dominantBaseline="middle"
-                    alignmentBaseline="middle"
-                    stroke="#000"
-                    strokeWidth="3"
-                    paintOrder="stroke fill"
-                    style={{
-                      filter: 'drop-shadow(0 1px 1px #000)',
-                      textShadow: '0 1px 4px #000, 0 0 3px #fff',
-                      letterSpacing: '1px',
-                      wordSpacing: '2px',
-                    }}
-                  >
-                    {rd3tProps.nodeDatum.attributes?.address?.slice(0, 6)}...
-                  </text>
-                </g>
-              )}
+              renderCustomNodeElement={renderCustomNode}
             />
             {treeMinimapVisible && (
               <div className="tree-minimap" aria-label="Genealogy Tree Minimap">
                 <Tree
                   ref={minimapRef}
                   data={networkTreeData}
-                  orientation="vertical"
+                  orientation={orientation}
                   pathFunc="diagonal"
-                  nodeSize={{ x: 40, y: 20 }}
+                  nodeSize={orientation === 'vertical' ? { x: 40, y: 20 } : { x: 20, y: 40 }}
                   separation={{ siblings: 1.2, nonSiblings: 1.5 }}
-                  translate={{ x: 100, y: 20 }}
+                  translate={orientation === 'vertical' ? { x: 100, y: 20 } : { x: 20, y: 100 }}
                   zoom={0.2}
                   scaleExtent={{ min: 0.1, max: 0.5 }}
                   enableLegacyTransitions={false}
                   renderCustomNodeElement={(rd3tProps) => (
                     <g onClick={() => handleMinimapNodeClick(rd3tProps.nodeDatum)} tabIndex={0} aria-label={`Minimap node: ${rd3tProps.nodeDatum.name}`}>
-                      <circle r={5} fill={rd3tProps.nodeDatum.attributes?.packageTier ? ['#FF6B35', '#00D4FF', '#7B2CBF', '#00FF88'][rd3tProps.nodeDatum.attributes.packageTier - 1] : '#666'} />
+                      <circle r={5} fill={getPackageTierColor(rd3tProps.nodeDatum.attributes?.packageTier)} />
                     </g>
                   )}
                 />
@@ -255,21 +280,59 @@ const GenealogyTreeBundle = ({
       </div>
       
       <div className="tree-legend">
-        <div className="legend-item">
-          <div className="legend-color" style={{ backgroundColor: '#FF6B35' }}></div>
-          <span>$30 Package</span>
+        <h4>Package Tiers</h4>
+        <div className="legend-items">
+          <div className="legend-item">
+            <div className="legend-color" style={{ backgroundColor: '#FF6B35' }}></div>
+            <span>$30 Package</span>
+          </div>
+          <div className="legend-item">
+            <div className="legend-color" style={{ backgroundColor: '#00D4FF' }}></div>
+            <span>$50 Package</span>
+          </div>
+          <div className="legend-item">
+            <div className="legend-color" style={{ backgroundColor: '#7B2CBF' }}></div>
+            <span>$100 Package</span>
+          </div>
+          <div className="legend-item">
+            <div className="legend-color" style={{ backgroundColor: '#00FF88' }}></div>
+            <span>$200 Package</span>
+          </div>
         </div>
-        <div className="legend-item">
-          <div className="legend-color" style={{ backgroundColor: '#00D4FF' }}></div>
-          <span>$50 Package</span>
-        </div>
-        <div className="legend-item">
-          <div className="legend-color" style={{ backgroundColor: '#7B2CBF' }}></div>
-          <span>$100 Package</span>
-        </div>
-        <div className="legend-item">
-          <div className="legend-color" style={{ backgroundColor: '#00FF88' }}></div>
-          <span>$200 Package</span>
+      </div>
+      
+      {/* Package Tier Statistics */}
+      <div className="package-tier-stats">
+        <h4>Package Distribution</h4>
+        <div className="tier-stats-grid">
+          <div className="tier-stat">
+            <div className="tier-color" style={{ backgroundColor: '#FF6B35' }}></div>
+            <div className="tier-info">
+              <span className="tier-count">{realtimeData.registrations.filter(r => r.packageTier === 1).length}</span>
+              <span className="tier-label">$30 Packages</span>
+            </div>
+          </div>
+          <div className="tier-stat">
+            <div className="tier-color" style={{ backgroundColor: '#00D4FF' }}></div>
+            <div className="tier-info">
+              <span className="tier-count">{realtimeData.registrations.filter(r => r.packageTier === 2).length}</span>
+              <span className="tier-label">$50 Packages</span>
+            </div>
+          </div>
+          <div className="tier-stat">
+            <div className="tier-color" style={{ backgroundColor: '#7B2CBF' }}></div>
+            <div className="tier-info">
+              <span className="tier-count">{realtimeData.registrations.filter(r => r.packageTier === 3).length}</span>
+              <span className="tier-label">$100 Packages</span>
+            </div>
+          </div>
+          <div className="tier-stat">
+            <div className="tier-color" style={{ backgroundColor: '#00FF88' }}></div>
+            <div className="tier-info">
+              <span className="tier-count">{realtimeData.registrations.filter(r => r.packageTier === 4).length}</span>
+              <span className="tier-label">$200 Packages</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>

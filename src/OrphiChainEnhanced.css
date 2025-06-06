@@ -1,0 +1,348 @@
+/* OrphiChainEnhanced.css - Enhanced OrphiChain UI/UX Styles (copied from docs/components)
+   Includes all OrphiChain brand, dashboard, and genealogy tree enhancements. */
+
+/* =============================
+   OrphiChainEnhanced.css START
+   ============================= */
+
+/* OrphiChain UI/UX Enhancement Styles */
+/* Following OrphiChain brand guidelines */
+
+/* Import base OrphiChain styles */
+@import url('./OrphiChain.css');
+
+/* ================================
+   ERROR BOUNDARY STYLES
+   ================================ */
+.error-boundary {
+  margin: 1rem;
+  padding: 1.5rem;
+  border-radius: 8px;
+  background: linear-gradient(rgba(255, 71, 87, 0.05), rgba(255, 71, 87, 0.15));
+  border: 1px solid var(--orphi-alert-red);
+  color: var(--orphi-pure-white);
+  font-family: var(--orphi-font-primary);
+}
+
+.error-boundary-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+  gap: 0.75rem;
+}
+
+.error-boundary-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: var(--orphi-alert-red);
+  color: var(--orphi-pure-white);
+  font-size: 1.5rem;
+}
+
+.error-boundary-title {
+  margin: 0;
+  font-size: var(--orphi-text-xl);
+  font-weight: 700;
+}
+
+.error-details {
+  background: rgba(0, 0, 0, 0.2);
+  padding: 1rem;
+  border-radius: 6px;
+  font-family: monospace;
+  white-space: pre-wrap;
+  overflow-x: auto;
+  margin-bottom: 1rem;
+  font-size: var(--orphi-text-sm);
+  border-left: 3px solid var(--orphi-alert-red);
+}
+
+.error-boundary-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.error-boundary-button {
+  padding: 0.6rem 1.2rem;
+  border-radius: 4px;
+  background-color: transparent;
+  border: 1px solid var(--orphi-cyber-blue);
+  color: var(--orphi-cyber-blue);
+  font-family: var(--orphi-font-primary);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.error-boundary-button:hover {
+  background-color: rgba(0, 212, 255, 0.1);
+}
+
+.error-boundary-button.primary {
+  background-color: var(--orphi-cyber-blue);
+  color: var(--orphi-deep-space);
+}
+
+.error-boundary-button.primary:hover {
+  background-color: #33DDFF;
+}
+
+.dev-info {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: rgba(123, 44, 191, 0.1);
+  border-radius: 6px;
+  border-left: 3px solid var(--orphi-royal-purple);
+}
+
+/* ================================
+   GLOBAL LOADING OVERLAY
+   ================================ */
+.global-loading-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(10, 10, 30, 0.7);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.global-loading-spinner {
+  background: linear-gradient(90deg, #00D4FF, #7B2CBF);
+  color: #fff;
+  padding: 1.5rem 2.5rem;
+  border-radius: 1rem;
+  font-size: 1.3rem;
+  font-weight: 700;
+  box-shadow: 0 4px 32px rgba(0, 212, 255, 0.15);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* ================================
+   PUSH NOTIFICATION STYLES
+   ================================ */
+.push-notification {
+  position: fixed;
+  bottom: 2.5rem;
+  right: 1.5rem;
+  z-index: 1200;
+  background: var(--orphi-cyber-blue);
+  color: var(--orphi-pure-white);
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 212, 255, 0.18);
+  font-family: var(--orphi-font-primary);
+  font-size: var(--orphi-text-base);
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  animation: push-fade-in 0.4s ease;
+}
+
+@keyframes push-fade-in {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ================================
+   ENHANCED METRICS GRID
+   ================================ */
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin: 2rem 0;
+}
+
+.metric-card {
+  background: var(--orphi-midnight-blue);
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.metric-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 212, 255, 0.15);
+}
+
+.metric-card h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.9rem;
+  color: var(--orphi-silver-mist);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.metric-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--orphi-cyber-blue);
+  margin-bottom: 0.5rem;
+}
+
+.metric-description {
+  font-size: 0.85rem;
+  color: var(--orphi-silver-mist);
+  opacity: 0.8;
+}
+
+/* ================================
+   JOINING AMOUNT OPTIONS
+   ================================ */
+.joining-amount-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.amount-option {
+  background: linear-gradient(45deg, var(--orphi-royal-purple), var(--orphi-cyber-blue));
+  color: white;
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: none;
+  cursor: default;
+  transition: all 0.2s ease;
+}
+
+.amount-option:hover {
+  transform: scale(1.05);
+  box-shadow: 0 2px 8px rgba(0, 212, 255, 0.3);
+}
+
+/* ================================
+   THEME TOGGLE BUTTON
+   ================================ */
+.theme-toggle-btn {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 1000;
+  background: var(--orphi-royal-purple);
+  color: white;
+  border: none;
+  border-radius: 25px;
+  padding: 0.7rem 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(123, 44, 191, 0.3);
+}
+
+.theme-toggle-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(123, 44, 191, 0.4);
+}
+
+/* ================================
+   HELP BUTTON
+   ================================ */
+.help-btn {
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: 1000;
+  background: var(--orphi-cyber-blue);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 212, 255, 0.3);
+}
+
+.help-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 16px rgba(0, 212, 255, 0.4);
+}
+
+/* ================================
+   LIGHT MODE SUPPORT
+   ================================ */
+[data-theme="light"] {
+  --orphi-deep-space: #f8f9fa;
+  --orphi-midnight-blue: #ffffff;
+  --orphi-pure-white: #212529;
+  --orphi-silver-mist: #6c757d;
+}
+
+[data-theme="light"] .metric-card {
+  background: white;
+  border: 1px solid #e9ecef;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .push-notification {
+  background: var(--orphi-royal-purple);
+}
+
+/* ================================
+   RESPONSIVE DESIGN
+   ================================ */
+@media (max-width: 768px) {
+  .metrics-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin: 1rem 0;
+  }
+  
+  .metric-card {
+    padding: 1rem;
+  }
+  
+  .metric-value {
+    font-size: 1.5rem;
+  }
+  
+  .theme-toggle-btn,
+  .help-btn {
+    top: 0.5rem;
+  }
+  
+  .theme-toggle-btn {
+    right: 0.5rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
+  
+  .help-btn {
+    left: 0.5rem;
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+  }
+  
+  .push-notification {
+    right: 0.5rem;
+    left: 0.5rem;
+    bottom: 1.2rem;
+    padding: 0.7rem 1rem;
+    font-size: 0.98em;
+    border-radius: 6px;
+  }
+}
+
+/* =============================
+   OrphiChainEnhanced.css END
+   ============================= */

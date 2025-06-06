@@ -1,0 +1,440 @@
+/* SmartInputValidation.css - Styling for smart input validation system */
+
+.smart-input-container {
+  margin-bottom: 1.5rem;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Label styling */
+.smart-input-label {
+  display: block;
+  font-weight: 600;
+  font-size: 14px;
+  color: #374151;
+  margin-bottom: 6px;
+  line-height: 1.4;
+}
+
+.required-indicator {
+  color: #EF4444;
+  margin-left: 2px;
+  font-weight: bold;
+}
+
+/* Input wrapper */
+.smart-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* Input styling */
+.smart-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #D1D5DB;
+  border-radius: 8px;
+  font-size: 16px;
+  line-height: 1.5;
+  background-color: #FFFFFF;
+  color: #111827;
+  transition: all 0.2s ease-in-out;
+  outline: none;
+  box-sizing: border-box;
+}
+
+/* Mobile font size to prevent zoom */
+@media (max-width: 768px) {
+  .smart-input {
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+}
+
+/* Focus state */
+.smart-input.is-focused {
+  border-color: #00D4FF;
+  box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1);
+  background-color: #FEFEFE;
+}
+
+/* Valid state */
+.smart-input.is-valid {
+  border-color: #10B981;
+  background-color: #F0FDF9;
+}
+
+.smart-input.is-valid.is-focused {
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+/* Error state */
+.smart-input.has-error {
+  border-color: #EF4444;
+  background-color: #FEF2F2;
+}
+
+.smart-input.has-error.is-focused {
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+/* Warning state */
+.smart-input.has-warning {
+  border-color: #F59E0B;
+  background-color: #FFFBEB;
+}
+
+.smart-input.has-warning.is-focused {
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+}
+
+/* Validating state */
+.smart-input.is-validating {
+  border-color: #6B7280;
+  background-color: #F9FAFB;
+}
+
+/* Disabled state */
+.smart-input.is-disabled {
+  background-color: #F3F4F6;
+  color: #9CA3AF;
+  cursor: not-allowed;
+  border-color: #E5E7EB;
+}
+
+.smart-input.is-disabled::placeholder {
+  color: #D1D5DB;
+}
+
+/* Placeholder styling */
+.smart-input::placeholder {
+  color: #9CA3AF;
+  opacity: 1;
+}
+
+/* Validation icon */
+.validation-icon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 18px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.success-icon {
+  color: #10B981;
+}
+
+.error-icon {
+  color: #EF4444;
+}
+
+.warning-icon {
+  color: #F59E0B;
+}
+
+/* Help text */
+.smart-input-help {
+  margin-top: 6px;
+  font-size: 14px;
+  color: #6B7280;
+  line-height: 1.4;
+}
+
+/* Error messages */
+.smart-input-errors {
+  margin-top: 6px;
+  font-size: 14px;
+  color: #EF4444;
+  animation: slideDown 0.2s ease-out;
+}
+
+.error-message {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin-bottom: 4px;
+  line-height: 1.4;
+}
+
+.error-message:before {
+  content: '⚠️';
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* Warning messages */
+.smart-input-warnings {
+  margin-top: 6px;
+  font-size: 14px;
+  color: #F59E0B;
+  animation: slideDown 0.2s ease-out;
+}
+
+.warning-message {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin-bottom: 4px;
+  line-height: 1.4;
+}
+
+.warning-message:before {
+  content: '⚠️';
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* Suggestions */
+.smart-input-suggestions {
+  margin-top: 8px;
+  padding: 12px;
+  background: rgba(59, 130, 246, 0.05);
+  border: 1px solid rgba(59, 130, 246, 0.1);
+  border-radius: 6px;
+  font-size: 13px;
+  animation: slideDown 0.2s ease-out;
+}
+
+.suggestion-item {
+  color: #1E40AF;
+  margin-bottom: 6px;
+  line-height: 1.4;
+}
+
+.suggestion-item:last-child {
+  margin-bottom: 0;
+}
+
+/* Animations */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Dark theme support */
+@media (prefers-color-scheme: dark) {
+  .smart-input-label {
+    color: #E5E7EB;
+  }
+
+  .smart-input {
+    background-color: #1F2937;
+    color: #F9FAFB;
+    border-color: #374151;
+  }
+
+  .smart-input.is-focused {
+    background-color: #111827;
+    border-color: #00D4FF;
+  }
+
+  .smart-input.is-valid {
+    background-color: #064E3B;
+    border-color: #10B981;
+  }
+
+  .smart-input.has-error {
+    background-color: #7F1D1D;
+    border-color: #EF4444;
+  }
+
+  .smart-input.has-warning {
+    background-color: #78350F;
+    border-color: #F59E0B;
+  }
+
+  .smart-input.is-validating {
+    background-color: #374151;
+    border-color: #6B7280;
+  }
+
+  .smart-input.is-disabled {
+    background-color: #374151;
+    color: #6B7280;
+    border-color: #4B5563;
+  }
+
+  .smart-input::placeholder {
+    color: #6B7280;
+  }
+
+  .smart-input-help {
+    color: #9CA3AF;
+  }
+
+  .smart-input-suggestions {
+    background: rgba(59, 130, 246, 0.1);
+    border-color: rgba(59, 130, 246, 0.2);
+  }
+
+  .suggestion-item {
+    color: #60A5FA;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .smart-input {
+    border-width: 3px;
+  }
+
+  .smart-input.is-focused {
+    box-shadow: 0 0 0 4px rgba(0, 212, 255, 0.3);
+  }
+
+  .smart-input.is-valid.is-focused {
+    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.3);
+  }
+
+  .smart-input.has-error.is-focused {
+    box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.3);
+  }
+
+  .smart-input.has-warning.is-focused {
+    box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.3);
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .smart-input {
+    transition: none;
+  }
+
+  .spinner {
+    animation: none;
+  }
+
+  .smart-input-errors,
+  .smart-input-warnings,
+  .smart-input-suggestions {
+    animation: none;
+  }
+}
+
+/* Specific input types */
+.smart-input[type="number"] {
+  text-align: right;
+}
+
+.smart-input[type="email"] {
+  text-transform: lowercase;
+}
+
+/* Ethereum address specific styling */
+.smart-input.ethereum-address {
+  font-family: 'Monaco', 'Consolas', monospace;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+}
+
+@media (max-width: 768px) {
+  .smart-input.ethereum-address {
+    font-size: 16px; /* Prevent zoom on mobile */
+  }
+}
+
+/* Amount input styling */
+.smart-input.amount-input {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Large input variant */
+.smart-input.large {
+  padding: 16px 20px;
+  font-size: 18px;
+  border-radius: 12px;
+}
+
+/* Small input variant */
+.smart-input.small {
+  padding: 8px 12px;
+  font-size: 14px;
+  border-radius: 6px;
+}
+
+/* Full width container */
+.smart-input-container.full-width {
+  width: 100%;
+}
+
+/* Inline container */
+.smart-input-container.inline {
+  display: inline-block;
+  margin-right: 1rem;
+  margin-bottom: 0;
+}
+
+/* Form group styling */
+.form-group {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 768px) {
+  .form-group.two-column {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .form-group.three-column {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+}
+
+/* Loading overlay for async validation */
+.smart-input-container.loading {
+  position: relative;
+}
+
+.smart-input-container.loading::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  pointer-events: none;
+}
+
+/* Accessibility improvements */
+.smart-input:focus {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+}
+
+/* Screen reader only content */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

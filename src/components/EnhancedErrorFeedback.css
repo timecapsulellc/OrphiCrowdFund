@@ -1,0 +1,431 @@
+/* EnhancedErrorFeedback.css - Styling for comprehensive error handling system */
+
+.enhanced-error-feedback {
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  max-width: 420px;
+  max-height: 80vh;
+  overflow-y: auto;
+  z-index: 1000;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .enhanced-error-feedback {
+    top: 60px;
+    right: 10px;
+    left: 10px;
+    max-width: none;
+    max-height: 70vh;
+  }
+}
+
+/* Error Item Container */
+.error-item {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+  transition: all 0.3s ease;
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Severity-based styling */
+.error-item.severity-low {
+  border-left: 4px solid #4CAF50;
+}
+
+.error-item.severity-medium {
+  border-left: 4px solid #FF9800;
+}
+
+.error-item.severity-high {
+  border-left: 4px solid #F44336;
+}
+
+.error-item.severity-critical {
+  border-left: 4px solid #9C27B0;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+}
+
+/* Error Header */
+.error-header {
+  display: flex;
+  align-items: flex-start;
+  padding: 16px;
+  gap: 12px;
+}
+
+.error-icon {
+  font-size: 24px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.error-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.error-title {
+  margin: 0 0 4px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1a1a1a;
+  line-height: 1.4;
+  word-wrap: break-word;
+}
+
+.error-code {
+  font-size: 12px;
+  color: #666;
+  font-family: 'Monaco', 'Consolas', monospace;
+  background: #f5f5f5;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.error-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.expand-button,
+.dismiss-button {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #666;
+  font-size: 14px;
+}
+
+.expand-button:hover,
+.dismiss-button:hover {
+  background: rgba(0, 0, 0, 0.1);
+  color: #333;
+}
+
+.expand-button:focus,
+.dismiss-button:focus {
+  outline: 2px solid #00D4FF;
+  outline-offset: 2px;
+}
+
+/* Error Details */
+.error-details {
+  padding: 0 16px 16px 16px;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.error-solution {
+  margin: 12px 0;
+  padding: 12px;
+  background: rgba(76, 175, 80, 0.1);
+  border: 1px solid rgba(76, 175, 80, 0.2);
+  border-radius: 8px;
+  color: #2E7D32;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.error-solution strong {
+  color: #1B5E20;
+}
+
+.error-steps {
+  margin: 12px 0;
+  font-size: 14px;
+  color: #333;
+}
+
+.error-steps strong {
+  color: #1a1a1a;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.error-steps ol {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.error-steps li {
+  margin-bottom: 6px;
+  line-height: 1.4;
+}
+
+.error-technical {
+  margin: 12px 0;
+  font-size: 12px;
+}
+
+.error-technical strong {
+  display: block;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.error-technical pre {
+  background: #f8f8f8;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 8px;
+  overflow-x: auto;
+  font-family: 'Monaco', 'Consolas', monospace;
+  font-size: 11px;
+  color: #666;
+  margin: 0;
+}
+
+.error-help {
+  margin: 12px 0;
+}
+
+.help-link {
+  color: #00D4FF;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.help-link:hover {
+  color: #0099CC;
+  text-decoration: underline;
+}
+
+/* Action Buttons */
+.error-buttons {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+.retry-button,
+.report-button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 36px;
+}
+
+.retry-button {
+  background: #00D4FF;
+  color: white;
+  flex: 1;
+  min-width: 120px;
+}
+
+.retry-button:hover:not(:disabled) {
+  background: #0099CC;
+  transform: translateY(-1px);
+}
+
+.retry-button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.report-button {
+  background: rgba(0, 0, 0, 0.05);
+  color: #666;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.report-button:hover {
+  background: rgba(0, 0, 0, 0.1);
+  color: #333;
+}
+
+.retry-info {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #666;
+  text-align: center;
+}
+
+/* Global Actions */
+.global-actions {
+  margin-top: 12px;
+  text-align: center;
+}
+
+.dismiss-all-button {
+  padding: 10px 20px;
+  background: rgba(244, 67, 54, 0.1);
+  color: #F44336;
+  border: 1px solid rgba(244, 67, 54, 0.2);
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.dismiss-all-button:hover {
+  background: rgba(244, 67, 54, 0.2);
+  transform: translateY(-1px);
+}
+
+/* Dark theme support */
+@media (prefers-color-scheme: dark) {
+  .error-item {
+    background: rgba(30, 30, 30, 0.95);
+    border-color: #444;
+    color: #e0e0e0;
+  }
+
+  .error-title {
+    color: #e0e0e0;
+  }
+
+  .error-code {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ccc;
+  }
+
+  .expand-button,
+  .dismiss-button {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ccc;
+  }
+
+  .expand-button:hover,
+  .dismiss-button:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: #e0e0e0;
+  }
+
+  .error-details {
+    background: rgba(0, 0, 0, 0.2);
+    border-top-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .error-technical pre {
+    background: rgba(0, 0, 0, 0.3);
+    border-color: #555;
+    color: #ccc;
+  }
+
+  .report-button {
+    background: rgba(255, 255, 255, 0.05);
+    color: #ccc;
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .report-button:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #e0e0e0;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .error-item {
+    border-width: 2px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  }
+
+  .error-title {
+    font-weight: 700;
+  }
+
+  .retry-button,
+  .report-button {
+    border-width: 2px;
+    font-weight: 600;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .error-item {
+    animation: none;
+    transition: none;
+  }
+
+  .error-item.severity-critical {
+    animation: none;
+  }
+
+  .retry-button:hover:not(:disabled) {
+    transform: none;
+  }
+
+  .dismiss-all-button:hover {
+    transform: none;
+  }
+}
+
+/* Loading state for retry button */
+.retry-button.loading {
+  position: relative;
+  color: transparent;
+}
+
+.retry-button.loading::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 16px;
+  height: 16px;
+  margin: -8px 0 0 -8px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Screen reader only content */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

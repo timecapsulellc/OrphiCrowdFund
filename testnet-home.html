@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OrphiCrowdFund V4UltraSecure - BSC Testnet</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            font-size: 3rem;
+            color: #00D4FF;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            color: #888;
+        }
+        
+        .status-bar {
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid #00D4FF;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .status-item {
+            text-align: center;
+            margin: 10px;
+        }
+        
+        .status-label {
+            font-size: 0.9rem;
+            color: #888;
+            text-transform: uppercase;
+        }
+        
+        .status-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #00D4FF;
+            margin-top: 5px;
+        }
+        
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .card {
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid #333;
+            border-radius: 15px;
+            padding: 30px;
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            border-color: #00D4FF;
+            transform: translateY(-5px);
+        }
+        
+        .card h3 {
+            color: #00D4FF;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+        
+        .card p {
+            color: #ccc;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .btn {
+            background: #00D4FF;
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            background: #0099cc;
+            transform: translateY(-2px);
+        }
+        
+        .btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .contract-info {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 30px;
+        }
+        
+        .contract-info h3 {
+            color: #00D4FF;
+            margin-bottom: 15px;
+        }
+        
+        .contract-info .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        
+        .info-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 10px;
+            border-radius: 5px;
+        }
+        
+        .info-item strong {
+            color: #00D4FF;
+        }
+        
+        .alert {
+            background: rgba(255, 193, 7, 0.2);
+            border: 1px solid #ffc107;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        
+        .success {
+            background: rgba(40, 167, 69, 0.2);
+            border-color: #28a745;
+        }
+        
+        .error {
+            background: rgba(220, 53, 69, 0.2);
+            border-color: #dc3545;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .status-bar {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .cards {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 OrphiCrowdFund V4UltraSecure</h1>
+            <p>BSC Testnet Deployment - Ready for Testing</p>
+        </div>
+
+        <div class="status-bar">
+            <div class="status-item">
+                <div class="status-label">Connection Status</div>
+                <div class="status-value" id="connectionStatus">🔴 Not Connected</div>
+            </div>
+            <div class="status-item">
+                <div class="status-label">Network</div>
+                <div class="status-value" id="networkStatus">-</div>
+            </div>
+            <div class="status-item">
+                <div class="status-label">Total Users</div>
+                <div class="status-value" id="totalUsers">-</div>
+            </div>
+            <div class="status-item">
+                <div class="status-label">Total Volume</div>
+                <div class="status-value" id="totalVolume">-</div>
+            </div>
+        </div>
+
+        <div id="walletAlert" class="alert" style="display: none;">
+            <strong>⚠️ MetaMask Required:</strong> Please install MetaMask to interact with the contract.
+        </div>
+
+        <div class="cards">
+            <div class="card">
+                <h3>💰 Test USDT Operations</h3>
+                <p>Mint test USDT tokens for registration and testing withdrawal functions on BSC Testnet.</p>
+                <button class="btn" id="mintBtn" disabled>Mint 1000 Test USDT</button>
+                <div style="margin-top: 10px;">
+                    <small>Balance: <span id="usdtBalance">-</span> USDT</small>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>👤 User Registration</h3>
+                <p>Register as a new user in the OrphiCrowdFund matrix system. Choose your package tier.</p>
+                <select id="tierSelect" style="background: rgba(255,255,255,0.1); color: white; border: 1px solid #00D4FF; padding: 8px; border-radius: 5px; margin-bottom: 10px;">
+                    <option value="1">Tier 1 - $100</option>
+                    <option value="2">Tier 2 - $200</option>
+                    <option value="3">Tier 3 - $500</option>
+                    <option value="4">Tier 4 - $1000</option>
+                    <option value="5">Tier 5 - $2000</option>
+                </select><br>
+                <button class="btn" id="registerBtn" disabled>Register Now</button>
+                <div style="margin-top: 10px;">
+                    <small>Status: <span id="registrationStatus">Not Registered</span></small>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>📊 User Dashboard</h3>
+                <p>View your earnings, team statistics, and withdraw your funds from the contract.</p>
+                <a href="user-dashboard.html" class="btn">Open Dashboard</a>
+                <div style="margin-top: 15px;">
+                    <button class="btn" id="withdrawBtn" disabled>Withdraw Earnings</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>🔧 Contract Testing</h3>
+                <p>Advanced testing interface for developers to interact with all contract functions.</p>
+                <a href="contract-test.html" class="btn">Open Test Interface</a>
+            </div>
+        </div>
+
+        <div class="contract-info">
+            <h3>📋 Deployed Contract Information</h3>
+            <div class="info-grid">
+                <div class="info-item">
+                    <strong>Contract Address:</strong><br>
+                    <code>0xFb586f2aF3ce424134C2F7F959cfF5db7eC083EC</code>
+                </div>
+                <div class="info-item">
+                    <strong>USDT Address:</strong><br>
+                    <code>0x1F7326578e8190effd341D14184A86a1d0227A7D</code>
+                </div>
+                <div class="info-item">
+                    <strong>Network:</strong><br>
+                    BSC Testnet (Chain ID: 97)
+                </div>
+                <div class="info-item">
+                    <strong>Block Explorer:</strong><br>
+                    <a href="https://testnet.bscscan.com/address/0xFb586f2aF3ce424134C2F7F959cfF5db7eC083EC" target="_blank" style="color: #00D4FF;">View on BSCScan</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+    <script>
+        let web3;
+        let account;
+        let orphiContract;
+        let usdtContract;
+
+        // Contract addresses and ABIs
+        const CONTRACT_ADDRESS = '0xFb586f2aF3ce424134C2F7F959cfF5db7eC083EC';
+        const USDT_ADDRESS = '0x1F7326578e8190effd341D14184A86a1d0227A7D';
+        
+        const ORPHI_ABI = [
+            {"inputs":[{"internalType":"address","name":"sponsor","type":"address"},{"internalType":"uint16","name":"tier","type":"uint16"}],"name":"register","outputs":[],"stateMutability":"nonpayable","type":"function"},
+            {"inputs":[],"name":"withdraw","outputs":[],"stateMutability":"nonpayable","type":"function"},
+            {"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"getUserInfo","outputs":[{"components":[{"internalType":"uint32","name":"id","type":"uint32"},{"internalType":"uint32","name":"teamSize","type":"uint32"},{"internalType":"uint16","name":"directCount","type":"uint16"},{"internalType":"uint16","name":"packageTier","type":"uint16"},{"internalType":"uint32","name":"matrixPos","type":"uint32"},{"internalType":"uint64","name":"totalEarnings","type":"uint64"},{"internalType":"uint64","name":"withdrawable","type":"uint64"},{"internalType":"uint32","name":"sponsor","type":"uint32"},{"internalType":"uint32","name":"lastActivity","type":"uint32"},{"internalType":"bool","name":"isCapped","type":"bool"},{"internalType":"bool","name":"isKYCVerified","type":"bool"},{"internalType":"uint8","name":"leaderRank","type":"uint8"},{"internalType":"uint8","name":"suspensionLevel","type":"uint8"}],"internalType":"struct OrphiCrowdFundV4UltraSecure.User","name":"","type":"tuple"}],"stateMutability":"view","type":"function"},
+            {"inputs":[],"name":"state","outputs":[{"internalType":"uint32","name":"totalUsers","type":"uint32"},{"internalType":"uint32","name":"lastUserId","type":"uint32"},{"internalType":"uint32","name":"lastGHPTime","type":"uint32"},{"internalType":"uint32","name":"lastLeaderTime","type":"uint32"},{"internalType":"uint32","name":"lastSecurityCheck","type":"uint32"},{"internalType":"bool","name":"automationOn","type":"bool"},{"internalType":"bool","name":"systemLocked","type":"bool"},{"internalType":"uint96","name":"totalVolume","type":"uint96"}],"stateMutability":"view","type":"function"}
+        ];
+
+        const USDT_ABI = [
+            {"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},
+            {"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+            {"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"mint","outputs":[],"stateMutability":"nonpayable","type":"function"}
+        ];
+
+        // Initialize Web3
+        async function init() {
+            if (typeof window.ethereum !== 'undefined') {
+                web3 = new Web3(window.ethereum);
+                orphiContract = new web3.eth.Contract(ORPHI_ABI, CONTRACT_ADDRESS);
+                usdtContract = new web3.eth.Contract(USDT_ABI, USDT_ADDRESS);
+                
+                console.log('Web3 initialized');
+                
+                // Try to connect if already authorized
+                const accounts = await web3.eth.getAccounts();
+                if (accounts.length > 0) {
+                    account = accounts[0];
+                    await onWalletConnected();
+                } else {
+                    showConnectButton();
+                }
+                
+                // Load contract data
+                await loadContractData();
+            } else {
+                document.getElementById('walletAlert').style.display = 'block';
+                console.log('MetaMask not found');
+            }
+        }
+
+        // Show connect button
+        function showConnectButton() {
+            const connectBtn = document.createElement('button');
+            connectBtn.textContent = 'Connect MetaMask';
+            connectBtn.className = 'btn';
+            connectBtn.onclick = connectWallet;
+            
+            const statusBar = document.querySelector('.status-bar');
+            statusBar.appendChild(connectBtn);
+        }
+
+        // Connect wallet
+        async function connectWallet() {
+            try {
+                const accounts = await window.ethereum.request({
+                    method: 'eth_requestAccounts'
+                });
+                account = accounts[0];
+                await switchToBSCTestnet();
+                await onWalletConnected();
+            } catch (error) {
+                console.error('Connection failed:', error);
+                alert('Failed to connect wallet: ' + error.message);
+            }
+        }
+
+        // Switch to BSC Testnet
+        async function switchToBSCTestnet() {
+            try {
+                await window.ethereum.request({
+                    method: 'wallet_switchEthereumChain',
+                    params: [{ chainId: '0x61' }],
+                });
+            } catch (switchError) {
+                if (switchError.code === 4902) {
+                    await window.ethereum.request({
+                        method: 'wallet_addEthereumChain',
+                        params: [{
+                            chainId: '0x61',
+                            chainName: 'BSC Testnet',
+                            rpcUrls: ['https://data-seed-prebsc-1-s1.binance.org:8545/'],
+                            nativeCurrency: {
+                                name: 'BNB',
+                                symbol: 'BNB',
+                                decimals: 18
+                            },
+                            blockExplorerUrls: ['https://testnet.bscscan.com']
+                        }]
+                    });
+                }
+            }
+        }
+
+        // On wallet connected
+        async function onWalletConnected() {
+            document.getElementById('connectionStatus').textContent = '🟢 Connected';
+            document.getElementById('networkStatus').textContent = 'BSC Testnet';
+            
+            // Enable buttons
+            document.getElementById('mintBtn').disabled = false;
+            document.getElementById('registerBtn').disabled = false;
+            document.getElementById('withdrawBtn').disabled = false;
+            
+            // Load user data
+            await loadUserData();
+            
+            console.log('Wallet connected:', account);
+        }
+
+        // Load contract data
+        async function loadContractData() {
+            try {
+                const state = await orphiContract.methods.state().call();
+                document.getElementById('totalUsers').textContent = state.totalUsers;
+                document.getElementById('totalVolume').textContent = '$' + web3.utils.fromWei(state.totalVolume.toString(), 'mwei');
+            } catch (error) {
+                console.error('Error loading contract data:', error);
+            }
+        }
+
+        // Load user data
+        async function loadUserData() {
+            try {
+                // USDT balance
+                const usdtBalance = await usdtContract.methods.balanceOf(account).call();
+                document.getElementById('usdtBalance').textContent = web3.utils.fromWei(usdtBalance.toString(), 'mwei');
+                
+                // User registration status
+                const userInfo = await orphiContract.methods.getUserInfo(account).call();
+                if (userInfo.id > 0) {
+                    document.getElementById('registrationStatus').textContent = `Registered (ID: ${userInfo.id})`;
+                    document.getElementById('registrationStatus').style.color = '#28a745';
+                } else {
+                    document.getElementById('registrationStatus').textContent = 'Not Registered';
+                    document.getElementById('registrationStatus').style.color = '#ffc107';
+                }
+            } catch (error) {
+                console.error('Error loading user data:', error);
+            }
+        }
+
+        // Mint USDT
+        document.getElementById('mintBtn').onclick = async () => {
+            try {
+                document.getElementById('mintBtn').disabled = true;
+                document.getElementById('mintBtn').textContent = 'Minting...';
+                
+                const tx = await usdtContract.methods.mint(account, web3.utils.toWei('1000', 'mwei')).send({ from: account });
+                
+                alert('✅ 1000 USDT minted successfully!\nTransaction: ' + tx.transactionHash);
+                await loadUserData();
+                
+                document.getElementById('mintBtn').textContent = 'Mint 1000 Test USDT';
+                document.getElementById('mintBtn').disabled = false;
+            } catch (error) {
+                alert('❌ Minting failed: ' + error.message);
+                document.getElementById('mintBtn').textContent = 'Mint 1000 Test USDT';
+                document.getElementById('mintBtn').disabled = false;
+            }
+        };
+
+        // Register user
+        document.getElementById('registerBtn').onclick = async () => {
+            try {
+                const tier = parseInt(document.getElementById('tierSelect').value);
+                const packageAmounts = [100, 200, 500, 1000, 2000];
+                const amount = packageAmounts[tier - 1];
+                
+                document.getElementById('registerBtn').disabled = true;
+                document.getElementById('registerBtn').textContent = 'Registering...';
+                
+                // Approve USDT
+                const amountWei = web3.utils.toWei(amount.toString(), 'mwei');
+                await usdtContract.methods.approve(CONTRACT_ADDRESS, amountWei).send({ from: account });
+                
+                // Register
+                const tx = await orphiContract.methods.register('0x0000000000000000000000000000000000000000', tier).send({ from: account });
+                
+                alert('✅ Registration successful!\nTransaction: ' + tx.transactionHash);
+                await loadUserData();
+                await loadContractData();
+                
+                document.getElementById('registerBtn').textContent = 'Register Now';
+                document.getElementById('registerBtn').disabled = false;
+            } catch (error) {
+                alert('❌ Registration failed: ' + error.message);
+                document.getElementById('registerBtn').textContent = 'Register Now';
+                document.getElementById('registerBtn').disabled = false;
+            }
+        };
+
+        // Withdraw
+        document.getElementById('withdrawBtn').onclick = async () => {
+            try {
+                document.getElementById('withdrawBtn').disabled = true;
+                document.getElementById('withdrawBtn').textContent = 'Withdrawing...';
+                
+                const tx = await orphiContract.methods.withdraw().send({ from: account });
+                
+                alert('✅ Withdrawal successful!\nTransaction: ' + tx.transactionHash);
+                await loadUserData();
+                
+                document.getElementById('withdrawBtn').textContent = 'Withdraw Earnings';
+                document.getElementById('withdrawBtn').disabled = false;
+            } catch (error) {
+                alert('❌ Withdrawal failed: ' + error.message);
+                document.getElementById('withdrawBtn').textContent = 'Withdraw Earnings';
+                document.getElementById('withdrawBtn').disabled = false;
+            }
+        };
+
+        // Initialize on load
+        window.addEventListener('load', () => {
+            console.log('Page loaded, initializing...');
+            init();
+        });
+    </script>
+</body>
+</html>

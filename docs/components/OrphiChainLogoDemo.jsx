@@ -20,8 +20,8 @@ const OrphiChainLogoDemo = () => {
         <OrphiChainLogo
           size={logoSize}
           variant={logoVariant}
-          showControls={true}
-          onVariantChange={handleVariantChange}
+          autoRotate={true}
+          backgroundColor="transparent"
         />
       </div>
       

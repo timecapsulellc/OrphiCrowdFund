@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OrphiCrowdFund V4UltraSecure - User Dashboard (BSC Testnet)</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        
+        .user-header {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px 30px;
+            border-bottom: 2px solid #00D4FF;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .user-header h1 {
+            color: #00D4FF;
+            font-size: 1.8rem;
+            margin: 0;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #00D4FF, #0099CC);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+        
+        .user-details {
+            font-size: 14px;
+        }
+        
+        .user-level {
+            background: #00D4FF;
+            color: #1a1a2e;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .user-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 30px;
+        }
+        
+        .user-stat-card {
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid #00D4FF;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+        
+        .user-stat-card h3 {
+            color: #00D4FF;
+            margin-bottom: 10px;
+            font-size: 1rem;
+        }
+        
+        .user-stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #00D4FF;
+            margin-bottom: 5px;
+        }
+        
+        .user-stat-change {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .user-stat-change.positive {
+            color: #00FF88;
+        }
+        
+        .user-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 0 30px 30px;
+        }
+        
+        .action-panel {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid #00D4FF;
+            border-radius: 10px;
+            padding: 20px;
+        }
+        
+        .action-panel h3 {
+            color: #00D4FF;
+            margin-bottom: 15px;
+        }
+        
+        .action-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .action-item:last-child {
+            border-bottom: none;
+        }
+        
+        .btn-user {
+            background: linear-gradient(45deg, #00D4FF, #0099CC);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: transform 0.2s;
+        }
+        
+        .btn-user:hover {
+            transform: translateY(-1px);
+        }
+        
+        .btn-user.secondary {
+            background: linear-gradient(45deg, #555, #777);
+        }
+        
+        .dashboard-embed {
+            margin: 20px 30px;
+            border: 2px solid #00D4FF;
+            border-radius: 10px;
+            overflow: hidden;
+            background: white;
+        }
+        
+        .dashboard-embed iframe {
+            width: 100%;
+            height: 600px;
+            border: none;
+        }
+        
+        .recent-activity {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid #00D4FF;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 30px;
+        }
+        
+        .recent-activity h3 {
+            color: #00D4FF;
+            margin-bottom: 15px;
+        }
+        
+        .activity-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+        
+        .activity-type {
+            color: #00D4FF;
+            font-weight: bold;
+        }
+        
+        .activity-time {
+            opacity: 0.7;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="user-header">
+        <h1>👤 My OrphiCrowdFund Dashboard</h1>
+        <div class="user-info">
+            <div class="user-avatar">JD</div>
+            <div class="user-details">
+                <div><strong>John Doe</strong></div>
+                <div class="user-level">Diamond Level</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="user-stats">
+        <div class="user-stat-card">
+            <h3>💰 My Earnings</h3>
+            <div class="user-stat-value">$12,450</div>
+            <div class="user-stat-change positive">+15.2% this month</div>
+        </div>
+        <div class="user-stat-card">
+            <h3>👥 Team Size</h3>
+            <div class="user-stat-value">287</div>
+            <div class="user-stat-change positive">+23 new members</div>
+        </div>
+        <div class="user-stat-card">
+            <h3>🎯 My Level</h3>
+            <div class="user-stat-value">Diamond</div>
+            <div class="user-stat-change">Next: Platinum</div>
+        </div>
+        <div class="user-stat-card">
+            <h3>📊 Performance</h3>
+            <div class="user-stat-value">92%</div>
+            <div class="user-stat-change positive">Above average</div>
+        </div>
+    </div>
+    
+    <div class="user-actions">
+        <div class="action-panel">
+            <h3>💼 Quick Actions</h3>
+            <div class="action-item">
+                <span>Claim Available Rewards</span>
+                <button class="btn-user">Claim $245</button>
+            </div>
+            <div class="action-item">
+                <span>Invite New Members</span>
+                <button class="btn-user">Share Link</button>
+            </div>
+            <div class="action-item">
+                <span>Upgrade Level</span>
+                <button class="btn-user secondary">View Requirements</button>
+            </div>
+            <div class="action-item">
+                <span>View Genealogy</span>
+                <button class="btn-user secondary">Open Tree</button>
+            </div>
+        </div>
+        
+        <div class="action-panel">
+            <h3>📈 My Performance</h3>
+            <div class="action-item">
+                <span>Monthly Analytics</span>
+                <button class="btn-user">View Report</button>
+            </div>
+            <div class="action-item">
+                <span>Team Performance</span>
+                <button class="btn-user">Analyze</button>
+            </div>
+            <div class="action-item">
+                <span>Earning History</span>
+                <button class="btn-user secondary">Download</button>
+            </div>
+            <div class="action-item">
+                <span>Goals & Targets</span>
+                <button class="btn-user secondary">Set Goals</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="dashboard-embed">
+        <iframe src="index.html" title="Interactive Dashboard"></iframe>
+    </div>
+    
+    <div class="recent-activity">
+        <h3>🔔 Recent Activity</h3>
+        <div class="activity-item">
+            <div>
+                <div class="activity-type">New Team Member</div>
+                <div>Sarah M. joined your team</div>
+            </div>
+            <div class="activity-time">2 hours ago</div>
+        </div>
+        <div class="activity-item">
+            <div>
+                <div class="activity-type">Reward Earned</div>
+                <div>Commission payment of $125 received</div>
+            </div>
+            <div class="activity-time">1 day ago</div>
+        </div>
+        <div class="activity-item">
+            <div>
+                <div class="activity-type">Level Progress</div>
+                <div>80% progress toward Platinum level</div>
+            </div>
+            <div class="activity-time">3 days ago</div>
+        </div>
+        <div class="activity-item">
+            <div>
+                <div class="activity-type">Achievement</div>
+                <div>Reached 250+ team members milestone</div>
+            </div>
+            <div class="activity-time">1 week ago</div>
+        </div>
+    </div>
+    
+    <script>
+        console.log('User Dashboard loaded');
+        
+        // Add click handlers to user buttons
+        document.querySelectorAll('.btn-user').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const action = this.textContent;
+                if (action.includes('Claim')) {
+                    alert(`💰 Reward Claim\n\nProcessing your reward claim of $245...\nFunds will be transferred to your wallet shortly.`);
+                } else if (action.includes('Share')) {
+                    alert(`🔗 Referral Link\n\nYour unique referral link:\nhttps://orphicrowdfund.com/ref/johndoe123\n\nShare this link to invite new members!`);
+                } else {
+                    alert(`User Action: ${action}\n\nThis would open the ${action.toLowerCase()} feature in your dashboard.`);
+                }
+            });
+        });
+        
+        // Animate stats on load
+        setTimeout(() => {
+            document.querySelectorAll('.user-stat-value').forEach(stat => {
+                stat.style.animation = 'pulse 0.5s ease-in-out';
+            });
+        }, 500);
+    </script>
+
+    <!-- Web3 Integration -->
+    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+    <script>
+        // Contract Configuration
+        const CONTRACTS = {
+            BSC_TESTNET: {
+                contracts: {
+                    OrphiCrowdFundV4UltraSecure: {
+                        address: '0xFb586f2aF3ce424134C2F7F959cfF5db7eC083EC'
+                    },
+                    MockUSDT: {
+                        address: '0x1F7326578e8190effd341D14184A86a1d0227A7D'
+                    }
+                }
+            }
+        };
+
+        const ORPHI_ABI = [
+            {"inputs":[{"internalType":"address","name":"sponsor","type":"address"},{"internalType":"uint16","name":"tier","type":"uint16"}],"name":"register","outputs":[],"stateMutability":"nonpayable","type":"function"},
+            {"inputs":[],"name":"withdraw","outputs":[],"stateMutability":"nonpayable","type":"function"},
+            {"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"getUserInfo","outputs":[{"components":[{"internalType":"uint32","name":"id","type":"uint32"},{"internalType":"uint32","name":"teamSize","type":"uint32"},{"internalType":"uint16","name":"directCount","type":"uint16"},{"internalType":"uint16","name":"packageTier","type":"uint16"},{"internalType":"uint32","name":"matrixPos","type":"uint32"},{"internalType":"uint64","name":"totalEarnings","type":"uint64"},{"internalType":"uint64","name":"withdrawable","type":"uint64"},{"internalType":"uint32","name":"sponsor","type":"uint32"},{"internalType":"uint32","name":"lastActivity","type":"uint32"},{"internalType":"bool","name":"isCapped","type":"bool"},{"internalType":"bool","name":"isKYCVerified","type":"bool"},{"internalType":"uint8","name":"leaderRank","type":"uint8"},{"internalType":"uint8","name":"suspensionLevel","type":"uint8"}],"internalType":"struct OrphiCrowdFundV4UltraSecure.User","name":"","type":"tuple"}],"stateMutability":"view","type":"function"},
+            {"inputs":[],"name":"state","outputs":[{"internalType":"uint32","name":"totalUsers","type":"uint32"},{"internalType":"uint32","name":"lastUserId","type":"uint32"},{"internalType":"uint32","name":"lastGHPTime","type":"uint32"},{"internalType":"uint32","name":"lastLeaderTime","type":"uint32"},{"internalType":"uint32","name":"lastSecurityCheck","type":"uint32"},{"internalType":"bool","name":"automationOn","type":"bool"},{"internalType":"bool","name":"systemLocked","type":"bool"},{"internalType":"uint96","name":"totalVolume","type":"uint96"}],"stateMutability":"view","type":"function"}
+        ];
+
+        const USDT_ABI = [
+            {"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},
+            {"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+            {"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"mint","outputs":[],"stateMutability":"nonpayable","type":"function"}
+        ];
+
+        // OrphiWeb3 Class
+        class OrphiWeb3 {
+            constructor() {
+                this.web3 = null;
+                this.account = null;
+                this.contract = null;
+                this.usdtContract = null;
+                this.network = 'BSC_TESTNET';
+            }
+
+            async init() {
+                if (typeof window.ethereum !== 'undefined') {
+                    this.web3 = new Web3(window.ethereum);
+                    
+                    const config = CONTRACTS[this.network];
+                    this.contract = new this.web3.eth.Contract(
+                        ORPHI_ABI, 
+                        config.contracts.OrphiCrowdFundV4UltraSecure.address
+                    );
+                    this.usdtContract = new this.web3.eth.Contract(
+                        USDT_ABI, 
+                        config.contracts.MockUSDT.address
+                    );
+
+                    console.log('Web3 initialized successfully');
+                    return true;
+                } else {
+                    console.error('MetaMask not found');
+                    return false;
+                }
+            }
+
+            async connectWallet() {
+                try {
+                    const accounts = await window.ethereum.request({
+                        method: 'eth_requestAccounts'
+                    });
+                    this.account = accounts[0];
+                    
+                    await this.switchToBSCTestnet();
+                    
+                    console.log('Wallet connected:', this.account);
+                    return this.account;
+                } catch (error) {
+                    console.error('Failed to connect wallet:', error);
+                    throw error;
+                }
+            }
+
+            async switchToBSCTestnet() {
+                try {
+                    await window.ethereum.request({
+                        method: 'wallet_switchEthereumChain',
+                        params: [{ chainId: '0x61' }],
+                    });
+                } catch (switchError) {
+                    if (switchError.code === 4902) {
+                        await window.ethereum.request({
+                            method: 'wallet_addEthereumChain',
+                            params: [{
+                                chainId: '0x61',
+                                chainName: 'BSC Testnet',
+                                rpcUrls: ['https://data-seed-prebsc-1-s1.binance.org:8545/'],
+                                nativeCurrency: {
+                                    name: 'BNB',
+                                    symbol: 'BNB',
+                                    decimals: 18
+                                },
+                                blockExplorerUrls: ['https://testnet.bscscan.com']
+                            }]
+                        });
+                    }
+                }
+            }
+
+            async getUserInfo(address = null) {
+                const userAddress = address || this.account;
+                if (!userAddress) throw new Error('No address provided');
+
+                try {
+                    const userInfo = await this.contract.methods.getUserInfo(userAddress).call();
+                    return {
+                        id: userInfo.id,
+                        teamSize: userInfo.teamSize,
+                        directCount: userInfo.directCount,
+                        packageTier: userInfo.packageTier,
+                        totalEarnings: this.web3.utils.fromWei(userInfo.totalEarnings.toString(), 'mwei'),
+                        withdrawable: this.web3.utils.fromWei(userInfo.withdrawable.toString(), 'mwei'),
+                        isCapped: userInfo.isCapped,
+                        isKYCVerified: userInfo.isKYCVerified,
+                        leaderRank: userInfo.leaderRank,
+                        suspensionLevel: userInfo.suspensionLevel
+                    };
+                } catch (error) {
+                    console.error('Error getting user info:', error);
+                    throw error;
+                }
+            }
+
+            async getContractState() {
+                try {
+                    const state = await this.contract.methods.state().call();
+                    return {
+                        totalUsers: state.totalUsers,
+                        lastUserId: state.lastUserId,
+                        automationOn: state.automationOn,
+                        systemLocked: state.systemLocked,
+                        totalVolume: this.web3.utils.fromWei(state.totalVolume.toString(), 'mwei')
+                    };
+                } catch (error) {
+                    console.error('Error getting contract state:', error);
+                    throw error;
+                }
+            }
+
+            async getUSDTBalance(address = null) {
+                const userAddress = address || this.account;
+                if (!userAddress) throw new Error('No address provided');
+
+                try {
+                    const balance = await this.usdtContract.methods.balanceOf(userAddress).call();
+                    return this.web3.utils.fromWei(balance.toString(), 'mwei');
+                } catch (error) {
+                    console.error('Error getting USDT balance:', error);
+                    throw error;
+                }
+            }
+
+            async mintTestUSDT(amount) {
+                if (!this.account) throw new Error('Wallet not connected');
+
+                try {
+                    const amountWei = this.web3.utils.toWei(amount.toString(), 'mwei');
+                    const tx = await this.usdtContract.methods.mint(this.account, amountWei).send({
+                        from: this.account
+                    });
+                    console.log('USDT minted:', tx.transactionHash);
+                    return tx;
+                } catch (error) {
+                    console.error('Error minting USDT:', error);
+                    throw error;
+                }
+            }
+
+            async register(sponsorAddress, packageTier) {
+                if (!this.account) throw new Error('Wallet not connected');
+
+                try {
+                    const packageAmount = [100, 200, 500, 1000, 2000][packageTier - 1];
+                    const amountWei = this.web3.utils.toWei(packageAmount.toString(), 'mwei');
+                    const contractAddress = CONTRACTS[this.network].contracts.OrphiCrowdFundV4UltraSecure.address;
+                    
+                    await this.usdtContract.methods.approve(contractAddress, amountWei).send({
+                        from: this.account
+                    });
+
+                    const tx = await this.contract.methods.register(sponsorAddress, packageTier).send({
+                        from: this.account
+                    });
+                    console.log('User registered:', tx.transactionHash);
+                    return tx;
+                } catch (error) {
+                    console.error('Error registering:', error);
+                    throw error;
+                }
+            }
+
+            async withdraw() {
+                if (!this.account) throw new Error('Wallet not connected');
+
+                try {
+                    const tx = await this.contract.methods.withdraw().send({
+                        from: this.account
+                    });
+                    console.log('Withdrawal successful:', tx.transactionHash);
+                    return tx;
+                } catch (error) {
+                    console.error('Error withdrawing:', error);
+                    throw error;
+                }
+            }
+
+            formatAddress(address) {
+                if (!address) return '';
+                return address.substring(0, 6) + '...' + address.substring(address.length - 4);
+            }
+
+            getTxUrl(txHash) {
+                return `https://testnet.bscscan.com/tx/${txHash}`;
+            }
+        }
+
+        const orphiWeb3 = new OrphiWeb3();
+        
+        let isConnected = false;
+        
+        // Add connection status indicator
+        const connectionIndicator = document.createElement('div');
+        connectionIndicator.innerHTML = `
+            <div style="position: fixed; top: 20px; right: 20px; z-index: 1000;">
+                <div id="connectionStatus" style="
+                    background: #ff4444; 
+                    color: white; 
+                    padding: 8px 16px; 
+                    border-radius: 20px; 
+                    font-size: 12px;
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                ">
+                    <div id="statusDot" style="width: 8px; height: 8px; border-radius: 50%; background: white;"></div>
+                    <span id="statusText">Not Connected</span>
+                </div>
+                <button id="connectBtn" style="
+                    background: #00D4FF; 
+                    border: none; 
+                    color: white; 
+                    padding: 8px 16px; 
+                    border-radius: 20px; 
+                    margin-top: 8px; 
+                    cursor: pointer;
+                    width: 100%;
+                ">Connect Wallet</button>
+            </div>
+        `;
+        document.body.appendChild(connectionIndicator);
+        
+        // Connect wallet function
+        async function connectWallet() {
+            try {
+                const account = await orphiWeb3.connectWallet();
+                isConnected = true;
+                updateConnectionStatus('Connected', '#00ff44');
+                document.getElementById('connectBtn').textContent = 'Connected ✓';
+                document.getElementById('connectBtn').disabled = true;
+                
+                // Load user data
+                await loadUserData(account);
+                
+                console.log('Wallet connected:', account);
+            } catch (error) {
+                console.error('Connection failed:', error);
+                alert('Failed to connect wallet: ' + error.message);
+            }
+        }
+        
+        // Update connection status
+        function updateConnectionStatus(text, color) {
+            document.getElementById('statusText').textContent = text;
+            document.getElementById('connectionStatus').style.background = color;
+        }
+        
+        // Load user data from contract
+        async function loadUserData(account) {
+            try {
+                updateConnectionStatus('Loading...', '#ffaa00');
+                
+                // Get user info
+                const userInfo = await orphiWeb3.getUserInfo(account);
+                const usdtBalance = await orphiWeb3.getUSDTBalance(account);
+                const contractState = await orphiWeb3.getContractState();
+                
+                // Update dashboard with real data
+                if (userInfo.id > 0) {
+                    // User is registered
+                    document.querySelector('.user-stat-value').textContent = `$${userInfo.totalEarnings}`;
+                    document.querySelectorAll('.user-stat-value')[1].textContent = userInfo.teamSize;
+                    document.querySelectorAll('.user-stat-value')[2].textContent = userInfo.directCount;
+                    document.querySelectorAll('.user-stat-value')[3].textContent = `$${userInfo.withdrawable}`;
+                    
+                    // Update user info
+                    document.querySelector('.user-name').textContent = orphiWeb3.formatAddress(account);
+                    document.querySelector('.user-id').textContent = `ID: ${userInfo.id}`;
+                    
+                    // Add package tier info
+                    const tierInfo = document.createElement('div');
+                    tierInfo.innerHTML = `
+                        <div style="margin-top: 10px; color: #00D4FF;">
+                            Package: Tier ${userInfo.packageTier} | 
+                            USDT Balance: $${usdtBalance} |
+                            ${userInfo.isKYCVerified ? '✅ KYC Verified' : '❌ KYC Pending'}
+                        </div>
+                    `;
+                    document.querySelector('.user-info').appendChild(tierInfo);
+                    
+                    updateConnectionStatus('Registered User', '#00ff44');
+                } else {
+                    // User not registered
+                    updateConnectionStatus('Not Registered', '#ffaa00');
+                    
+                    // Show registration prompt
+                    const registerPrompt = document.createElement('div');
+                    registerPrompt.innerHTML = `
+                        <div style="
+                            position: fixed; 
+                            top: 50%; 
+                            left: 50%; 
+                            transform: translate(-50%, -50%);
+                            background: rgba(0, 0, 0, 0.9);
+                            padding: 30px;
+                            border-radius: 15px;
+                            border: 2px solid #00D4FF;
+                            z-index: 2000;
+                            text-align: center;
+                        ">
+                            <h3 style="color: #00D4FF; margin-bottom: 20px;">Registration Required</h3>
+                            <p style="margin-bottom: 20px;">You need to register to access the dashboard.</p>
+                            <p style="margin-bottom: 20px;">USDT Balance: $${usdtBalance}</p>
+                            <button id="mintUSDTBtn" style="
+                                background: #ff6b6b; 
+                                border: none; 
+                                color: white; 
+                                padding: 10px 20px; 
+                                border-radius: 5px; 
+                                margin: 5px;
+                                cursor: pointer;
+                            ">Mint Test USDT (1000)</button>
+                            <button id="registerBtn" style="
+                                background: #00D4FF; 
+                                border: none; 
+                                color: white; 
+                                padding: 10px 20px; 
+                                border-radius: 5px; 
+                                margin: 5px;
+                                cursor: pointer;
+                            ">Register (Tier 1 - $100)</button>
+                            <button onclick="this.parentElement.remove()" style="
+                                background: #666; 
+                                border: none; 
+                                color: white; 
+                                padding: 10px 20px; 
+                                border-radius: 5px; 
+                                margin: 5px;
+                                cursor: pointer;
+                            ">Close</button>
+                        </div>
+                    `;
+                    document.body.appendChild(registerPrompt);
+                    
+                    // Mint USDT handler
+                    document.getElementById('mintUSDTBtn').onclick = async () => {
+                        try {
+                            await orphiWeb3.mintTestUSDT(1000);
+                            alert('✅ 1000 Test USDT minted successfully!');
+                            // Refresh data
+                            await loadUserData(account);
+                        } catch (error) {
+                            alert('❌ Minting failed: ' + error.message);
+                        }
+                    };
+                    
+                    // Register handler
+                    document.getElementById('registerBtn').onclick = async () => {
+                        try {
+                            const tx = await orphiWeb3.register('0x0000000000000000000000000000000000000000', 1);
+                            alert('✅ Registration successful! Transaction: ' + orphiWeb3.getTxUrl(tx.transactionHash));
+                            registerPrompt.remove();
+                            await loadUserData(account);
+                        } catch (error) {
+                            alert('❌ Registration failed: ' + error.message);
+                        }
+                    };
+                }
+                
+                // Add contract info
+                const contractInfo = document.createElement('div');
+                contractInfo.innerHTML = `
+                    <div style="
+                        position: fixed; 
+                        bottom: 20px; 
+                        left: 20px; 
+                        background: rgba(0, 0, 0, 0.8);
+                        padding: 15px;
+                        border-radius: 10px;
+                        font-size: 12px;
+                        border: 1px solid #00D4FF;
+                    ">
+                        <div style="color: #00D4FF; font-weight: bold; margin-bottom: 8px;">BSC Testnet Contract</div>
+                        <div>Total Users: ${contractState.totalUsers}</div>
+                        <div>Total Volume: $${contractState.totalVolume}</div>
+                        <div>Contract: <a href="https://testnet.bscscan.com/address/0xFb586f2aF3ce424134C2F7F959cfF5db7eC083EC" target="_blank" style="color: #00D4FF;">View on BSCScan</a></div>
+                    </div>
+                `;
+                document.body.appendChild(contractInfo);
+                
+            } catch (error) {
+                console.error('Error loading user data:', error);
+                updateConnectionStatus('Error Loading', '#ff4444');
+            }
+        }
+        
+        // Add withdraw functionality to existing buttons
+        document.addEventListener('click', async (e) => {
+            if (e.target.closest('.user-action') && e.target.textContent.includes('Withdraw')) {
+                if (!isConnected) {
+                    alert('Please connect your wallet first');
+                    return;
+                }
+                
+                try {
+                    const userInfo = await orphiWeb3.getUserInfo();
+                    if (parseFloat(userInfo.withdrawable) > 0) {
+                        const tx = await orphiWeb3.withdraw();
+                        alert(`✅ Withdrawal successful!\nTransaction: ${orphiWeb3.getTxUrl(tx.transactionHash)}`);
+                        await loadUserData(orphiWeb3.account);
+                    } else {
+                        alert('No withdrawable amount available');
+                    }
+                } catch (error) {
+                    alert('❌ Withdrawal failed: ' + error.message);
+                }
+            }
+        });
+        
+        // Connect wallet on button click
+        document.getElementById('connectBtn').onclick = connectWallet;
+        
+        // Initialize
+        window.addEventListener('load', async () => {
+            console.log('Dashboard loading...');
+            await orphiWeb3.init();
+        });
+    </script>
+</body>
+</html>

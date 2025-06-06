@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OrphiChain Dashboard - Diagnostic</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            max-width: 600px;
+            text-align: center;
+        }
+        h1 { color: #7B2CBF; }
+        .status { padding: 10px; margin: 10px 0; border-radius: 4px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        button {
+            background: #00D4FF;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>OrphiChain Dashboard Diagnostic</h1>
+        <p>This page helps diagnose issues with the React application.</p>
+        
+        <div id="diagnostics">
+            <div class="status success">✅ HTML is loading correctly</div>
+            <div id="js-check" class="status error">❌ JavaScript not executed yet</div>
+        </div>
+        
+        <button onclick="testReactMount()">Test React Mount</button>
+        <button onclick="window.location.href = 'http://localhost:3000'">Go to React App</button>
+        <button onclick="window.location.href = 'http://localhost:5173'">Go to Default Port</button>
+        
+        <h3>Manual Steps:</h3>
+        <ol style="text-align: left;">
+            <li>Open Terminal</li>
+            <li>Run: <code>cd "/Users/dadou/Orphi CrowdFund"</code></li>
+            <li>Run: <code>chmod +x start-on-port-3000.sh</code></li>
+            <li>Run: <code>./start-on-port-3000.sh</code></li>
+            <li>Open: <a href="http://localhost:3000">http://localhost:3000</a></li>
+        </ol>
+        
+        <div id="react-mount"></div>
+    </div>
+
+    <script>
+        // Test basic JavaScript
+        document.getElementById('js-check').innerHTML = '✅ JavaScript is working';
+        document.getElementById('js-check').className = 'status success';
+        
+        function testReactMount() {
+            const mountPoint = document.getElementById('react-mount');
+            mountPoint.innerHTML = '<div style="padding: 20px; background: #f0f0f0; margin: 20px 0; border-radius: 4px;">React mount test would go here. If you see this, JavaScript is working but React needs to be loaded separately.</div>';
+        }
+        
+        // Check for common issues
+        setTimeout(() => {
+            const issues = [];
+            
+            if (!window.fetch) {
+                issues.push('Fetch API not supported');
+            }
+            
+            if (!window.Promise) {
+                issues.push('Promises not supported');
+            }
+            
+            if (issues.length > 0) {
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'status error';
+                errorDiv.innerHTML = '❌ Browser compatibility issues: ' + issues.join(', ');
+                document.getElementById('diagnostics').appendChild(errorDiv);
+            } else {
+                const successDiv = document.createElement('div');
+                successDiv.className = 'status success';
+                successDiv.innerHTML = '✅ Browser compatibility looks good';
+                document.getElementById('diagnostics').appendChild(successDiv);
+            }
+        }, 1000);
+    </script>
+</body>
+</html>

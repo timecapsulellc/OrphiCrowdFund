@@ -536,3 +536,35 @@ This smart contract system handles real financial transactions. Always:
 - Have emergency response procedures
 - Keep private keys secure
 - Use multi-sig wallets for admin functions
+
+## User Testing & Quality Assurance
+
+- **Unit/Integration Testing**: Run `npm test` to execute all React component and contract tests.
+- **End-to-End Testing**: Cypress is recommended for E2E flows. To set up, run:
+  ```sh
+  npm install --save-dev cypress
+  npx cypress open
+  ```
+  Add tests in `cypress/e2e/` to simulate real user flows (registration, dashboard, error handling, etc).
+- **Accessibility**: All major components are ARIA-compliant and keyboard accessible. Use tools like Axe or Lighthouse for further audits.
+
+## Mobile Responsiveness
+
+- All dashboard and notification components are fully responsive.
+- Touch targets and safe area insets are optimized for iOS/Android.
+- Test on devices or emulators for best experience.
+
+## Production Deployment
+
+1. **Build the frontend**:
+   ```sh
+   npm run build
+   ```
+2. **Preview locally**:
+   ```sh
+   npm run preview
+   ```
+3. **Deploy to your preferred static host** (e.g., Vercel, Netlify, AWS S3, GitHub Pages).
+4. **Smart Contract Deployment**: See `deployment-config.json` and `FINAL_DEPLOYMENT_STATUS.md` for contract addresses and deployment steps.
+
+For more, see `PRODUCTION_DEPLOYMENT_ROADMAP.md` and `FINAL_COMPLETION_REPORT.md`.

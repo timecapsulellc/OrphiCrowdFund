@@ -367,6 +367,31 @@ const TeamAnalyticsDashboard = ({
         </div>
       </div>
 
+      {/* === LEADER POOL & CAP STATUS PANEL === */}
+      <div className="orphi-card orphi-theme-dark" style={{margin: '2rem 0', padding: '1.5rem'}}>
+        <h3 className="orphi-h3">Leader Pool Share & Earnings Cap</h3>
+        <div className="leader-cap-grid" style={{display:'flex',gap:'2rem',flexWrap:'wrap'}}>
+          <div>
+            <b>Leader Pool Distribution</b> <span title="Bi-monthly, 50/50 split between Shining/Silver Stars">🛈</span>
+            <ul style={{margin:'0.5rem 0 0 1rem',color:'#b8c5d1'}}>
+              <li>Shining Star: 50% (Team 250+, 10+ directs)</li>
+              <li>Silver Star: 50% (Team 500+, any directs)</li>
+            </ul>
+          </div>
+          <div>
+            <b>Earnings Cap</b> <span title="Maximum 4x of total investment">🛈</span>
+            <div style={{marginTop:'0.5rem',color:'#FFD700'}}>
+              {/* Example: show capped status if available */}
+              {teamData && teamData.isCapped !== undefined ? (
+                <span>Status: <b>{teamData.isCapped ? 'Capped' : 'Active'}</b></span>
+              ) : <span>Login to see your cap status.</span>}
+              <br/>
+              <span>Cap: 4x of total invested</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Export Actions */}
       <div className="export-actions">
         <button className="orphi-btn orphi-btn-primary">
